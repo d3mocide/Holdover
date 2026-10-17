@@ -1,0 +1,165 @@
+import json
+
+import httpx
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import func, select
+
+from app.llm.client import LLMClient, LLMUnavailable
+from app.llm.extract import extract_report, match_waterbody
+from app.llm.jobs import process_pending
+from app.llm.summarize import summarize_report, ungrounded_terms
+from app.models import Generation, Report, ReportItem
+from app.seed import seed_waterbodies
+from app.sources.odfw_report import ParseError, ingest, parse, report_text
+from conftest import FIX
+
+URL = "https://example.test/recreation-report"
+AUTH = {"Authorization": "Bearer testtoken"}
+HTML = (FIX / "odfw_report" / "index.html").read_bytes()
+
+
+def llm_with(handler) -> LLMClient:
+    return LLMClient("http://llm.test/v1", "m", transport=httpx.MockTransport(handler))
+
+
+def reply(obj):
+    return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(obj)}}]})
+
+
+def willamette(session):
+    seed_waterbodies(session)
+    ingest(session, URL, 200, HTML)
+    return session.scalar(select(Report).where(Report.zone == "willamette"))
+
+
+def test_parse_real_report():
+    p = parse(HTML)
+    assert p.issued_on == "2026-10-16"
+    assert set(p.zones) == {"nw", "willamette", "central", "ne", "se"}
+    assert len(p.zones["willamette"]) == 2 and "North Santiam" in p.zone_text("willamette")
+
+
+def test_layout_change_is_parse_error():
+    with pytest.raises(ParseError):
+        parse(b"<html><body>nothing</body></html>")
+
+
+def test_ingest_one_report_per_zone_and_hash_skip(session):
+    seed_waterbodies(session)
+    assert len(ingest(session, URL, 200, HTML)) == 5
+    assert ingest(session, URL, 200, HTML) == []  # identical body: parse skipped
+    assert session.scalar(select(func.count()).select_from(Report)) == 5
+
+
+def test_waterbody_matching_is_exact_not_loose(session):
+    seed_waterbodies(session)
+    assert match_waterbody(session, "North Santiam") is not None
+    assert match_waterbody(session, "Dexter Reservoir") is not None
+    assert match_waterbody(session, "Willamette River") is None  # not the Coast Fork
+    assert match_waterbody(session, "Imaginary Lake") is None
+
+
+def test_hallucinated_sentence_is_rejected(session):
+    r = willamette(session)
+    text = report_text(session, r)
+    real = text.split(". ")[0] + "."
+    llm = llm_with(lambda req: reply({"items": [
+        {"waterbody_raw": "North Santiam", "species": ["coho"], "rating": "good", "note": "n", "source_sentence": real},
+        {"waterbody_raw": "Fake Lake", "species": ["trout"], "rating": "excellent", "note": "n",
+         "source_sentence": "Fake Lake is stuffed with trout."},
+    ]}))
+    assert extract_report(session, r, llm) == {"kept": 1, "rejected": 1}
+    items = {i.waterbody_raw: i for i in session.scalars(select(ReportItem))}
+    assert items["North Santiam"].status == "review" and items["North Santiam"].waterbody_id
+    assert items["Fake Lake"].status == "rejected" and items["Fake Lake"].waterbody_id is None
+    # idempotent
+    assert extract_report(session, r, llm) == {"skipped": True}
+    assert session.scalar(select(func.count()).select_from(ReportItem)) == 2
+
+
+def test_invalid_model_output_is_rejected_whole(session):
+    r = willamette(session)
+    for bad in [{"items": [{"waterbody_raw": "x"}]}, {"items": [{"waterbody_raw": "x", "source_sentence": "y", "rating": "stellar"}]}]:
+        with pytest.raises(ValueError):
+            extract_report(session, r, llm_with(lambda req, b=bad: reply(b)))
+    bad_json = llm_with(lambda req: httpx.Response(200, json={"choices": [{"message": {"content": "not json"}}]}))
+    with pytest.raises(ValueError):
+        extract_report(session, r, bad_json)
+    assert session.scalar(select(func.count()).select_from(ReportItem)) == 0
+
+
+def test_llm_down_leaves_everything_pending_then_recovers(session):
+    willamette(session)
+
+    def down(req):
+        raise httpx.ConnectError("refused")
+
+    out = process_pending(session, llm_with(down))
+    assert out["llm"] == "unreachable" and out["pending"] >= 1 and out["extracted"] == 0
+    assert session.scalar(select(func.count()).select_from(Generation)) == 0
+
+    def ok(req):
+        body = json.loads(req.content)
+        if "short digest" in body["messages"][0]["content"]:
+            return reply({"digest": "Reports mention North Santiam."})
+        return reply({"items": []})
+
+    out = process_pending(session, llm_with(ok))
+    assert out["llm"] == "ok" and out["extracted"] == 5 and out["pending"] == 0
+
+
+def test_unconfigured_llm_is_not_an_error(session):
+    willamette(session)
+    out = process_pending(session, LLMClient("", ""))
+    assert out["llm"] == "not_configured"
+    with pytest.raises(LLMUnavailable):
+        LLMClient("", "").chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).DigestResult)
+
+
+def test_digest_guard():
+    src = "- North Santiam (coho; rating good): Coho moving in. [Coho salmon are moving into the lower North Santiam.]"
+    assert ungrounded_terms("Coho are moving into the North Santiam.", src) == []
+    assert "40" in ungrounded_terms("About 40 coho were caught.", src)
+    assert "Detroit" in ungrounded_terms("Fishing is also good at Detroit.", src)
+
+
+def test_ungrounded_digest_is_discarded(session):
+    r = willamette(session)
+    session.add(ReportItem(report_id=r.id, waterbody_raw="North Santiam", species="coho", rating="good",
+                           note="Coho moving in.", source_sentence="Coho salmon are moving.", status="review"))
+    session.commit()
+    with pytest.raises(ValueError):
+        summarize_report(session, r, llm_with(lambda req: reply({"digest": "Limit is 5 coho at Detroit."})))
+    assert r.summary_text is None
+
+
+def test_api_serves_verbatim_bullets_without_llm(session):
+    from app.main import app
+    r = willamette(session)
+    c = TestClient(app)
+    body = c.get("/api/reports?zone=willamette").json()["report"]
+    assert body["digest"] is None and body["items"] == []
+    assert body["bullets"][0].startswith("Coho salmon are moving into the lower parts of the North Santiam")
+    assert body["source_url"] == "https://myodfw.com/recreation-report" and body["issued_on"] == "2026-10-16"
+
+
+def test_review_queue_accept_reject_and_map_effect(session):
+    from app.main import app
+    r = willamette(session)
+    session.add_all([
+        ReportItem(report_id=r.id, waterbody_raw="North Santiam", waterbody_id=None, rating="good", species="coho",
+                   note="n", source_sentence="s1", status="review"),
+        ReportItem(report_id=r.id, waterbody_raw="Junk", rating="unknown", note="n", source_sentence="s2", status="review"),
+    ])
+    session.commit()
+    c = TestClient(app)
+    assert c.get("/api/admin/review/items").status_code == 401
+    q = c.get("/api/admin/review/items", headers=AUTH).json()
+    assert len(q) == 2
+    wb = match_waterbody(session, "North Santiam")
+    assert c.post(f"/api/admin/review/items/{q[0]['id']}/accept", json={"waterbody_id": wb}, headers=AUTH).status_code == 200
+    assert c.post(f"/api/admin/review/items/{q[1]['id']}/reject", headers=AUTH).status_code == 200
+    sheet = c.get(f"/api/waterbodies/{wb}").json()
+    assert [i["source_sentence"] for i in sheet["report_items"]] == ["s1"]
+    assert c.get("/api/reports?zone=willamette").json()["report"]["items"][0]["rating"] == "good"
