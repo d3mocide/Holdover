@@ -19,14 +19,14 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def http_fetch(url: str, *, retries: int = 3) -> tuple[int | None, bytes]:
+def http_fetch(url: str, *, retries: int = 3, timeout: float = 30) -> tuple[int | None, bytes]:
     headers = {"User-Agent": get_settings().user_agent}
     delay = 2.0
     status: int | None = None
     body = b""
     for attempt in range(retries + 1):
         try:
-            r = httpx.get(url, headers=headers, follow_redirects=True, timeout=30)
+            r = httpx.get(url, headers=headers, follow_redirects=True, timeout=timeout)
             status, body = r.status_code, r.content
         except httpx.HTTPError as exc:
             status, body = None, str(exc).encode()
@@ -52,3 +52,8 @@ def store_fetch(session: Session, source: str, url: str, status: int | None, bod
     session.add(row)
     session.flush()
     return row, bool(prev and prev.content_hash == h)
+
+
+def quick_fetch(url: str) -> tuple[int | None, bytes]:
+    """One short attempt, for on-demand refreshes inside a request."""
+    return http_fetch(url, retries=0, timeout=8)

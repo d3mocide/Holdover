@@ -6,6 +6,8 @@
   import Planner from './lib/Planner.svelte';
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
+  import Gauges from './lib/Gauges.svelte';
+  import DayView from './lib/DayView.svelte';
   import Placeholder from './lib/Placeholder.svelte';
   import { getToken } from './lib/api.js';
 
@@ -17,6 +19,10 @@
   let error = $state('');
   let selectedId = $state(null);
   let showStocking = $state(true);
+  let showGauges = $state(true);
+  let showAdvisories = $state(true);
+  let showReports = $state(true);
+  let dayFor = $state(null);
 
   $effect(() => {
     document.documentElement.dataset.theme = theme;
@@ -30,7 +36,7 @@
   $effect(() => { load(); loadReport(); });
 
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gauges', 'Gauges', 'gauge']];
-  const select = (id) => { selectedId = id; if (view !== 'map') view = 'map'; };
+  const select = (id) => { selectedId = id; dayFor = null; if (view !== 'map') view = 'map'; };
 </script>
 
 <div class="shell">
@@ -52,30 +58,35 @@
       <Planner {data} {report} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
     </div>
     <main class="mapwrap" class:hide={view === 'plan'}>
-      <MapView {data} {selectedId} {theme} {showStocking} onselect={select} />
+      <MapView {data} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
       <div class="layers card" role="group" aria-label="Map layers">
         <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
-        {#each ['Report ratings', 'Gauges', 'My pins', 'Advisories'] as l}
-          <label class="lyr off"><input type="checkbox" disabled /> {l} <span class="soon">later</span></label>
-        {/each}
+        <label class="lyr"><input type="checkbox" bind:checked={showReports} /> Report ratings</label>
+        <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
+        <label class="lyr off"><input type="checkbox" disabled /> My pins <span class="soon">later</span></label>
+        <label class="lyr"><input type="checkbox" bind:checked={showAdvisories} /> Advisories</label>
       </div>
       <div class="legend card" aria-label="Stocking freshness legend">
         <span><i class="dot this_week"></i> This week</span>
         <span><i class="dot recent"></i> Last 2 weeks</span>
         <span><i class="dot older"></i> Older</span>
         <span><i class="dot upcoming"></i> Scheduled</span>
+        <span><i class="sym diamond"></i> Gauge (provisional)</span>
+        <span><i class="sym ring"></i> Algae advisory/precaution</span>
       </div>
       <button class="offline" disabled title="Offline map download arrives with the journal phase">Prepare for offline</button>
     </main>
-    {#if selectedId && view === 'map'}
-      <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} /></div>
+    {#if dayFor && view === 'map'}
+      <div class="sheetwrap wide"><DayView id={dayFor} onback={() => (dayFor = null)} /></div>
+    {:else if selectedId && view === 'map'}
+      <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} onday={(id) => (dayFor = id)} /></div>
     {/if}
   {:else if view === 'settings'}
     <main class="page"><Settings {theme} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); }} /></main>
   {:else if view === 'journal'}
     <main class="page"><Placeholder title="Journal" phase="Phase 4" blurb="Trip and catch logging that works offline." /></main>
   {:else}
-    <main class="page"><Placeholder title="Gauges" phase="Phase 3" blurb="USGS flow and temperature for your starred rivers." /></main>
+    <main class="page"><Gauges /></main>
   {/if}
 </div>
 
@@ -97,9 +108,13 @@
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 14px; padding: 8px 12px; font-size: 12px; z-index: 2; flex-wrap: wrap; max-width: calc(100% - 24px); }
+  .legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 14px; padding: 8px 12px; font-size: 12px; z-index: 2; flex-wrap: wrap; max-width: calc(100% - 210px); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .offline { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2; }
+  .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
+  .sym.diamond { transform: rotate(45deg); }
+  .sym.ring { border-radius: 50%; border-color: var(--accent); }
+  .sheetwrap.wide { width: min(520px, 60%); }
+  .offline { position: absolute; right: 12px; bottom: 12px; z-index: 2; }
 
   @media (max-width: 899px) {
     .shell { grid-template-columns: 1fr; grid-template-rows: 1fr 64px; }
@@ -111,7 +126,7 @@
     .planner { z-index: 3; align-self: end; height: 42%; border: 1px solid var(--line); border-radius: 16px 16px 0 0; }
     .planner.full { height: 100%; border-radius: 0; }
     .mapwrap.hide { display: none; }
-    .sheetwrap { width: 100%; top: auto; height: 62%; z-index: 4; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; }
+    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; height: 62%; z-index: 4; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; }
     .layers { right: 12px; top: 64px; }
     .offline, .lyr.off { display: none; }
     .legend { bottom: calc(42% + 12px); }

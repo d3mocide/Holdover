@@ -1,4 +1,4 @@
-"""python -m app.cli <command>: migrate | seed | ingest-fixtures DIR | stocking | ingest-report FILE | llm | reports"""
+"""python -m app.cli <command>: migrate | seed | ingest-fixtures DIR | stocking | ingest-report FILE | llm | reports | usgs | nws | oha"""
 import glob
 import sys
 
@@ -36,6 +36,9 @@ def main(argv: list[str]) -> int:
     elif cmd == "reports":
         from app.scheduler import run_reports
         print(run_reports())
+    elif cmd in ("usgs", "nws", "oha"):
+        from app import scheduler
+        print(getattr(scheduler, f"run_{cmd}")())
     elif cmd == "stocking":
         from app.scheduler import run_stocking
         print(run_stocking())

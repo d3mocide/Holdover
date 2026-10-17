@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.auth import require_token
 from app.db import get_session
 from app.models import Report, ReportItem, Waterbody, WaterbodyAlias
-from app.scheduler import run_reports, run_stocking
+from app.scheduler import run_nws, run_oha, run_reports, run_stocking, run_usgs
 
 router = APIRouter(dependencies=[Depends(require_token)])
 
@@ -99,3 +99,25 @@ def reject_item(item_id: int, session: Session = Depends(get_session)):
 @router.post("/jobs/reports/run")
 def run_reports_now():
     return run_reports()
+
+
+@router.post("/jobs/{name}/run")
+def run_job_now(name: str):
+    jobs = {"usgs": run_usgs, "nws": run_nws, "oha": run_oha}
+    if name not in jobs:
+        raise HTTPException(404, "unknown job")
+    return jobs[name]()
+
+
+class Star(BaseModel):
+    starred: bool
+
+
+@router.post("/waterbodies/{wb_id}/star")
+def star(wb_id: int, body: Star, session: Session = Depends(get_session)):
+    wb = session.get(Waterbody, wb_id)
+    if wb is None:
+        raise HTTPException(404)
+    wb.starred = int(body.starred)
+    session.commit()
+    return {"id": wb.id, "starred": bool(wb.starred)}

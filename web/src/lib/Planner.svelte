@@ -5,7 +5,7 @@
 
   const order = { this_week: 0, recent: 1, upcoming: 2, older: 3 };
   const spots = $derived(
-    (data?.features ?? []).map((f) => f.properties)
+    (data?.features ?? []).filter((f) => f.properties.layer === 'stocking').map((f) => f.properties)
       .sort((a, b) => order[a.freshness] - order[b.freshness] || (b.last_total ?? b.next_total ?? 0) - (a.last_total ?? a.next_total ?? 0))
   );
   const unlocated = $derived(data?.meta.needs_coords ?? []);

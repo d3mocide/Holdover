@@ -9,18 +9,11 @@ from app.llm.client import LLMClient
 from app.llm.prompts import EXTRACT_SYSTEM, EXTRACT_VERSION
 from app.llm.schemas import ExtractionResult
 from app.models import Generation, Report, ReportItem, Waterbody, WaterbodyAlias
-from app.normalize import normalize_alias
+from app.normalize import name_key as _key
 from app.sources.odfw_report import report_text
-
-_GENERIC = {"RIVER", "LAKE", "POND", "RESERVOIR", "CREEK", "FORK", "THE", "OF"}
-
 
 def _ws(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
-
-
-def _key(raw: str) -> frozenset[str]:
-    return frozenset(t for t in normalize_alias(raw).split() if t not in _GENERIC)
 
 
 def match_waterbody(session: Session, raw: str) -> int | None:

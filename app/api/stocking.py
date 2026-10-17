@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.freshness import freshness
-from app.models import Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias
+from app.sources import oha
+from app.conditions import conditions, latest_gauge
+from app.models import Gauge, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias
 
 router = APIRouter()
 
@@ -32,7 +34,8 @@ def latest_rows(session: Session):
 
 
 @router.get("/map")
-def map_layers(zone: str = "willamette", session: Session = Depends(get_session)):
+def map_layers(zone: str = "willamette", layers: str = "stocking", session: Session = Depends(get_session)):
+    wanted = {x.strip() for x in layers.split(",")}
     today = _today()
     by_wb: dict[int, list[StockingSnapshot]] = {}
     for snap, alias in latest_rows(session):
@@ -49,7 +52,7 @@ def map_layers(zone: str = "willamette", session: Session = Depends(get_session)
         upcoming = nxt[0] if nxt else None
         bucket = freshness(last.week_of, today) if last else "upcoming"
         props = {
-            "id": wb.id, "name": wb.name, "kind": wb.kind, "freshness": bucket,
+            "layer": "stocking", "id": wb.id, "name": wb.name, "kind": wb.kind, "freshness": bucket,
             "last_week": last.week_of if last else None, "last_total": last.total if last else None,
             "next_week": upcoming.week_of if upcoming else None,
             "next_total": upcoming.total if upcoming else None,
@@ -60,6 +63,7 @@ def map_layers(zone: str = "willamette", session: Session = Depends(get_session)
             continue
         features.append({"type": "Feature", "properties": props,
                          "geometry": {"type": "Point", "coordinates": [wb.lon, wb.lat]}})
+    features += _extra_layers(session, wanted, zone, today)
     unconfirmed = session.scalar(
         select(func.count()).select_from(WaterbodyAlias).where(WaterbodyAlias.confirmed == 0)
     )
@@ -69,6 +73,39 @@ def map_layers(zone: str = "willamette", session: Session = Depends(get_session)
                  "unconfirmed_aliases": unconfirmed,
                  "note": "Stocking is shown by week; the schedule may change without notice."},
     }
+
+
+def _extra_layers(session: Session, wanted: set[str], zone: str, today: date) -> list[dict]:
+    out = []
+    pt = lambda lon, lat: {"type": "Point", "coordinates": [lon, lat]}
+    if "gauges" in wanted:
+        for g in session.scalars(select(Gauge)):
+            if g.lat is None:
+                continue
+            lg = latest_gauge(session, g)
+            q = lg["values"].get("discharge_cfs")
+            out.append({"type": "Feature", "geometry": pt(g.lon, g.lat), "properties": {
+                "layer": "gauge", "id": g.id, "name": g.name, "site_no": g.site_no,
+                "flow_cfs": q["value"] if q else None, "trend": lg["trend"], "as_of": lg["as_of"],
+                "stale": lg["stale"], "provisional": True}})
+    if "advisories" in wanted:
+        for a in oha.current(session):
+            wb = session.get(Waterbody, a.waterbody_id)
+            if wb and wb.lat is not None and wb.zone == zone:
+                out.append({"type": "Feature", "geometry": pt(wb.lon, wb.lat), "properties": {
+                    "layer": "advisory", "id": wb.id, "name": wb.name, "kind": a.kind, "text": a.text,
+                    "issued": a.observed_at}})
+    if "reports" in wanted:
+        rows = session.execute(select(ReportItem, Report).join(Report, Report.id == ReportItem.report_id)
+                               .where(ReportItem.status == "accepted", ReportItem.waterbody_id.is_not(None))
+                               .order_by(Report.issued_on, ReportItem.id)).all()
+        latest = {i.waterbody_id: (i, r) for i, r in rows}  # newest accepted item per waterbody wins
+        for wb_id, (i, r) in latest.items():
+            wb = session.get(Waterbody, wb_id)
+            if wb and wb.lat is not None and i.rating != "unknown":
+                out.append({"type": "Feature", "geometry": pt(wb.lon, wb.lat), "properties": {
+                    "layer": "report", "id": wb.id, "name": wb.name, "rating": i.rating, "issued_on": r.issued_on}})
+    return out
 
 
 def _latest_scrape(session: Session) -> str | None:
@@ -97,6 +134,7 @@ def waterbody(wb_id: int, session: Session = Depends(get_session)):
             for w, r in sorted(current.items(), reverse=True)
         ],
         "snapshots": len(rows),
+        "conditions": conditions(session, wb, today, today),
         "report_items": [
             {"issued_on": r.issued_on, "species": i.species, "rating": i.rating, "note": i.note,
              "source_sentence": i.source_sentence}

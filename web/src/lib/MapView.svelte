@@ -7,7 +7,7 @@
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { data, selectedId = null, theme, onselect, showStocking = true } = $props();
+  let { data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -46,17 +46,55 @@
     };
   }
 
+  function icon(draw) {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 32;
+    const g = cv.getContext('2d'); draw(g);
+    return g.getImageData(0, 0, 32, 32);
+  }
+  function addIcons() {
+    const c = palette();
+    const stroke = css('--text');
+    for (const [name, img] of Object.entries({
+      'gauge-icon': icon((g) => { g.fillStyle = c.bg; g.strokeStyle = stroke; g.lineWidth = 3; g.beginPath();
+        g.moveTo(16, 3); g.lineTo(29, 16); g.lineTo(16, 29); g.lineTo(3, 16); g.closePath(); g.fill(); g.stroke(); }),
+      'report-icon': icon((g) => { g.fillStyle = css('--text-quiet'); g.fillRect(6, 6, 20, 20); })
+    })) { if (map.hasImage(name)) map.removeImage(name); map.addImage(name, img); }
+  }
+
+  const isL = (l) => ['==', ['get', 'layer'], l];
+  const selFilter = (id) => ['all', isL('stocking'), ['==', ['get', 'id'], id]];
+
   function addLayers() {
+    addIcons();
     const p = freshnessPaint();
     const c = palette();
     map.addSource('stocking', { type: 'geojson', data: data ?? { type: 'FeatureCollection', features: [] } });
-    map.addLayer({ id: 'stocking-pts', type: 'circle', source: 'stocking', paint: {
+    map.addLayer({ id: 'advisory-ring', type: 'circle', source: 'stocking', filter: isL('advisory'), paint: {
+      'circle-radius': 15, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
+    map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
+      'icon-image': 'report-icon', 'icon-size': 0.5, 'icon-offset': [16, -16], 'icon-allow-overlap': true }, paint: {
+      'icon-opacity': ['match', ['get', 'rating'], 'excellent', 1, 'good', 0.8, 'fair', 0.55, 'slow', 0.35, 0.3] } });
+    map.addLayer({ id: 'stocking-pts', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
       'circle-radius': 8, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2 } });
-    map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: ['==', ['get', 'id'], -1], paint: {
+    map.addLayer({ id: 'gauge-pts', type: 'symbol', source: 'stocking', filter: isL('gauge'), layout: {
+      'icon-image': 'gauge-icon', 'icon-size': 0.75, 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
       'circle-radius': 12, 'circle-color': p.color, 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
-    map.on('click', 'stocking-pts', (e) => onselect?.(e.features[0].properties.id));
-    map.on('mouseenter', 'stocking-pts', () => (map.getCanvas().style.cursor = 'pointer'));
-    map.on('mouseleave', 'stocking-pts', () => (map.getCanvas().style.cursor = ''));
+    for (const l of ['stocking-pts', 'advisory-ring', 'report-badge']) {
+      map.on('click', l, (e) => onselect?.(e.features[0].properties.id));
+    }
+    map.on('click', 'gauge-pts', (e) => {
+      const p = e.features[0].properties;
+      const el = document.createElement('div');
+      const t = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; el.appendChild(d); };
+      t(p.name); t(p.flow_cfs != null ? `${Math.round(p.flow_cfs).toLocaleString()} cfs${p.trend ? ' · ' + p.trend : ''}` : 'No flow data', 'mono');
+      t(`USGS ${p.site_no} · provisional${p.stale === true || p.stale === 'true' ? ' · STALE' : ''}`);
+      new maplibregl.Popup({ offset: 12 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
+    });
+    for (const l of ['stocking-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
+      map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
+      map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
+    }
   }
 
   onMount(() => {
@@ -85,19 +123,23 @@
     if (!fitted && data.features.length) {
       fitted = true;
       const b = new maplibregl.LngLatBounds();
-      data.features.forEach((f) => b.extend(f.geometry.coordinates));
+      data.features.filter((f) => f.properties.layer === 'stocking').forEach((f) => b.extend(f.geometry.coordinates));
       map.fitBounds(b, { padding: 60, maxZoom: 9, duration: 0 });
     }
   });
   $effect(() => {
     if (!ready) return;
-    map.setLayoutProperty('stocking-pts', 'visibility', showStocking ? 'visible' : 'none');
-    map.setLayoutProperty('stocking-sel', 'visibility', showStocking ? 'visible' : 'none');
+    const vis = (on) => (on ? 'visible' : 'none');
+    map.setLayoutProperty('stocking-pts', 'visibility', vis(showStocking));
+    map.setLayoutProperty('stocking-sel', 'visibility', vis(showStocking));
+    map.setLayoutProperty('gauge-pts', 'visibility', vis(showGauges));
+    map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
+    map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
   });
   $effect(() => {
     if (!ready) return;
-    map.setFilter('stocking-sel', ['==', ['get', 'id'], selectedId ?? -1]);
-    const f = data?.features.find((x) => x.properties.id === selectedId);
+    map.setFilter('stocking-sel', selFilter(selectedId ?? -1));
+    const f = data?.features.find((x) => x.properties.layer === 'stocking' && x.properties.id === selectedId);
     if (f) map.easeTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), duration: 400 });
   });
   $effect(() => {
@@ -115,6 +157,8 @@
       map.setPaintProperty('stocking-pts', 'circle-stroke-color', p.stroke);
       map.setPaintProperty('stocking-sel', 'circle-color', p.color);
       map.setPaintProperty('stocking-sel', 'circle-stroke-color', c.accent);
+      map.setPaintProperty('advisory-ring', 'circle-stroke-color', c.accent);
+      addIcons();
     });
   });
 </script>

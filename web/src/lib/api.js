@@ -15,7 +15,9 @@ async function req(path, opts = {}) {
 }
 
 export const api = {
-  map: () => req('/api/map?zone=willamette'),
+  map: () => req('/api/map?zone=willamette&layers=stocking,gauges,advisories,reports'),
+  gauges: () => req('/api/gauges'),
+  day: (id, date) => req(`/api/day/${id}?date=${date}`),
   report: (zone = 'willamette') => req(`/api/reports?zone=${zone}`),
   reviewItems: () => req('/api/admin/review/items', { auth: true }),
   acceptItem: (id, waterbody_id) =>
@@ -54,3 +56,11 @@ export function longDate(iso) {
   const [y, m, d] = iso.split('-').map(Number);
   return `${MONTHS[m - 1]} ${d}, ${y}`;
 }
+
+export const asOf = (iso) => (iso ? `as of ${hhmm(iso)}` : 'no data');
+export const cToF = (c) => Math.round((c * 9) / 5 + 32);
+export const TREND = { rising: '↑ rising', falling: '↓ falling', steady: '→ steady' };
+export const isoDay = (offset = 0) => {
+  const d = new Date(); d.setDate(d.getDate() + offset);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};

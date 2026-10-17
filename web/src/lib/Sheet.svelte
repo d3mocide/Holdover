@@ -1,7 +1,8 @@
 <script>
   import { api, FRESH_LABEL, weekLabel, hhmm, longDate } from './api.js';
+  import Conditions from './Conditions.svelte';
   import Icon from './Icon.svelte';
-  let { id, onclose } = $props();
+  let { id, onclose, onday } = $props();
   let wb = $state(null);
   let error = $state('');
 
@@ -27,6 +28,8 @@
     <h2>{wb.name}</h2>
     <p class="quiet small">{wb.stocking[0]?.zone_office ?? wb.zone}</p>
 
+    <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
+
     <h3 class="quiet small">Stocking</h3>
     <ul>
       {#each ordered as s (s.week_of)}
@@ -51,7 +54,8 @@
     {/if}
 
     <div class="actions">
-      <button class="primary" disabled title="Journal arrives in a later phase">Log a trip here</button>
+      <button class="primary" onclick={() => onday(wb.id)}>Plan the day</button>
+      <button disabled title="Journal arrives in a later phase">Log a trip here</button>
       {#if wb.regs_url}
         <a class="btn" href={wb.regs_url} target="_blank" rel="noopener">Official regulations on ODFW <Icon name="external" /></a>
       {/if}

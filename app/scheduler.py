@@ -7,13 +7,16 @@ from sqlalchemy import func, select
 from app.db import session_factory
 from app.http import now_iso
 from app.models import RawFetch
-from app.sources import odfw_report, odfw_stocking
+from app.sources import nws, odfw_report, odfw_stocking, oha, usgs
 
 log = logging.getLogger("holdover.scheduler")
 scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 
 # source -> expected cadence, used to flag a source stale when nothing succeeded recently
-CADENCE = {odfw_stocking.SOURCE: timedelta(days=1), odfw_report.SOURCE: timedelta(days=8)}
+CADENCE = {odfw_stocking.SOURCE: timedelta(days=1), odfw_report.SOURCE: timedelta(days=8),
+           usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2)}
+# Sources that only run for things the owner opts into (nws needs starred waterbodies)
+OPTIONAL = {nws.SOURCE}
 
 
 def run_stocking() -> dict:
@@ -43,6 +46,28 @@ def run_reports() -> dict:
             return {"fetch": fetched, "llm": {"error": "job crashed, see logs"}}
 
 
+def _run(name: str, mod) -> dict:
+    with session_factory()() as s:
+        try:
+            return mod.run_job(s)
+        except Exception:
+            log.exception("%s job crashed", name)
+            s.rollback()
+            return {"ok": False, "error": "job crashed, see logs"}
+
+
+def run_usgs() -> dict:
+    return _run("usgs", usgs)
+
+
+def run_nws() -> dict:
+    return _run("nws", nws)
+
+
+def run_oha() -> dict:
+    return _run("oha", oha)
+
+
 def run_llm_retry() -> None:
     from app.llm.jobs import process_pending
     with session_factory()() as s:
@@ -61,6 +86,9 @@ def start() -> None:
                       replace_existing=True, misfire_grace_time=3600, coalesce=True)
     # Retry LLM work that was skipped because the host was down.
     scheduler.add_job(run_llm_retry, "interval", hours=2, id="llm_retry", replace_existing=True)
+    scheduler.add_job(run_usgs, "interval", minutes=30, id="usgs", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_oha, "cron", hour=5, minute=45, id="oha", replace_existing=True, coalesce=True)
     scheduler.add_job(backup, "cron", hour=3, minute=30, id="backup", replace_existing=True)
     scheduler.start()
 
@@ -95,6 +123,9 @@ def source_status() -> dict:
             last_ok = s.scalar(select(func.max(RawFetch.fetched_at)).where(
                 RawFetch.source == source, RawFetch.status == 200, RawFetch.parse_ok == 1))
             last = s.scalar(select(RawFetch).where(RawFetch.source == source).order_by(RawFetch.id.desc()).limit(1))
+            if last is None and source in OPTIONAL:
+                out[source] = {"last_success": None, "stale": False, "last_error": None, "idle": True}
+                continue
             stale = last_ok is None or (last is not None and last.parse_ok == 0)
             if last_ok and not stale:
                 from datetime import datetime

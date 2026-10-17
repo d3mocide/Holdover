@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import scheduler
-from app.api import admin, reports, stocking
+from app.api import admin, conditions, reports, stocking
 from app.config import get_settings
 
 log = logging.getLogger("holdover")
@@ -29,6 +29,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Holdover", lifespan=lifespan)
 app.include_router(stocking.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
+app.include_router(conditions.router, prefix="/api")
 app.include_router(admin.router, prefix="/api/admin")
 
 
