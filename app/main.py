@@ -1,0 +1,62 @@
+import logging
+import os
+from pathlib import Path
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from app import scheduler
+from app.api import admin, stocking
+from app.config import get_settings
+
+log = logging.getLogger("holdover")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    s = get_settings()
+    if not s.holdover_token:
+        log.warning("HOLDOVER_TOKEN is not set: admin endpoints are locked")
+    if s.run_scheduler:
+        scheduler.start()
+    yield
+    if scheduler.scheduler.running:
+        scheduler.scheduler.shutdown(wait=False)
+
+
+app = FastAPI(title="Holdover", lifespan=lifespan)
+app.include_router(stocking.router, prefix="/api")
+app.include_router(admin.router, prefix="/api/admin")
+
+
+@app.get("/healthz")
+def healthz():
+    sources = scheduler.source_status()
+    s = get_settings()
+    return {
+        "ok": True,
+        "scheduler_running": scheduler.scheduler.running,
+        "sources": sources,
+        "stale": [k for k, v in sources.items() if v["stale"]],
+        "llm": {"configured": bool(s.llm_base_url and s.llm_model)},
+    }
+
+
+# StaticFiles answers HTTP Range requests, which PMTiles needs.
+tiles_dir = os.path.join(get_settings().data_dir, "tiles")
+if os.path.isdir(tiles_dir):
+    app.mount("/tiles", StaticFiles(directory=tiles_dir), name="tiles")
+
+web = Path(get_settings().web_dir).resolve()
+if (web / "index.html").exists():
+
+    @app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
+    def spa(path: str):
+        if path.startswith(("api/", "tiles/")):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
+        f = (web / path).resolve()
+        if path and f.is_file() and web in f.parents:
+            return FileResponse(f)
+        return FileResponse(web / "index.html")
