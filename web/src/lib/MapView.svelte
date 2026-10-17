@@ -1,13 +1,17 @@
+<script module>
+  let protocolDone = false; // addProtocol is global: register once per page load
+</script>
+
 <script>
   import { onMount } from 'svelte';
   import * as maplibregl from 'maplibre-gl';
-  import { Protocol } from 'pmtiles';
+  import { registerTileProtocol, basemapAvailable } from './tiles.js';
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true } = $props();
+  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -26,7 +30,7 @@
     const c = palette();
     const style = { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': c.land } }] };
     if (withTiles) {
-      style.sources.oregon = { type: 'vector', url: 'pmtiles:///tiles/oregon.pmtiles' };
+      style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 };
       style.layers.push(
         { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', paint: { 'fill-color': c.water } },
         { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'LineString'],
@@ -69,6 +73,9 @@
     const p = freshnessPaint();
     const c = palette();
     map.addSource('stocking', { type: 'geojson', data: data ?? { type: 'FeatureCollection', features: [] } });
+    map.addSource('journal', { type: 'geojson', data: journal ?? { type: 'FeatureCollection', features: [] } });
+    map.addLayer({ id: 'journal-pts', type: 'circle', source: 'journal', paint: {
+      'circle-radius': 5, 'circle-color': css('--text'), 'circle-stroke-color': c.bg, 'circle-stroke-width': 2, 'circle-opacity': 0.9 } });
     map.addLayer({ id: 'advisory-ring', type: 'circle', source: 'stocking', filter: isL('advisory'), paint: {
       'circle-radius': 15, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
     map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
@@ -83,6 +90,11 @@
     for (const l of ['stocking-pts', 'advisory-ring', 'report-badge']) {
       map.on('click', l, (e) => onselect?.(e.features[0].properties.id));
     }
+    map.on('click', 'journal-pts', (e) => {
+      const p = e.features[0].properties;
+      const el = document.createElement('div'); el.textContent = p.label; 
+      new maplibregl.Popup({ offset: 8 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
+    });
     map.on('click', 'gauge-pts', (e) => {
       const p = e.features[0].properties;
       const el = document.createElement('div');
@@ -98,12 +110,12 @@
   }
 
   onMount(() => {
-    maplibregl.addProtocol('pmtiles', new Protocol().tile);
+    if (!protocolDone) { registerTileProtocol(maplibregl); protocolDone = true; }
     let dead = false;
     (async () => {
       // The basemap is optional: with no PMTiles file the map still renders pins on a themed ground.
       let withTiles = false;
-      try { withTiles = (await fetch('/tiles/oregon.pmtiles', { method: 'HEAD' })).ok; } catch { /* offline */ }
+      withTiles = await basemapAvailable();
       if (dead) return;
       hasBasemap = withTiles;
       map = new maplibregl.Map({
@@ -116,6 +128,8 @@
     return () => { dead = true; map?.remove(); };
   });
 
+  $effect(() => { if (ready && journal) map.getSource('journal').setData(journal); });
+  $effect(() => { if (ready) map.setLayoutProperty('journal-pts', 'visibility', showJournal ? 'visible' : 'none'); });
   let fitted = false;
   $effect(() => {
     if (!ready || !data) return;
@@ -158,6 +172,8 @@
       map.setPaintProperty('stocking-sel', 'circle-color', p.color);
       map.setPaintProperty('stocking-sel', 'circle-stroke-color', c.accent);
       map.setPaintProperty('advisory-ring', 'circle-stroke-color', c.accent);
+      map.setPaintProperty('journal-pts', 'circle-color', css('--text'));
+      map.setPaintProperty('journal-pts', 'circle-stroke-color', c.bg);
       addIcons();
     });
   });

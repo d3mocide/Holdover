@@ -112,6 +112,13 @@ def _latest_scrape(session: Session) -> str | None:
     return session.scalar(select(func.max(StockingSnapshot.scraped_at)))
 
 
+@router.get("/waterbodies")
+def waterbody_list(session: Session = Depends(get_session)):
+    """All seeded waterbodies, for the trip form's 'Where' picker."""
+    return [{"id": w.id, "name": w.name, "kind": w.kind, "lat": w.lat, "lon": w.lon}
+            for w in session.scalars(select(Waterbody).order_by(Waterbody.name))]
+
+
 @router.get("/waterbodies/{wb_id}")
 def waterbody(wb_id: int, session: Session = Depends(get_session)):
     wb = session.get(Waterbody, wb_id)

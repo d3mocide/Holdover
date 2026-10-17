@@ -1,11 +1,14 @@
 <script>
-  import { api, isoDay, longDate, weekLabel } from './api.js';
+  import { isoDay, longDate, weekLabel, hhmm } from './api.js';
+  import { loadDay } from './conditions.js';
   import Conditions from './Conditions.svelte';
   import Icon from './Icon.svelte';
-  let { id, onback } = $props();
+  let { id, onback, onlog, onoffline } = $props();
   let offset = $state(0);
   let d = $state(null);
   let error = $state('');
+  let source = $state('live');
+  let asof = $state(null);
   let online = $state(typeof navigator === 'undefined' ? true : navigator.onLine);
   $effect(() => {
     const up = () => (online = true), down = () => (online = false);
@@ -14,7 +17,7 @@
   });
   $effect(() => {
     d = null; error = '';
-    api.day(id, isoDay(offset)).then((v) => (d = v)).catch((e) => (error = e.message));
+    loadDay(id, isoDay(offset)).then((v) => { d = v.data; source = v.source; asof = v.as_of; }).catch((e) => (error = e.message));
   });
   const c = $derived(d?.conditions);
 </script>
@@ -26,7 +29,7 @@
       <h1>{d?.waterbody.name ?? 'Loading…'}</h1>
       <p class="quiet small zone">{longDate(isoDay(offset))} · {d?.waterbody.zone ?? ''}</p>
     </div>
-    {#if !online}<span class="badge">Cached</span>{/if}
+    {#if !online || source === 'cached'}<span class="badge">Cached{asof ? ` ${hhmm(asof)}` : ''}</span>{/if}
   </header>
   <div class="chips" role="group" aria-label="Day">
     {#each [['Today', 0], ['Tomorrow', 1], ['In 2 days', 2]] as [l, o]}
@@ -59,8 +62,8 @@
   {:else}<p class="quiet">Loading…</p>{/if}
 
   <div class="bar">
-    <button class="primary" disabled title="Journal arrives in a later phase">Log a trip here</button>
-    <button disabled title="Offline preparation arrives in a later phase">Prepare for offline</button>
+    <button class="primary" onclick={() => onlog(id)}>Log a trip here</button>
+    <button onclick={() => onoffline(id)}>Prepare for offline</button>
   </div>
 </section>
 

@@ -1,8 +1,11 @@
 <script>
   import { api, FRESH_LABEL, weekLabel, hhmm, longDate } from './api.js';
   import Conditions from './Conditions.svelte';
+  import { db } from './db.js';
   import Icon from './Icon.svelte';
-  let { id, onclose, onday } = $props();
+  let { id, onclose, onday, onlog } = $props();
+  let mine = $state([]);
+  let mineCatch = $state([]);
   let wb = $state(null);
   let error = $state('');
 
@@ -12,6 +15,12 @@
   );
   const fish = (s) => [s.legals && `${s.legals.toLocaleString()} legals`, s.trophy && `${s.trophy.toLocaleString()} trophy`].filter(Boolean).join(' + ') || `${s.total.toLocaleString()} fish`;
 
+  $effect(() => {
+    db.trips.where('waterbody_id').equals(id).filter((t) => !t.deleted).toArray().then(async (t) => {
+      mine = t.sort((a, b) => (b.started_at ?? '').localeCompare(a.started_at ?? ''));
+      mineCatch = (await db.catches.filter((c) => !c.deleted && mine.some((x) => x.uuid === c.trip_uuid)).toArray());
+    });
+  });
   $effect(() => {
     wb = null; error = '';
     api.waterbody(id).then((v) => (wb = v)).catch((e) => (error = e.message));
@@ -53,9 +62,15 @@
       {/each}
     {/if}
 
+    {#if mine.length}
+      <h3 class="quiet small">Your trips here</h3>
+      <p class="small">{mine.length} trip{mine.length === 1 ? '' : 's'}, last {longDate(mine[0].started_at?.slice(0, 10))}.
+        {Object.entries(mineCatch.reduce((a, c) => ({ ...a, [c.species ?? 'unspecified']: (a[c.species ?? 'unspecified'] ?? 0) + (c.count || 0) }), {})).map(([k, v]) => `${v} ${k}`).join(', ')}</p>
+    {/if}
+
     <div class="actions">
       <button class="primary" onclick={() => onday(wb.id)}>Plan the day</button>
-      <button disabled title="Journal arrives in a later phase">Log a trip here</button>
+      <button onclick={() => onlog(wb.id)}>Log a trip here</button>
       {#if wb.regs_url}
         <a class="btn" href={wb.regs_url} target="_blank" rel="noopener">Official regulations on ODFW <Icon name="external" /></a>
       {/if}

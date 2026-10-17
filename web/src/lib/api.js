@@ -16,6 +16,7 @@ async function req(path, opts = {}) {
 
 export const api = {
   map: () => req('/api/map?zone=willamette&layers=stocking,gauges,advisories,reports'),
+  waterbodyList: () => req('/api/waterbodies'),
   gauges: () => req('/api/gauges'),
   day: (id, date) => req(`/api/day/${id}?date=${date}`),
   report: (zone = 'willamette') => req(`/api/reports?zone=${zone}`),
