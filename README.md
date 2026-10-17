@@ -2,7 +2,7 @@
 
 Self-hosted PWA for Oregon fishing: where to fish, when, and what to bring, plus a technical angler's journal. One container, one SQLite file, a local LLM for text only.
 
-Status: **Phase 1** (foundation and stocking map). See the build plan in the handoff for later phases.
+Status: phases 1 to 5 built (stocking map, report and LLM pipeline, conditions, offline journal, planner). Phase 6 items not started. **Read `docs/laptop-handoff.md` first**: it lists what was verified and what was not.
 
 ## Run
 
@@ -18,7 +18,8 @@ Then put a TLS reverse proxy in front (service workers need HTTPS).
     python -m app.cli ingest-fixtures tests/fixtures/odfw_stocking   # offline sample data
     HOLDOVER_TOKEN=dev RUN_SCHEDULER=false DATA_DIR=./data uvicorn app.main:app --reload
     cd web && npm install && npm run dev                              # proxies /api to :8000
-    pytest
+    pytest                                                            # 74 tests
+    # airplane-mode E2E: tests/e2e/README.md
 
 ## Notes
 

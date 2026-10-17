@@ -5,7 +5,7 @@
   let error = $state('');
   $effect(() => { api.gauges().then((r) => { gauges = r.gauges; note = r.note; }).catch((e) => (error = e.message)); });
 </script>
-<div class="page">
+<div class="page" tabindex="0" role="region" aria-label="Gauges">
   <h1>Gauges</h1>
   <p class="quiet">{note || 'USGS values are provisional.'}</p>
   {#if error}<p role="alert">Couldn't load gauges ({error}).</p>{/if}

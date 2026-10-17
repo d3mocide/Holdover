@@ -100,8 +100,8 @@
   h1 { font-size: 20px; } h2 { font-weight: 500; }
   .small { font-size: 13px; margin: 0; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-  .chip { padding: 0 12px; min-height: 40px; font-size: 13px; }
-  .chip.accent[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .chip { padding: 0 12px; min-height: 44px; font-size: 13px; }
+  .chip.accent[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   ul.plain { display: block; list-style: disc; padding: 8px 0 0 16px; }
   .spotli { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
@@ -114,7 +114,7 @@
   .end { display: flex; align-items: center; gap: 8px; padding-top: 2px; }
   .score { font-size: 16px; font-weight: 500; }
   .how { padding: 0 12px 8px 40px; }
-  .how summary { min-height: 36px; display: flex; align-items: center; cursor: pointer; color: var(--text-quiet); }
+  .how summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--text-quiet); }
   .frow { display: grid; grid-template-columns: 78px 1fr 40px; gap: 2px 8px; align-items: center; margin: 4px 0; }
   .fl { color: var(--text); } .pts { text-align: right; }
   .fd { grid-column: 1 / -1; }
