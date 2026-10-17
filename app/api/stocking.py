@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.freshness import freshness
-from app.models import StockingSnapshot, Waterbody, WaterbodyAlias
+from app.models import Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias
 
 router = APIRouter()
 
@@ -97,4 +97,12 @@ def waterbody(wb_id: int, session: Session = Depends(get_session)):
             for w, r in sorted(current.items(), reverse=True)
         ],
         "snapshots": len(rows),
+        "report_items": [
+            {"issued_on": r.issued_on, "species": i.species, "rating": i.rating, "note": i.note,
+             "source_sentence": i.source_sentence}
+            for i, r in session.execute(
+                select(ReportItem, Report).join(Report, Report.id == ReportItem.report_id)
+                .where(ReportItem.waterbody_id == wb_id, ReportItem.status == "accepted")
+                .order_by(Report.issued_on.desc()).limit(5))
+        ],
     }

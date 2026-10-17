@@ -1,6 +1,7 @@
 <script>
-  import { FRESH_LABEL, weekLabel, hhmm } from './api.js';
-  let { data, error, selectedId, onselect, onreview, canReview } = $props();
+  import { FRESH_LABEL, weekLabel, hhmm, longDate } from './api.js';
+  let { data, report, selectedId, error, onselect, onreview, canReview } = $props();
+  const rep = $derived(report?.report);
 
   const order = { this_week: 0, recent: 1, upcoming: 2, older: 3 };
   const spots = $derived(
@@ -21,6 +22,22 @@
 
   {#if error}
     <p class="notice" role="alert">Couldn't load stocking data ({error}).</p>
+  {/if}
+
+  {#if rep}
+    <section class="report" aria-label="From the weekly report">
+      <h2 class="small quiet">From the weekly report · {longDate(rep.issued_on)}</h2>
+      {#if rep.digest}
+        <p class="digest">{rep.digest.text}</p>
+        <p class="quiet small">Summary generated {hhmm(rep.digest.as_of)} by a local model from the report text. Check the original wording.</p>
+      {/if}
+      <details open={!rep.digest}>
+        <summary class="small">{rep.digest ? 'Original ODFW wording' : 'ODFW wording (no summary yet)'}</summary>
+        {#each rep.bullets as b}<p class="small bullet">{b}</p>{/each}
+        <a class="small" href={rep.source_url} target="_blank" rel="noopener">Read the original report on ODFW</a>
+      </details>
+      {#if rep.pending_review && canReview}<p class="quiet small">{rep.pending_review} item(s) awaiting your review. <button class="linkish" onclick={onreview}>Review</button></p>{/if}
+    </section>
   {/if}
 
   <h2 class="small quiet">{spots.length} waterbodies with stocking</h2>
@@ -72,6 +89,10 @@
   .body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
   .name { font-weight: 500; }
   .count { font-size: 14px; }
+  .report { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; background: var(--surface); }
+  .digest { margin: 4px 0; }
+  .bullet { margin: 6px 0; }
+  .report p { margin: 4px 0; }
   .notice { background: var(--surface); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin: 0; }
   .plain { padding: 8px 0 0 16px; list-style: disc; display: block; }
   summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }

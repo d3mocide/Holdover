@@ -16,6 +16,12 @@ async function req(path, opts = {}) {
 
 export const api = {
   map: () => req('/api/map?zone=willamette'),
+  report: (zone = 'willamette') => req(`/api/reports?zone=${zone}`),
+  reviewItems: () => req('/api/admin/review/items', { auth: true }),
+  acceptItem: (id, waterbody_id) =>
+    req(`/api/admin/review/items/${id}/accept`, { method: 'POST', auth: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ waterbody_id }) }),
+  rejectItem: (id) => req(`/api/admin/review/items/${id}/reject`, { method: 'POST', auth: true }),
+  runReports: () => req('/api/admin/jobs/reports/run', { method: 'POST', auth: true }),
   waterbody: (id) => req(`/api/waterbodies/${id}`),
   health: () => req('/healthz'),
   aliases: () => req('/api/admin/aliases?status=unconfirmed', { auth: true }),
@@ -42,3 +48,9 @@ export const FRESH_LABEL = {
   this_week: 'Stocked this week', recent: 'Stocked in the last 2 weeks',
   older: 'Stocked earlier', upcoming: 'Scheduled'
 };
+
+export function longDate(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${MONTHS[m - 1]} ${d}, ${y}`;
+}

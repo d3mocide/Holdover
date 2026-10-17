@@ -13,6 +13,7 @@
   let theme = $state(stored('holdover.theme', 'fir'));
   let view = $state('map');
   let data = $state(null);
+  let report = $state(null);
   let error = $state('');
   let selectedId = $state(null);
   let showStocking = $state(true);
@@ -25,7 +26,8 @@
   async function load() {
     try { data = await api.map(); error = ''; } catch (e) { error = e.message; }
   }
-  $effect(() => { load(); });
+  async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
+  $effect(() => { load(); loadReport(); });
 
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gauges', 'Gauges', 'gauge']];
   const select = (id) => { selectedId = id; if (view !== 'map') view = 'map'; };
@@ -47,7 +49,7 @@
 
   {#if view === 'map' || view === 'plan'}
     <div class="planner" class:full={view === 'plan'}>
-      <Planner {data} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
+      <Planner {data} {report} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
     </div>
     <main class="mapwrap" class:hide={view === 'plan'}>
       <MapView {data} {selectedId} {theme} {showStocking} onselect={select} />
@@ -69,7 +71,7 @@
       <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} /></div>
     {/if}
   {:else if view === 'settings'}
-    <main class="page"><Settings {theme} onTheme={(t) => (theme = t)} onChanged={load} /></main>
+    <main class="page"><Settings {theme} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); }} /></main>
   {:else if view === 'journal'}
     <main class="page"><Placeholder title="Journal" phase="Phase 4" blurb="Trip and catch logging that works offline." /></main>
   {:else}

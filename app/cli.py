@@ -1,4 +1,4 @@
-"""python -m app.cli <command>: migrate | seed | ingest-fixtures DIR | stocking"""
+"""python -m app.cli <command>: migrate | seed | ingest-fixtures DIR | stocking | ingest-report FILE | llm | reports"""
 import glob
 import sys
 
@@ -25,6 +25,17 @@ def main(argv: list[str]) -> int:
         for f in sorted(glob.glob(argv[1] + "/*.html")):
             with session_factory()() as s:
                 print(f, ingest_page(s, "file://" + f, 200, open(f, "rb").read()))
+    elif cmd == "ingest-report":  # replay a saved report page: ingest-report FILE
+        from app.sources.odfw_report import URL, ingest
+        with session_factory()() as s:
+            print([(r.zone, r.issued_on) for r in ingest(s, URL, 200, open(argv[1], "rb").read())])
+    elif cmd == "llm":
+        from app.llm.jobs import process_pending
+        with session_factory()() as s:
+            print(process_pending(s))
+    elif cmd == "reports":
+        from app.scheduler import run_reports
+        print(run_reports())
     elif cmd == "stocking":
         from app.scheduler import run_stocking
         print(run_stocking())

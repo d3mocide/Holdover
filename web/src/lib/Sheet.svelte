@@ -1,5 +1,5 @@
 <script>
-  import { api, FRESH_LABEL, weekLabel, hhmm } from './api.js';
+  import { api, FRESH_LABEL, weekLabel, hhmm, longDate } from './api.js';
   import Icon from './Icon.svelte';
   let { id, onclose } = $props();
   let wb = $state(null);
@@ -40,6 +40,16 @@
     </ul>
     <p class="quiet small">Weeks, not days. The schedule can change without notice. As of {hhmm(wb.stocking[0]?.scraped_at)}.</p>
 
+    {#if wb.report_items?.length}
+      <h3 class="quiet small">From the weekly report</h3>
+      {#each wb.report_items as r}
+        <blockquote>
+          <p class="small">{r.note}{r.rating !== 'unknown' ? ` (${r.rating})` : ''}</p>
+          <p class="quiet small">ODFW, {longDate(r.issued_on)}: “{r.source_sentence}”</p>
+        </blockquote>
+      {/each}
+    {/if}
+
     <div class="actions">
       <button class="primary" disabled title="Journal arrives in a later phase">Log a trip here</button>
       {#if wb.regs_url}
@@ -57,5 +67,7 @@
   ul { list-style: none; margin: 0; padding: 0; }
   .srow { display: flex; gap: 10px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--line); }
   .grow { flex: 1; }
+  blockquote { margin: 0; padding: 4px 0 4px 10px; border-left: 2px solid var(--fresh-2); }
+  blockquote p { margin: 2px 0; }
   .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 </style>

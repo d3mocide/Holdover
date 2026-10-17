@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import scheduler
-from app.api import admin, stocking
+from app.api import admin, reports, stocking
 from app.config import get_settings
 
 log = logging.getLogger("holdover")
@@ -28,7 +28,22 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Holdover", lifespan=lifespan)
 app.include_router(stocking.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
 app.include_router(admin.router, prefix="/api/admin")
+
+
+_llm_cache: tuple[float, dict] = (0.0, {})
+
+
+def _llm_status() -> dict:
+    """Reachability is cached for 60 s so /healthz stays cheap."""
+    global _llm_cache
+    import time
+    from app.llm.client import LLMClient
+    if time.monotonic() - _llm_cache[0] > 60:
+        c = LLMClient()
+        _llm_cache = (time.monotonic(), {"configured": c.configured, "reachable": c.reachable()})
+    return _llm_cache[1]
 
 
 @app.get("/healthz")
@@ -40,7 +55,7 @@ def healthz():
         "scheduler_running": scheduler.scheduler.running,
         "sources": sources,
         "stale": [k for k, v in sources.items() if v["stale"]],
-        "llm": {"configured": bool(s.llm_base_url and s.llm_model)},
+        "llm": _llm_status(),
     }
 
 

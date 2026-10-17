@@ -4,6 +4,8 @@
   const themes = [['fir', 'Fir & Steelhead'], ['redband', 'Redband'], ['nightbite', 'Night Bite']];
   let token = $state(getToken());
   let aliases = $state([]);
+  let items = $state([]);
+  let itemChoice = $state({});
   let wbs = $state([]);
   let choice = $state({});
   let msg = $state('');
@@ -14,7 +16,7 @@
     health = await api.health().catch(() => null);
     if (!getToken()) { aliases = []; return; }
     try {
-      [aliases, wbs] = await Promise.all([api.aliases(), api.waterbodies()]);
+      [aliases, wbs, items] = await Promise.all([api.aliases(), api.waterbodies(), api.reviewItems()]);
     } catch (e) { msg = `Review queue unavailable (${e.message}). Check the token.`; }
   }
   $effect(() => { load(); });
@@ -24,6 +26,18 @@
     const wb = Number(choice[a.id] ?? a.proposed_waterbody?.id);
     if (!wb) { msg = 'Pick a waterbody first.'; return; }
     try { await api.confirm(a.id, wb); await load(); onChanged?.(); } catch (e) { msg = `Couldn't confirm (${e.message}).`; }
+  }
+  async function decide(i, accept) {
+    try {
+      if (accept) await api.acceptItem(i.id, Number(itemChoice[i.id] || i.waterbody?.id) || null);
+      else await api.rejectItem(i.id);
+      await load(); onChanged?.();
+    } catch (e) { msg = `Couldn't save (${e.message}).`; }
+  }
+  async function runReports() {
+    msg = 'Running…';
+    try { const r = await api.runReports(); msg = `Report fetch ${r.fetch.ok ? 'ok' : 'failed'}; ${r.llm.extracted ?? 0} extracted, ${r.llm.pending ?? 0} pending (LLM ${r.llm.llm ?? 'error'}).`; await load(); onChanged?.(); }
+    catch (e) { msg = `Couldn't run (${e.message}).`; }
   }
   async function runNow() {
     msg = 'Running…';
@@ -61,8 +75,25 @@
       <button onclick={saveToken}>Save</button>
     </div>
     {#if getToken()}
-      <div class="row gap top"><button onclick={runNow}>Fetch stocking now</button></div>
-      <h3>Needs review ({aliases.length})</h3>
+      <div class="row gap top"><button onclick={runNow}>Fetch stocking now</button><button onclick={runReports}>Fetch report now</button></div>
+      <h3>Report items to review ({items.length})</h3>
+      {#if !items.length}<p class="quiet small">Nothing waiting.</p>{/if}
+      {#each items as i (i.id)}
+        <div class="alias">
+          <p><strong>{i.waterbody_raw}</strong> <span class="quiet small">· {i.zone} · {i.species || 'species not stated'} · {i.rating}</span></p>
+          <p class="quiet small">“{i.source_sentence}”</p>
+          <div class="row gap">
+            <select aria-label="Waterbody for {i.waterbody_raw}" bind:value={itemChoice[i.id]}>
+              <option value="">{i.waterbody ? `Matched: ${i.waterbody.name}` : 'No waterbody (statewide note)'}</option>
+              {#each wbs as w}<option value={w.id}>{w.name}</option>{/each}
+            </select>
+            <button onclick={() => decide(i, true)}>Accept</button>
+            <button onclick={() => decide(i, false)}>Reject</button>
+          </div>
+        </div>
+      {/each}
+
+      <h3>Waterbody labels to review ({aliases.length})</h3>
       {#if !aliases.length}<p class="quiet small">Every stocking label is matched.</p>{/if}
       {#each aliases as a (a.id)}
         <div class="alias">

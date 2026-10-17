@@ -7,13 +7,13 @@ from sqlalchemy import func, select
 from app.db import session_factory
 from app.http import now_iso
 from app.models import RawFetch
-from app.sources import odfw_stocking
+from app.sources import odfw_report, odfw_stocking
 
 log = logging.getLogger("holdover.scheduler")
 scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 
 # source -> expected cadence, used to flag a source stale when nothing succeeded recently
-CADENCE = {odfw_stocking.SOURCE: timedelta(days=1)}
+CADENCE = {odfw_stocking.SOURCE: timedelta(days=1), odfw_report.SOURCE: timedelta(days=8)}
 
 
 def run_stocking() -> dict:
@@ -26,9 +26,41 @@ def run_stocking() -> dict:
             return {"ok": False, "error": "job crashed, see logs"}
 
 
+def run_reports() -> dict:
+    from app.llm.jobs import process_pending
+    with session_factory()() as s:
+        try:
+            fetched = odfw_report.run_job(s)
+        except Exception:
+            log.exception("report fetch crashed")
+            s.rollback()
+            fetched = {"ok": False}
+        try:
+            return {"fetch": fetched, "llm": process_pending(s)}
+        except Exception:
+            log.exception("llm job crashed")
+            s.rollback()
+            return {"fetch": fetched, "llm": {"error": "job crashed, see logs"}}
+
+
+def run_llm_retry() -> None:
+    from app.llm.jobs import process_pending
+    with session_factory()() as s:
+        try:
+            process_pending(s)
+        except Exception:
+            log.exception("llm retry crashed")
+            s.rollback()
+
+
 def start() -> None:
     scheduler.add_job(run_stocking, "cron", hour=6, minute=15, id="stocking", replace_existing=True,
                       misfire_grace_time=3600, coalesce=True)
+    # Report is published weekly (usually Thursday); poll twice a day Wed-Fri, hash compare skips unchanged.
+    scheduler.add_job(run_reports, "cron", day_of_week="wed-fri", hour="9,15", minute=5, id="reports",
+                      replace_existing=True, misfire_grace_time=3600, coalesce=True)
+    # Retry LLM work that was skipped because the host was down.
+    scheduler.add_job(run_llm_retry, "interval", hours=2, id="llm_retry", replace_existing=True)
     scheduler.add_job(backup, "cron", hour=3, minute=30, id="backup", replace_existing=True)
     scheduler.start()
 
