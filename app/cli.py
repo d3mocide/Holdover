@@ -1,4 +1,4 @@
-"""python -m app.cli <command>: migrate | seed | ingest-fixtures DIR | stocking | ingest-report FILE | llm | reports | usgs | nws | oha"""
+"""python -m app.cli <command>: migrate | seed | ingest-fixtures DIR | stocking | ingest-report FILE | llm | reports | usgs [--backfill] | nws | oha | explain"""
 import glob
 import sys
 
@@ -36,7 +36,11 @@ def main(argv: list[str]) -> int:
     elif cmd == "reports":
         from app.scheduler import run_reports
         print(run_reports())
-    elif cmd in ("usgs", "nws", "oha"):
+    elif cmd == "usgs" and "--backfill" in argv:
+        from app.sources import usgs
+        with session_factory()() as s:
+            print(usgs.run_job(s, period="P7D"))
+    elif cmd in ("usgs", "nws", "oha", "explain"):
         from app import scheduler
         print(getattr(scheduler, f"run_{cmd}")())
     elif cmd == "stocking":

@@ -18,6 +18,14 @@ class Settings(BaseSettings):
     user_agent: str = "Holdover/0.1 (set USER_AGENT with a contact address)"
     run_scheduler: bool = True
 
+    # Scoring weights (tunable starting points, not validated). Missing-data factors are dropped
+    # and the remaining weights renormalised, see app/scoring.py.
+    w_stocking: float = 0.30
+    w_report: float = 0.25
+    w_flow: float = 0.20
+    w_forecast: float = 0.15
+    w_distance: float = 0.10
+
     # Willamette zone on the ODFW stocking schedule (field_zone_value)
     stocking_zone_value: int = 6
 

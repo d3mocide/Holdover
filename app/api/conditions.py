@@ -8,13 +8,18 @@ from app.conditions import conditions, latest_gauge
 from app.db import get_session
 from app.http import quick_fetch
 from app.models import Gauge, Waterbody, WaterbodyGauge
+from app.llm.explain import _key, cached_text
+from app.llm.prompts import PACK_VERSION
+from app.packlist import pack_list
+from app.planner import FISHERIES, wind_mph
 from app.sources import nws
 
 router = APIRouter()
 
 
 @router.get("/day/{wb_id}")
-def day(wb_id: int, date_: date | None = Query(None, alias="date"), refresh: bool = True, session: Session = Depends(get_session)):
+def day(wb_id: int, date_: date | None = Query(None, alias="date"), fishery: str = "trout", refresh: bool = True,
+        session: Session = Depends(get_session)):
     """Day-of bundle. Tries one short NWS refresh if the forecast is missing or old; any failure
     just means the cached forecast (with its own as-of time and stale flag) is served."""
     wb = session.get(Waterbody, wb_id)
@@ -28,9 +33,17 @@ def day(wb_id: int, date_: date | None = Query(None, alias="date"), refresh: boo
                 nws.refresh(session, wb, quick_fetch)
             except Exception:
                 session.rollback()
+    cond = conditions(session, wb, d)
+    w = (cond["weather"] or {}).get("day") or {}
+    pack = pack_list(d, fishery if fishery in FISHERIES else "trout", w.get("temp_f"), w.get("precip_pct"),
+                     wind_mph(w.get("wind")), wb.kind)
+    pack["intro_source"] = "template"
+    g = cached_text(session, "pack", _key(str(wb.id), d.isoformat(), fishery, facts=pack["intro"]), PACK_VERSION)
+    if g:
+        pack["intro"], pack["intro_source"] = g.text, "llm"
     return {"waterbody": {"id": wb.id, "name": wb.name, "kind": wb.kind, "zone": wb.zone,
                           "lat": wb.lat, "lon": wb.lon, "regs_url": wb.regs_url},
-            "conditions": conditions(session, wb, d)}
+            "conditions": cond, "pack": pack}
 
 
 @router.get("/gauges")

@@ -19,7 +19,7 @@
     const parts = [];
     try {
       // data first (small), so a quota error on tiles can't cost us the conditions
-      await Promise.all([api.map(), api.report(), api.gauges(), api.waterbodyList()]);
+      await Promise.all([api.map(), api.report(), api.gauges(), api.waterbodyList(), api.spots(isoDay(0), 'trout')]);
       if (wbId) { await loadDay(wbId, isoDay(0)); await loadDay(wbId, isoDay(1)).catch(() => {}); parts.push('conditions for the selected waterbody'); }
       parts.unshift('map data, report and gauges');
     } catch (e) { parts.push(`(data failed: ${e.message})`); }

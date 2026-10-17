@@ -52,7 +52,20 @@ def parse(body: bytes | str) -> list[dict]:
     return out
 
 
-def run_job(session: Session, fetch: Fetcher = http_fetch, period: str = "PT6H") -> dict:
+def needs_backfill(session: Session) -> bool:
+    """True if any gauge has under two days of history (first run, or a new gauge): the flow factor
+    needs a baseline, so pull a week once instead of the usual 6 hours."""
+    from sqlalchemy import func
+    for g in session.scalars(select(Gauge).where(Gauge.agency == "USGS")):
+        lo, hi = session.execute(select(func.min(GaugeReading.observed_at), func.max(GaugeReading.observed_at))
+                                 .where(GaugeReading.gauge_id == g.id, GaugeReading.parameter == "discharge_cfs")).one()
+        if lo is None or (datetime.fromisoformat(hi) - datetime.fromisoformat(lo)).days < 2:
+            return True
+    return False
+
+
+def run_job(session: Session, fetch: Fetcher = http_fetch, period: str | None = None) -> dict:
+    period = period or ("P7D" if needs_backfill(session) else "PT6H")
     gauges = {g.site_no: g for g in session.scalars(select(Gauge).where(Gauge.agency == "USGS"))}
     if not gauges:
         return {"ok": True, "inserted": 0}

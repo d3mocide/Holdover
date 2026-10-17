@@ -5,6 +5,8 @@ Coordinates are APPROXIMATE, entered from general knowledge, and have NOT been v
 a map. Entries with lat/lon None have no coordinate yet and are listed under "needs coordinates"
 instead of being drawn. The owner should review every row before trusting a pin location.
 """
+import json
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -78,6 +80,17 @@ SEED: list[tuple[str, str, float | None, float | None, list[str]]] = [
 ]
 
 
+# Which fisheries a water supports beyond stocked trout. Seed hints from general knowledge, NOT verified:
+# the owner should correct them. Trout membership comes from the stocking schedule itself, and any
+# water also joins a fishery when an accepted report item names a matching species.
+FISHERY_HINTS = {
+    "Santiam River, North Fork": ["steelhead"], "McKenzie River (below Leaburg Dam)": ["steelhead"],
+    "McKenzie River (above Leaburg Dam)": ["steelhead"],
+    "Henry Hagg Lake": ["warmwater"], "Dorena Reservoir": ["warmwater"], "Cottage Grove Reservoir": ["warmwater"],
+    "Foster Reservoir": ["warmwater"], "Blue Lake": ["warmwater"],
+}
+
+
 def seed_waterbodies(session: Session) -> int:
     """Idempotent: adds missing waterbodies and their confirmed aliases."""
     added = 0
@@ -88,6 +101,8 @@ def seed_waterbodies(session: Session) -> int:
             session.add(wb)
             session.flush()
             added += 1
+        if name in FISHERY_HINTS and wb.species_json is None:
+            wb.species_json = json.dumps({"fisheries": FISHERY_HINTS[name], "source": "seed hint, unverified"})
         for label in labels:
             key = normalize_alias(label)
             if session.scalar(

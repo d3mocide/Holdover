@@ -3,8 +3,8 @@
   import { loadDay } from './conditions.js';
   import Conditions from './Conditions.svelte';
   import Icon from './Icon.svelte';
-  let { id, onback, onlog, onoffline } = $props();
-  let offset = $state(0);
+  let { id, fishery = 'trout', startOffset = 0, onback, onlog, onoffline } = $props();
+  let offset = $state(startOffset);
   let d = $state(null);
   let error = $state('');
   let source = $state('live');
@@ -17,9 +17,15 @@
   });
   $effect(() => {
     d = null; error = '';
-    loadDay(id, isoDay(offset)).then((v) => { d = v.data; source = v.source; asof = v.as_of; }).catch((e) => (error = e.message));
+    loadDay(id, isoDay(offset), fishery).then((v) => { d = v.data; source = v.source; asof = v.as_of; }).catch((e) => (error = e.message));
   });
   const c = $derived(d?.conditions);
+  const pack = $derived(d?.pack);
+  const packKey = $derived(`holdover.pack.${id}.${isoDay(offset)}.${fishery}`);
+  let checked = $state({});
+  $effect(() => { try { checked = JSON.parse(localStorage.getItem(packKey) || '{}'); } catch { checked = {}; } });
+  const toggle = (itemId) => { checked = { ...checked, [itemId]: !checked[itemId] }; try { localStorage.setItem(packKey, JSON.stringify(checked)); } catch { /* storage blocked */ } };
+  const groups = $derived(pack ? [...new Set(pack.items.map((i) => i.group))] : []);
 </script>
 
 <section class="day" aria-label="Day-of view">
@@ -56,6 +62,19 @@
     </ul>
     <p class="quiet small">Stocking is by week and the schedule may change. Facts only: this page doesn't state regulations.</p>
 
+    {#if pack}
+      <h2 class="quiet small">Pack</h2>
+      <p class="small">{pack.intro}</p>
+      <p class="quiet small">{pack.intro_source === 'llm' ? 'Intro reworded by a local model. The checklist is a fixed template.' : 'Checklist is a fixed template for the season, fishery and forecast.'}</p>
+      {#each groups as g}
+        <fieldset class="pk"><legend class="small quiet">{g}</legend>
+          {#each pack.items.filter((i) => i.group === g) as it (it.id)}
+            <label class="ck"><input type="checkbox" checked={!!checked[it.id]} onchange={() => toggle(it.id)} /> <span class:done={checked[it.id]}>{it.label}</span></label>
+          {/each}
+        </fieldset>
+      {/each}
+    {/if}
+
     <div class="note card" role="note">
       <a href={d.waterbody.regs_url} target="_blank" rel="noopener">Official regulations on ODFW <Icon name="external" /></a>
     </div>
@@ -74,6 +93,9 @@
   .badge { border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .facts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  .pk { border: 0; padding: 0; margin: 0; } .pk legend { padding: 0; }
+  .ck { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text); margin: 0; font-size: 14px; }
+  .ck input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; } .done { text-decoration: line-through; color: var(--text-quiet); }
   .bar { position: sticky; bottom: 0; display: flex; gap: 8px; padding: 12px 0; background: var(--bg); margin-top: auto; }
   .bar button { flex: 1; }
 </style>

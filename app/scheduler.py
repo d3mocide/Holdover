@@ -16,7 +16,7 @@ scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 CADENCE = {odfw_stocking.SOURCE: timedelta(days=1), odfw_report.SOURCE: timedelta(days=8),
            usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2)}
 # Sources that only run for things the owner opts into (nws needs starred waterbodies)
-OPTIONAL = {nws.SOURCE}
+OPTIONAL: set[str] = set()
 
 
 def run_stocking() -> dict:
@@ -68,6 +68,25 @@ def run_oha() -> dict:
     return _run("oha", oha)
 
 
+def run_explain(days: int = 2) -> dict:
+    from datetime import date, timedelta
+
+    from app.llm.client import LLMClient
+    from app.llm.explain import generate_explanations, generate_pack_intros
+    from app.planner import FISHERIES
+    llm, out = LLMClient(), {}
+    with session_factory()() as s:
+        try:
+            for off in range(days):
+                for f in FISHERIES:
+                    d = date.today() + timedelta(days=off)
+                    out[f"{f}+{off}"] = {**generate_explanations(s, llm, d, f), "pack": generate_pack_intros(s, llm, d, f)}
+        except Exception:
+            log.exception("explain job crashed")
+            s.rollback()
+    return out
+
+
 def run_llm_retry() -> None:
     from app.llm.jobs import process_pending
     with session_factory()() as s:
@@ -88,6 +107,7 @@ def start() -> None:
     scheduler.add_job(run_llm_retry, "interval", hours=2, id="llm_retry", replace_existing=True)
     scheduler.add_job(run_usgs, "interval", minutes=30, id="usgs", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)
     scheduler.add_job(run_oha, "cron", hour=5, minute=45, id="oha", replace_existing=True, coalesce=True)
     scheduler.add_job(backup, "cron", hour=3, minute=30, id="backup", replace_existing=True)
     scheduler.start()

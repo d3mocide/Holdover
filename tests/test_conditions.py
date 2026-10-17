@@ -149,6 +149,6 @@ def test_day_endpoint_survives_nws_down(session, monkeypatch):
     assert r.status_code == 200 and r.json()["conditions"]["weather"] is None
 
 
-def test_nws_idle_not_stale(session):
+def test_nws_never_fetched_is_stale(session):
     from app.scheduler import source_status
-    assert source_status()["nws"]["stale"] is False
+    assert source_status()["nws"]["stale"] is True

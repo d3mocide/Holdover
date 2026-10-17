@@ -2,9 +2,9 @@ import { api } from './api.js';
 import { db } from './db.js';
 
 /** Day bundle with an IndexedDB copy, so conditions survive going offline. Returns {data, source, as_of}. */
-export async function loadDay(id, dayIso) {
+export async function loadDay(id, dayIso, fishery = 'trout') {
   try {
-    const data = await api.day(id, dayIso);
+    const data = await api.day(id, dayIso, fishery);
     await db.cond.put({ waterbody_id: id, fetched_at: new Date().toISOString(), date: dayIso, payload: data });
     return { data, source: 'live', as_of: new Date().toISOString() };
   } catch (e) {

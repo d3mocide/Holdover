@@ -17,3 +17,7 @@ class ExtractionResult(BaseModel):
 
 class DigestResult(BaseModel):
     digest: str = Field(min_length=1)
+
+
+class TextResult(BaseModel):
+    text: str = Field(min_length=1, max_length=600)

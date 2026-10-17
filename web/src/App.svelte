@@ -1,5 +1,5 @@
 <script>
-  import { api } from './lib/api.js';
+  import { api, isoDay } from './lib/api.js';
   import Icon from './lib/Icon.svelte';
   import Logo from './lib/Logo.svelte';
   import MapView from './lib/MapView.svelte';
@@ -28,6 +28,10 @@
   let showAdvisories = $state(true);
   let showReports = $state(true);
   let dayFor = $state(null);
+  let offset = $state(0);
+  let fishery = $state('trout');
+  let spots = $state(null);
+  let spotsError = $state('');
   let showJournal = $state(true);
   let wbList = $state([]);
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
@@ -59,6 +63,11 @@
   async function load() {
     try { data = await api.map(); error = ''; } catch (e) { error = e.message; }
   }
+  $effect(() => {
+    const o = offset, f = fishery;
+    spotsError = '';
+    api.spots(isoDay(o), f).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
+  });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
   $effect(() => { load(); loadReport(); });
 
@@ -82,7 +91,7 @@
 
   {#if view === 'map' || view === 'plan'}
     <div class="planner" class:full={view === 'plan'}>
-      <Planner {data} {report} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
+      <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
     </div>
     <main class="mapwrap" class:hide={view === 'plan'}>
       <MapView {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
@@ -104,12 +113,12 @@
       <button class="offline" onclick={() => (offlineFor = selectedId)}>Prepare for offline</button>
     </main>
     {#if dayFor && view === 'map'}
-      <div class="sheetwrap wide"><DayView id={dayFor} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
+      <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
     {:else if selectedId && view === 'map'}
       <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} onday={(id) => (dayFor = id)} onlog={(id) => (logFor = id)} /></div>
     {/if}
   {:else if view === 'settings'}
-    <main class="page"><Settings {theme} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); }} /></main>
+    <main class="page"><Settings {theme} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} /></main>
   {:else if view === 'journal'}
     <main class="page"><Journal {wbList} onlog={() => (logFor = null)} /></main>
   {:else}

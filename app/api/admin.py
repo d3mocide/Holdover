@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.auth import require_token
 from app.db import get_session
 from app.models import Report, ReportItem, Waterbody, WaterbodyAlias
-from app.scheduler import run_nws, run_oha, run_reports, run_stocking, run_usgs
+from app.scheduler import run_explain, run_nws, run_oha, run_reports, run_stocking, run_usgs
 
 router = APIRouter(dependencies=[Depends(require_token)])
 
@@ -103,7 +103,7 @@ def run_reports_now():
 
 @router.post("/jobs/{name}/run")
 def run_job_now(name: str):
-    jobs = {"usgs": run_usgs, "nws": run_nws, "oha": run_oha}
+    jobs = {"usgs": run_usgs, "nws": run_nws, "oha": run_oha, "explain": run_explain}
     if name not in jobs:
         raise HTTPException(404, "unknown job")
     return jobs[name]()

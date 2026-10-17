@@ -18,7 +18,8 @@ export const api = {
   map: () => req('/api/map?zone=willamette&layers=stocking,gauges,advisories,reports'),
   waterbodyList: () => req('/api/waterbodies'),
   gauges: () => req('/api/gauges'),
-  day: (id, date) => req(`/api/day/${id}?date=${date}`),
+  day: (id, date, fishery = 'trout') => req(`/api/day/${id}?date=${date}&fishery=${fishery}`),
+  spots: (date, fishery) => req(`/api/spots?date=${date}&fishery=${fishery}`),
   report: (zone = 'willamette') => req(`/api/reports?zone=${zone}`),
   reviewItems: () => req('/api/admin/review/items', { auth: true }),
   acceptItem: (id, waterbody_id) =>
@@ -65,3 +66,12 @@ export const isoDay = (offset = 0) => {
   const d = new Date(); d.setDate(d.getDate() + offset);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
+
+export const FISHERIES = [['trout', 'Stocked trout'], ['steelhead', 'Steelhead & salmon'], ['warmwater', 'Warmwater']];
+export const dayLabel = (offset) => {
+  if (offset === 0) return 'Today';
+  if (offset === 1) return 'Tomorrow';
+  const d = new Date(); d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+};
+export const FACTOR_LABEL = { stocking: 'Stocking', report: 'ODFW report', flow: 'Flow', forecast: 'Forecast', distance: 'Distance' };

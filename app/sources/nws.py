@@ -91,9 +91,43 @@ def age_hours(fetched_at: str) -> float:
     return (datetime.now(timezone.utc) - datetime.fromisoformat(fetched_at)).total_seconds() / 3600
 
 
+def forecast_points(session: Session) -> list[Waterbody]:
+    """Starred waterbodies, plus one stocked waterbody per ~0.25 degree cell so the planner has a nearby
+    forecast for every spot without one NWS call per waterbody."""
+    from app.models import StockingSnapshot, WaterbodyAlias
+    starred = list(session.scalars(select(Waterbody).where(Waterbody.starred == 1)))
+    stocked_ids = {r for r in session.scalars(
+        select(WaterbodyAlias.waterbody_id).join(StockingSnapshot, StockingSnapshot.alias_id == WaterbodyAlias.id)
+        .where(WaterbodyAlias.confirmed == 1)) if r}
+    seen = {(round(w.lat * 4), round(w.lon * 4)) for w in starred if w.lat is not None}
+    out = list(starred)
+    for wb in session.scalars(select(Waterbody).where(Waterbody.id.in_(stocked_ids)).order_by(Waterbody.id)):
+        if wb.lat is None or wb.lon is None:
+            continue
+        cell = (round(wb.lat * 4), round(wb.lon * 4))
+        if cell not in seen:
+            seen.add(cell)
+            out.append(wb)
+    return out
+
+
+def nearest_cached(session: Session, lat: float, lon: float, max_km: float = 30) -> tuple[dict, float] | None:
+    from app.scoring import haversine_km
+    best = None
+    for wb in session.scalars(select(Waterbody)):
+        if wb.lat is None or wb.lon is None:
+            continue
+        d = haversine_km(lat, lon, wb.lat, wb.lon)
+        if d <= max_km and (best is None or d < best[1]):
+            payload = cached(session, wb.id)
+            if payload:
+                best = (payload, d)
+    return best
+
+
 def run_job(session: Session, fetch: Fetcher = http_fetch) -> dict:
     ok = fail = 0
-    for wb in session.scalars(select(Waterbody).where(Waterbody.starred == 1)):
+    for wb in forecast_points(session):
         if refresh(session, wb, fetch):
             ok += 1
         else:
