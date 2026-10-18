@@ -199,3 +199,11 @@ Searched for APIs behind every unbuilt data item and probed each endpoint direct
 - Not checked: the Corps' and NIFC's terms (to read before building), ODF's code meanings, how long a history the Corps
   service returns, USGS rate limits (their pages did not state them).
 
+### 2026-10-18 · this commit · n/a · License: GPL-3.0, matching Vertex
+Added `LICENSE` (the unmodified GPL-3.0 text, byte-identical to Vertex's), declared it in `pyproject.toml`,
+`web/package.json`, the README and `AGENTS.md` (new dependencies and bundled assets must be GPL-3.0 compatible), and a
+test that keeps them consistent. Reason: owner's request, so code can move freely between the two projects.
+- Verified: `pytest` document checks pass; package metadata reports the license.
+- Not checked: a formal audit of every dependency's license (the main ones, such as Svelte, MapLibre, FastAPI, SQLAlchemy and
+  Dexie, are MIT, BSD or Apache-2.0, which are GPL-3.0 compatible).
+

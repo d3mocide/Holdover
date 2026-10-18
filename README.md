@@ -45,3 +45,10 @@ Status: phases 1 to 5 built (stocking map, report and LLM pipeline, conditions, 
 - Accounts are optional (browse and keep a local journal without one): `docs/accounts.md`.
 - Source terms: `docs/sources.md`. Basemap: `docs/basemap.md`.
 - Design tokens (palette, glass tiers, hairlines) are in `web/src/theme.css`; the icon set and map marker art are in `web/src/lib/icons.js`. A theme is only a palette: components use no literal colours.
+
+## License
+
+GPL-3.0, see [LICENSE](LICENSE). This is the same license as the sibling project Vertex, so code can move between the
+two. Bundled third-party assets keep their own licenses: IBM Plex and Noto Sans under the SIL Open Font License
+(`web/public/fonts/NOTICE.txt`), map data from OpenStreetMap contributors under the ODbL (credited in the app).
+

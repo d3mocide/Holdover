@@ -72,6 +72,9 @@ These come from the product's promises. Breaking one is a bug even if every test
 - **UI work follows [docs/BRAND.md](docs/BRAND.md):** colours only from tokens in `web/src/theme.css` (no literal
   colours in components), icons only from `web/src/lib/icons.js`, dense glass under any text, 16 px gutters, 44 px
   targets, no meaning carried by colour alone. Check phone, tablet and desktop and all three themes. Take screenshots.
+- **Licensing:** the project is GPL-3.0 (see `LICENSE`), the same as Vertex. A new dependency or bundled asset must be
+  GPL-3.0 compatible (MIT, BSD, Apache-2.0, OFL and public-domain data are fine); keep third-party notices with the
+  asset. Do not paste in code under an incompatible or unknown license. Moving code between Holdover and Vertex is fine.
 - **Data migrations are guarded:** never overwrite a value a person set deliberately; say what changed and why.
 
 ## 4. Documentation discipline (how drift is prevented)

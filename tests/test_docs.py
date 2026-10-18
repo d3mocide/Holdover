@@ -162,3 +162,14 @@ def test_gear_pack_rules_only_name_pack_items_that_exist():
                                                            (30, 60, 85, None), (0, 60, None), (5, 20, None), (1, 5, 7, 10)):
         emitted |= {i["id"] for i in pack_list(date(2026, month, 15), fishery, temp, precip, wind, kind)["items"]}
     assert rule_ids <= emitted, f"gear rules for pack items that do not exist: {sorted(rule_ids - emitted)}"
+
+
+# ---- license ---------------------------------------------------------------------------------------------------
+
+def test_license_is_present_and_declared_consistently():
+    text = read("LICENSE")
+    assert "GNU GENERAL PUBLIC LICENSE" in text and "Version 3, 29 June 2007" in text
+    assert "GPL-3.0" in read("README.md") and "LICENSE" in read("README.md")
+    assert 'license = "GPL-3.0-only"' in read("pyproject.toml")
+    assert '"license": "GPL-3.0-only"' in read("web/package.json")
+    assert "GPL-3.0" in read("AGENTS.md")
