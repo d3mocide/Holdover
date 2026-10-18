@@ -254,3 +254,23 @@ hourly job, a `corps` entry in `/healthz` (stale after 2 h), a credit, and the t
 - Not checked: the Corps' terms (there is no page to read), how the service behaves under its own maintenance, a
   real phone. Lookout Point, Big Cliff, Cougar and Fern Ridge exist at the Corps but have no waterbody here yet.
 
+### 2026-10-18 · this commit · Phase 11 · Fire card (ODF fire danger and NIFC perimeters)
+A "Fire" block on each waterbody's sheet: the ODF public fire danger level and area code (when the waterbody is inside a
+zone ODF protects), and any active wildfire within 50 km from the NIFC perimeters, with distance, size, containment and
+the perimeter's update date. Two adapters (`odf_fire.py`, `nifc.py`), a small `geo.py`, tables `fire_danger` and
+`fire_nearby` (migration 0005; per-fetch snapshots like advisories), jobs every 6 h and hourly, `/healthz` entries, credits,
+terms in `docs/sources.md`. The wording never states restrictions or closures and says a nearby fire is not a closure.
+- Verified: 154 `pytest` (12 new: geometry incl. holes and multipolygons, both real captured responses, error objects and
+  garbage rejected, overlapping zones take the more cautious level, the active-fire rules, raw-first storage, failure keeps
+  the last good reading, "never fetched" differs from "no fire", the conditions bundle). 5 new frontend tests (30 total). **Live**:
+  both jobs ran in the rebuilt container: 63 zones, 28 waterbodies inside one, 4 active fires, 21 waterbody-fire pairs, both
+  matching an independent offline calculation. North Fork Reservoir's sheet shows "Austin fire: 25 km away; 12,888
+  acres, 98% contained" and "Low (level 1 of 4), ODF area CM-1"; axe: zero violations in all three themes, desktop and phone.
+- Found: ODF's `pendingchangedatetime` is not clearly a future change, so it is not shown. A perimeter's "current" date can
+  be months old at 97 to 99% contained, hence the 30-day and not-100% filters. A phone screenshot taken after a reload
+  (service worker controlling the page, WebGL map) drew the list through the sheet while a DOM hit test and computed
+  styles showed the sheet on top and the same page without a reload rendered correctly; treated as a headless compositor
+  artifact, **not verified on a real phone**.
+- Not checked: ODF's and NIFC's terms beyond their metadata (no ODF text exists), behaviour when ODF changes the layer,
+  fires just across the Washington border, and a real phone. FIRMS and the map layer are not built (owner undecided on FIRMS).
+

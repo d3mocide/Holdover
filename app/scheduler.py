@@ -7,7 +7,7 @@ from sqlalchemy import func, select
 from app.db import session_factory
 from app.http import now_iso
 from app.models import RawFetch
-from app.sources import corps, nws, odfw_report, odfw_stocking, oha, usgs
+from app.sources import corps, nifc, nws, odf_fire, odfw_report, odfw_stocking, oha, usgs
 
 log = logging.getLogger("holdover.scheduler")
 scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
@@ -15,7 +15,7 @@ scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 # source -> expected cadence, used to flag a source stale when nothing succeeded recently
 CADENCE = {odfw_stocking.SOURCE: timedelta(days=1), odfw_report.SOURCE: timedelta(days=8),
            usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2),
-           corps.SOURCE: timedelta(hours=1)}
+           corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3)}
 # Sources that only run for things the owner opts into (nws needs starred waterbodies)
 OPTIONAL: set[str] = set()
 
@@ -69,6 +69,14 @@ def run_corps() -> dict:
     return _run("corps", corps)
 
 
+def run_odf_fire() -> dict:
+    return _run("odf_fire", odf_fire)
+
+
+def run_nifc() -> dict:
+    return _run("nifc", nifc)
+
+
 def run_oha() -> dict:
     return _run("oha", oha)
 
@@ -112,6 +120,8 @@ def start() -> None:
     scheduler.add_job(run_llm_retry, "interval", hours=2, id="llm_retry", replace_existing=True)
     scheduler.add_job(run_usgs, "interval", minutes=30, id="usgs", replace_existing=True, coalesce=True)
     scheduler.add_job(run_corps, "interval", hours=1, id="corps", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_odf_fire, "interval", hours=6, id="odf_fire", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_nifc, "interval", hours=1, id="nifc", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
     scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)
     scheduler.add_job(run_oha, "cron", hour=5, minute=45, id="oha", replace_existing=True, coalesce=True)

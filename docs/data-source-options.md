@@ -96,6 +96,10 @@ a Corps web page. **Effort:** medium (new adapter, certificate bundle, history c
 
 ## 3. Wildfire perimeters (NIFC)
 
+**Status: built 2026-10-18** (`app/sources/nifc.py`), together with section 4 as the fire card. The *Current* layer filtered to
+`attr_POOState='US-OR'` returns 16 perimeters; the card keeps wildfires (not prescribed burns) under 100% contained and updated
+within 30 days (4 on 2026-10-18) and shows those within 50 km. Perimeters near the Washington border are not included.
+
 - **Endpoint (verified):** `services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0`,
   a standard ArcGIS REST service with GeoJSON output. `where=attr_POOState='US-OR'` returned **16 perimeters**, with
   name, acres, percent contained, cause and a current-date stamp. The layer was edited today.
@@ -107,6 +111,10 @@ a Corps web page. **Effort:** medium (new adapter, certificate bundle, history c
   warning chip on the sheet and a map layer, tests.
 
 ## 4. ODF fire danger by regulated-use area
+
+**Status: built 2026-10-18** (`app/sources/odf_fire.py`). The area codes have no names in either layer, so the card shows the
+code and links to ODF's map. 28 of 58 seeded waterbodies fall inside a zone; the rest get an honest "outside ODF-protected
+lands" line.
 
 **Update 2026-10-18, thanks to Vertex.** My first probe found a layer of 72 "regulated use" polygons with only short area
 codes and no meaning. Vertex's ODF poller uses a different ODF service that carries the level:

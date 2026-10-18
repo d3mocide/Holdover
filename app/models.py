@@ -117,6 +117,29 @@ class ReservoirReading(Base):
     raw_fetch_id: Mapped[int | None] = mapped_column(Integer)
 
 
+class FireDanger(Base):
+    __tablename__ = "fire_danger"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    waterbody_id: Mapped[int] = mapped_column(Integer, index=True)
+    level: Mapped[int] = mapped_column(Integer)  # ODF public fire danger, 1 Low to 4 Extreme
+    area: Mapped[str] = mapped_column(Text)  # ODF regulated-use area code
+    district: Mapped[int | None] = mapped_column(Integer)
+    raw_fetch_id: Mapped[int | None] = mapped_column(Integer, index=True)
+
+
+class FireNearby(Base):
+    __tablename__ = "fire_nearby"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    waterbody_id: Mapped[int] = mapped_column(Integer, index=True)
+    incident: Mapped[str] = mapped_column(Text)
+    acres: Mapped[float | None] = mapped_column(Float)
+    percent_contained: Mapped[float | None] = mapped_column(Float)
+    updated_at: Mapped[str | None] = mapped_column(Text)
+    distance_km: Mapped[float] = mapped_column(Float)
+    inside: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    raw_fetch_id: Mapped[int | None] = mapped_column(Integer, index=True)
+
+
 class ForecastCache(Base):
     __tablename__ = "forecast_cache"
     __table_args__ = (PrimaryKeyConstraint("waterbody_id", "fetched_at"),)

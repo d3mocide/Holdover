@@ -2,12 +2,15 @@
   import Tile from './Tile.svelte';
   import Icon from './Icon.svelte';
   import { asOf, cToF, TREND } from './api.js';
+  import { dangerText, dangerHigh, fireLine, nearbyText } from './fireText.js';
   // level: the heading level for this block's section titles. A sheet titles itself with an h2, the day view with an h1,
   // so each passes the level that keeps the outline in order (no skipped levels).
   let { c, level = 3 } = $props();
   const w = $derived(c.weather?.day);
   const flowGauge = $derived(c.gauges.find((g) => g.values.discharge_cfs));
   const r = $derived(c.reservoir);
+  const fd = $derived(c.fire?.danger);
+  const fn = $derived(c.fire?.nearby);
   const ft = (v) => (v == null ? '—' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)} ft`);
 </script>
 
@@ -48,6 +51,26 @@
   {/each}
 {/if}
 
+{#if fd || fn}
+  <svelte:element this={`h${level}`} class="eyebrow head"><Icon name="advisory" size={14} /> Fire</svelte:element>
+  {#if fn?.fires.length}
+    <div class="adv" role="note">
+      <span class="advh"><Icon name="advisory" size={18} /></span>
+      <p><strong>Active wildfire nearby</strong></p>
+      {#each fn.fires as f}<p>{fireLine(f)}</p>{/each}
+      <p class="quiet small">A fire nearby does not by itself mean a closure. Check the land manager and <a href={fn.page} target="_blank" rel="noopener">Oregon wildfire information</a>. NIFC data, {asOf(fn.as_of)}.</p>
+    </div>
+  {/if}
+  {#if fd}
+    <div class="g">
+      <span class="grow">ODF fire danger</span>
+      <span class:warn={dangerHigh(fd)} class={fd.covered ? 'mono' : 'quiet'}>{dangerText(fd)}</span>
+      <span class="quiet small full">Oregon Department of Forestry, {asOf(fd.as_of)} · <a href={fd.page} target="_blank" rel="noopener">ODF fire restrictions and closures</a></span>
+    </div>
+  {/if}
+  {#if nearbyText(fn)}<p class="quiet small">{nearbyText(fn)} <a href={fn.page} target="_blank" rel="noopener">Oregon wildfire information</a></p>{/if}
+{/if}
+
 {#if c.advisories.length}
   <div class="adv" role="note">
     <span class="advh"><Icon name="advisory" size={18} /></span>
@@ -65,6 +88,7 @@
   .grow { flex: 1; min-width: 140px; } .full { flex-basis: 100%; margin: 0; }
   .stale { color: var(--accent); border: 1px solid var(--accent); border-radius: 4px; padding: 0 4px; }
   .head { display: flex; align-items: center; gap: 6px; margin-top: 10px; } .head :global(svg) { color: var(--fresh-2); }
+  .warn { color: var(--accent); font-weight: 500; }
   .adv { border: 1px solid var(--accent); border-radius: 14px; padding: 8px 12px; margin-top: 8px; background: color-mix(in srgb, var(--accent) 8%, transparent); }
   .advh { color: var(--accent); display: inline-flex; margin-bottom: 2px; }
   .adv p { margin: 0 0 4px; font-size: 14px; }

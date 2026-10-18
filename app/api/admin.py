@@ -10,7 +10,7 @@ from app.config import get_settings
 from app.db import get_session
 from app.models import Favorite, Invite, Report, ReportItem, Trip, User, UserSession, Waterbody, WaterbodyAlias
 from app.security import hash_password, hash_token, new_token, validate_password
-from app.scheduler import run_corps, run_explain, run_nws, run_oha, run_reports, run_stocking, run_usgs
+from app.scheduler import run_corps, run_explain, run_nifc, run_nws, run_odf_fire, run_oha, run_reports, run_stocking, run_usgs
 
 router = APIRouter(dependencies=[Depends(csrf_guard), Depends(require_admin)])
 
@@ -107,7 +107,7 @@ def run_reports_now():
 
 @router.post("/jobs/{name}/run")
 def run_job_now(name: str):
-    jobs = {"usgs": run_usgs, "nws": run_nws, "oha": run_oha, "corps": run_corps, "explain": run_explain}
+    jobs = {"usgs": run_usgs, "nws": run_nws, "oha": run_oha, "corps": run_corps, "odf_fire": run_odf_fire, "nifc": run_nifc, "explain": run_explain}
     if name not in jobs:
         raise HTTPException(404, "unknown job")
     return jobs[name]()

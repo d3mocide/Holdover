@@ -210,7 +210,8 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 
 - [x] **Reservoir levels** from the Army Corps (9 Willamette reservoirs that have a waterbody here; JSON, undocumented service with a certificate
       quirk): elevation, 24 h / 7 d change, and the same date in the three previous years. Built 2026-10-18
-- [ ] **Fire card and map layer**: ODF fire danger by regulated-use area (63 zones, verified, codes decoded via Vertex), NIFC active perimeters ("active fire near here", never a closure claim), and NASA FIRMS hotspots if the owner gets a free MAP_KEY
+- [x] **Fire card**: ODF fire danger by regulated-use area (the level and area code for the 28 of 58 waterbodies inside an ODF zone) and NIFC active wildfire perimeters within 50 km ("active fire near here", never a closure claim). Built 2026-10-18
+- [ ] **Fire map layer** (perimeters and danger zones drawn on the map) and NASA FIRMS hotspots: the owner is not sure FIRMS is wanted (it needs a free key); the layer needs geometry served to the browser
 - [ ] **River flood status** from NOAA NWPS (165 gauges in the area, official flood categories and forecast crests; found in Vertex)
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
 - [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value
