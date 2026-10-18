@@ -38,6 +38,6 @@ export default defineConfig({
     })
   ],
   server: {
-    proxy: { '/api': 'http://localhost:8000', '/healthz': 'http://localhost:8000', '/tiles': 'http://localhost:8000' }
+    proxy: Object.fromEntries(['/api', '/healthz', '/tiles'].map((p) => [p, process.env.API_URL || 'http://localhost:8000']))
   }
 });

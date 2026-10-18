@@ -1,0 +1,33 @@
+# Development stack: live reload for the API (:8020) and the Vite dev server (:5173), with its own data volume
+# so it never touches the deployed instance. Use:  docker compose -f docker-compose.dev.yml up --build
+name: holdover-dev
+
+services:
+  api:
+    build: { context: ., dockerfile: Dockerfile.dev }
+    ports: ["${DEV_API_PORT:-8020}:8000"]
+    volumes:
+      - ./app:/app/app
+      - ./alembic.ini:/app/alembic.ini
+      - dev-data:/data
+    environment:
+      USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
+      # Off by default so a dev stack does not poll the agencies. Run the jobs once by hand: scripts/dev-fetch.sh
+      RUN_SCHEDULER: ${DEV_RUN_SCHEDULER:-false}
+      HOME_LAT: ${HOME_LAT:-}
+      HOME_LON: ${HOME_LON:-}
+  web:
+    image: node:22-slim
+    working_dir: /web
+    command: sh -c "npm ci --no-audit --no-fund && npm run dev -- --host 0.0.0.0"
+    ports: ["${DEV_WEB_PORT:-5173}:5173"]
+    environment:
+      API_URL: http://api:8000
+    volumes:
+      - ./web:/web
+      - web-node-modules:/web/node_modules   # keep Linux modules out of your host checkout
+    depends_on: [api]
+
+volumes:
+  dev-data:
+  web-node-modules:

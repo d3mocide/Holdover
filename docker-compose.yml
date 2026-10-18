@@ -1,5 +1,8 @@
 services:
   holdover:
+    # Deploy: `docker compose pull && docker compose up -d` (the published image).
+    # Build locally instead: `docker compose up -d --build`.
+    image: ghcr.io/d3mocide/holdover:${HOLDOVER_TAG:-main}
     build: .
     restart: unless-stopped
     ports: ["${HOLDOVER_PORT:-8000}:8000"]   # put your TLS reverse proxy in front; service workers need HTTPS

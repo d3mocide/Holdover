@@ -298,3 +298,15 @@ each flow row on the sheet and on the Gauges page, worded as "NOAA flood categor
 - Not checked: NWPS's own usage policy (none found), the layer on a phone-width screen, FIRMS (not built), flood status for
   ungauged waters.
 
+### 2026-10-18 · this commit · Phase 9 · Image publishing workflows and a separate dev stack
+`.github/workflows/ci.yml` (pytest, frontend tests and build) and `docker.yml` (multi-arch amd64 and arm64 build; publishes
+to `ghcr.io/d3mocide/holdover` from `main` and `v*` tags only). `docker-compose.yml` now names the published image and can still
+build locally. A separate dev stack (`docker-compose.dev.yml`, `Dockerfile.dev`, `scripts/dev-fetch.sh`): API with reload,
+Vite dev server proxying to it, its own volumes, scheduler off by default. Added a `.dockerignore` (there was none, so
+`node_modules` and `data/` went into the build context). Vite's proxy target is now `API_URL`.
+- Verified: the workflow and compose files parse as YAML; the dev stack built and ran here: API healthy on :8020, and Vite on
+  :5173 answered `/healthz` through its proxy.
+- Not verified: **the workflows have never run** (nothing is pushed and there are no credentials here), the arm64 image has
+  not been built or run on a Pi, hot reload was not exercised by an edit, and `scripts/dev-fetch.sh` was not run (it would
+  poll the agencies).
+

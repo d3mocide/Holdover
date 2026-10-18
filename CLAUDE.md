@@ -11,6 +11,7 @@ here.** This file holds only what is specific to working in Claude Code. If a ru
     python -m venv .venv && .venv/bin/pip install -e '.[dev]'    # once
     .venv/bin/pytest -q                                          # backend tests
     cd web && npm ci && npm run build                            # frontend build (also: npm test)
+    docker compose -f docker-compose.dev.yml up --build           # dev stack: reload on :8020, Vite on :5173
     docker compose up -d --build                                 # run it; the app is on HOLDOVER_PORT (default 8000)
     docker compose exec holdover python -m app.cli create-user NAME   # first user is the admin
     docker compose exec holdover python -m app.cli                 # prints usage: migrate, seed, create-user, reset-password, ...

@@ -182,6 +182,8 @@ its server.
 - [x] **USGS migrated to the Water Data API** (done 2026-10-18, ahead of the early-2027 retirement of `waterservices.usgs.gov`): all 16 gauges, same values, no key; routine polls use latest values, with gap-fill and a first-run backfill ([data-source-options.md](data-source-options.md))
 - [ ] Delete the legacy USGS fallback (`USGS_API=legacy`) once USGS retires the old endpoint
 - [x] Per-address login throttle that works behind a proxy (`TRUSTED_PROXY_HOPS`; tested with spoofed headers)
+- [ ] **Publish the image** (`.github/workflows/`, amd64 + arm64 to ghcr.io) and run it on the owner's Raspberry Pi: workflows written 2026-10-18, **never run**; needs a push to `main`, then a pull on the Pi
+- [x] Separate dev stack (`docker-compose.dev.yml`: reload, Vite, own volumes), built and run 2026-10-18
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
 - [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction
