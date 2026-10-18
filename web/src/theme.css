@@ -8,6 +8,7 @@
   --glass-blur-dense: blur(28px) saturate(1.4);
   --hair: rgba(255, 255, 255, 0.07);
   --warn: #e9b44c;
+  --safe-top: env(safe-area-inset-top, 0px);
   --shore: var(--river); --road: var(--line); --road-minor: var(--line); --forest: var(--land); --gauge: #6cb4ee; --glow-1: transparent; --glow-2: transparent;
 }
 :root[data-theme='fir'] {

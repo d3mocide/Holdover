@@ -38,12 +38,19 @@
           paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
         { id: 'natural', type: 'fill', source: 'oregon', 'source-layer': 'natural',
           filter: ['in', ['get', 'kind'], ['literal', ['forest', 'wood']]], paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
-        { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', paint: { 'fill-color': c.water } },
-        { id: 'water-edge', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'Polygon'],
+        // River polygons in OSM are often open-ended or hand-split, so they read as glitches when drawn hard.
+        // Lakes/reservoirs are closed shapes: fill + soft edge. Rivers lean on their centerlines and only
+        // gain a faint polygon fill once zoomed in far enough for the geometry to be trustworthy.
+        { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['!', ['in', ['get', 'kind_detail'], ['literal', ['river', 'canal', 'stream']]]]],
+          paint: { 'fill-color': c.water } },
+        { id: 'water-river', type: 'fill', source: 'oregon', 'source-layer': 'water', minzoom: 10, filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['in', ['get', 'kind_detail'], ['literal', ['river', 'canal', 'stream']]]],
+          paint: { 'fill-color': c.water, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0, 12.5, 0.75] } },
+        { id: 'water-edge', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['!', ['in', ['get', 'kind_detail'], ['literal', ['river', 'canal', 'stream']]]]],
           layout: { 'line-join': 'round' },
-          paint: { 'line-color': c.shore, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.6, 12, 1.4], 'line-opacity': 0.55, 'line-blur': 0.6 } },
-        { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'LineString'],
-          paint: { 'line-color': c.river, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 10, 0.8, 13, 1.8], 'line-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.25, 12, 0.6] } },
+          paint: { 'line-color': c.shore, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.6, 12, 1.4], 'line-opacity': 0.5, 'line-blur': 0.6 } },
+        { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', ['geometry-type'], 'LineString'],
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: { 'line-color': c.river, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.7, 10, 1.6, 13, 3, 16, 5], 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.45, 10, 0.8] } },
         { id: 'roads-minor', type: 'line', source: 'oregon', 'source-layer': 'roads', minzoom: 10,
           filter: ['!', ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]]],
           paint: { 'line-color': c.minor, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 14, 1.2] } },
@@ -204,6 +211,7 @@
         map.setPaintProperty('landuse', 'fill-color', c.forest);
         map.setPaintProperty('natural', 'fill-color', c.forest);
         map.setPaintProperty('water', 'fill-color', c.water);
+        map.setPaintProperty('water-river', 'fill-color', c.water);
         map.setPaintProperty('waterway', 'line-color', c.river);
         map.setPaintProperty('water-edge', 'line-color', c.shore);
         map.setPaintProperty('roads', 'line-color', c.line);

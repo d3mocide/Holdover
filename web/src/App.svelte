@@ -175,9 +175,9 @@
   .offline { position: absolute; left: 492px; top: 16px; z-index: 2; color: var(--text); gap: 10px; padding: 0 20px; }
 
   @media (max-width: 899px) {
-    .shell { grid-template-columns: 1fr; grid-template-rows: 1fr 64px; gap: 0; padding: 0; }
+    .shell { --nav-h: calc(64px + env(safe-area-inset-bottom, 0px)); grid-template-columns: 1fr; grid-template-rows: 1fr var(--nav-h); gap: 0; padding: 0; }
     .shell > :global(.page) { grid-column: 1; }
-    .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-radius: 0; border-width: 1px 0 0; padding: 0 4px; order: 9; gap: 0; }
+    .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-radius: 0; border-width: 1px 0 0; padding: 0 4px env(safe-area-inset-bottom, 0px); order: 9; gap: 0; }
     .logo, .spacer { display: none; }
     .navbtn { flex: 1; width: auto; height: 100%; }
     .shell > :global(*) { grid-column: 1; grid-row: 1; }
@@ -185,13 +185,15 @@
     .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
     .planner.full { height: 100%; border-radius: 0; }
     .mapwrap.hide { display: none; }
-    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: 0; height: 62%; z-index: 4; border-radius: 20px 20px 0 0; }
+    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: var(--nav-h); height: calc(62% - var(--nav-h)); z-index: 6; border-radius: 20px 20px 0 0; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .planner { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
     .mapwrap.sheet, .mapwrap.wide { --sheet-inset: 0px; }
-    .layers { right: 76px; top: 16px; }
-    .offline { top: 16px; }
+    .mapwrap :global(.maplibregl-ctrl-top-right) { display: none; }
+    .layers { right: 16px; top: calc(16px + var(--safe-top)); }
+    .offline { top: calc(16px + var(--safe-top)); }
     .lyr.off { display: none; }
     .legend { left: 16px; bottom: calc(42% + 16px); }
     .offline { left: 16px; }
-    .mapwrap { inset: 0 0 64px 0; grid-column: 1; }
+    .mapwrap { inset: 0 0 var(--nav-h) 0; grid-column: 1; }
   }
 </style>
