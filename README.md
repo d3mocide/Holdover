@@ -35,6 +35,7 @@ Status: phases 1 to 5 built (stocking map, report and LLM pipeline, conditions, 
 | [docs/BUILD_LOG.md](docs/BUILD_LOG.md) | What was done and how it was verified |
 | [docs/BRAND.md](docs/BRAND.md) | Look, voice, colour tokens, icons, map language |
 | [docs/accounts.md](docs/accounts.md) | Optional accounts and the privacy model |
+| [docs/operations.md](docs/operations.md) | Backups, restore, upgrades, running behind a proxy |
 | [docs/reference/original-handoff.md](docs/reference/original-handoff.md) | The original brief (historical) |
 
 ## Notes

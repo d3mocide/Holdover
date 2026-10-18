@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = ["AGENTS.md", "CLAUDE.md", "README.md", "docs/ROADMAP.md", "docs/BUILD_LOG.md", "docs/BRAND.md", "docs/accounts.md"]
+DOCS = ["AGENTS.md", "CLAUDE.md", "README.md", "docs/ROADMAP.md", "docs/BUILD_LOG.md", "docs/BRAND.md", "docs/accounts.md", "docs/operations.md"]
 STATUSES = {"Done", "In progress", "Planned"}
 
 

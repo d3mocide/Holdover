@@ -13,7 +13,7 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY app ./app
 COPY alembic.ini ./
-RUN pip install . && useradd --system --uid 10001 holdover && mkdir -p /data && chown holdover /data
+RUN pip install ".[postgres]" && useradd --system --uid 10001 holdover && mkdir -p /data && chown holdover /data
 COPY --from=web /web/dist ./web/dist
 USER holdover
 VOLUME /data

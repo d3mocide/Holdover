@@ -42,7 +42,8 @@ everywhere), and promote or demote other admins. The last active admin cannot be
   `X-Forwarded-Proto`; force with `COOKIE_SECURE`). The database stores only a hash of the token. Page scripts
   cannot read it. Sessions last `SESSION_DAYS` (90) and slide forward while you use the app.
 - Wrong passwords and unknown usernames look identical and take the same time. Five failures for one username, or
-  thirty from one address, lock further attempts for 15 minutes (in memory, so a restart clears it).
+  thirty from one address, lock further attempts for 15 minutes (in memory, so a restart clears it). Behind a
+  reverse proxy set `TRUSTED_PROXY_HOPS` so "address" means the real caller ([operations.md](operations.md)).
 - Every state-changing call must carry an `X-Holdover: 1` header, which a cross-site page cannot send. That, plus
   `SameSite=Lax`, is the CSRF defence.
 - Changing your password signs out your other devices.

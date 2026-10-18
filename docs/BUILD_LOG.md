@@ -138,3 +138,16 @@ journal cards, a fish-hook nav icon; the account and gear browser scripts and a 
   browser test). Running the scripts from the repo exposed that a stale server on the same port made tests pass or fail
   against the wrong instance, so `setup.sh` now refuses a busy port.
 - Not checked: gear on a real phone or over HTTPS; photo upload size on a slow connection.
+
+### 2026-10-18 · this commit · Phase 9 · Hardening that does not need a phone
+Persistent-storage request and a Storage card in Settings; login throttle aware of reverse proxies; backup tests;
+`docs/operations.md`; the Docker image can run on Postgres.
+- Verified: **restore drill**: a backup from the live container restored into a brand-new container with an empty
+  volume served identical results (51 pins, 58 waterbodies, 16 gauges, source status). **Postgres 16**: all 115
+  tests pass (2 SQLite-only skip), and the 37-check accounts and 22-check gear browser tests pass with the app
+  running on it (22 tables, migration 0003). New tests: throttle with spoofed and proxied headers, backup integrity
+  and 7-file rotation, the Postgres no-op; 15 frontend unit tests.
+- Found: the schema needed no changes for Postgres. The backup tests initially assumed SQLite (now marked).
+- Not checked: any of it behind a real reverse proxy over HTTPS, the storage request on a real phone (Safari may
+  decline silently), moving existing SQLite data to Postgres (no tool).
+

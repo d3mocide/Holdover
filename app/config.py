@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     # reverse proxy's X-Forwarded-Proto); set true/false to force it.
     cookie_secure: bool | None = None
     session_days: int = 90
+    # Reverse proxies in front of the app that append to X-Forwarded-For (0 = trust nothing and use the socket address).
+    # The login throttle uses the address this yields, so with a proxy and 0 hops everyone shares one address.
+    trusted_proxy_hops: int = 0
     invite_days: int = 7
 
     # Scoring weights (tunable starting points, not validated). Missing-data factors are dropped

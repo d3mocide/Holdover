@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from app.api.auth import COOKIE, csrf_guard, end_session, iso, optional_user, require_user, start_session
+from app.api.auth import COOKIE, client_ip, csrf_guard, end_session, iso, optional_user, require_user, start_session
 from app.config import get_settings
 from app.db import get_session
 from app.models import Favorite, Invite, User, UserSession, Waterbody
@@ -44,7 +44,7 @@ def me(user: User | None = Depends(optional_user), session: Session = Depends(ge
 @router.post("/auth/login")
 def login(body: Creds, request: Request, response: Response, session: Session = Depends(get_session)):
     name = (body.username or "").strip().lower()
-    ip = request.client.host if request.client else "?"
+    ip = client_ip(request)
     for key in (f"u:{name}", f"ip:{ip}"):
         wait = (by_user if key.startswith("u:") else by_ip).blocked(key)
         if wait:

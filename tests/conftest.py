@@ -18,13 +18,20 @@ def session(tmp_path, monkeypatch):
     from alembic import command
     from alembic.config import Config
 
-    url = f"sqlite:///{tmp_path/'t.db'}"
+    # TEST_DATABASE_URL points the whole suite at another database (e.g. Postgres) to prove the schema is portable.
+    url = os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{tmp_path/'t.db'}"
     monkeypatch.setenv("DATABASE_URL", url)
     from app import db
     from app.config import get_settings
 
     get_settings.cache_clear()
     db._engine = db._Session = None
+    if not url.startswith("sqlite"):  # a shared server database: start every test from an empty schema
+        from sqlalchemy import text
+        with db.get_engine().begin() as c:
+            c.execute(text("DROP SCHEMA public CASCADE"))
+            c.execute(text("CREATE SCHEMA public"))
+        db._engine = db._Session = None
     cfg = Config(str(Path(__file__).parent.parent / "alembic.ini"))
     cfg.set_main_option("sqlalchemy.url", url)
     command.upgrade(cfg, "head")

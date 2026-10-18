@@ -293,3 +293,26 @@ def test_forecast_points_include_every_users_favorites(session):
     a.put(f"/api/me/favorites/{ids[0]}")
     b.put(f"/api/me/favorites/{ids[1]}")
     assert {ids[0], ids[1]} <= {w.id for w in nws.forecast_points(session)}
+
+
+def test_login_throttle_uses_the_real_address_only_when_proxies_are_trusted(session, monkeypatch):
+    from app.config import get_settings
+
+    signed_in_client("will")
+
+    def hammer(hops, vary):
+        monkeypatch.setenv("TRUSTED_PROXY_HOPS", str(hops))
+        get_settings.cache_clear()
+        from app import security
+        security.by_ip.hits.clear()
+        c, last = anonymous_client(), None
+        for i in range(32):  # 30 failures from one address lock it; unknown names, so the per-user limit never trips
+            xff = f"6.6.6.6, 10.0.{i if vary else 0}.1"  # the right-most entry is the proxy's view of the caller
+            last = c.post("/api/auth/login", json={"username": f"ghost{i}", "password": "nope-nope-nope"}, headers={"X-Forwarded-For": xff})
+        return last.status_code
+
+    assert hammer(0, vary=True) == 429   # header ignored: it is all one address, so a spoofed header cannot dodge the limit
+    assert hammer(1, vary=False) == 429  # one trusted proxy, one real client: still limited
+    assert hammer(1, vary=True) == 401   # distinct real clients behind the proxy are limited separately
+    monkeypatch.delenv("TRUSTED_PROXY_HOPS")
+    get_settings.cache_clear()

@@ -12,7 +12,13 @@ mkdir -p "$DIR/data"
 sleep 1
 if (echo > /dev/tcp/127.0.0.1/"$PORT") 2>/dev/null; then echo "port $PORT is already in use: stop whatever holds it (or set PORT=...) so the tests do not hit stale state" >&2; exit 1; fi
 rm -f "$DIR"/data/e2e.db*
-export DATABASE_URL="sqlite:///$DIR/data/e2e.db" RUN_SCHEDULER=false DATA_DIR="$DIR/data" WEB_DIR=web/dist
+# E2E_DATABASE_URL runs the same tests on another database (e.g. postgresql+psycopg://user:pw@localhost:5433/db); it is wiped first.
+export DATABASE_URL="${E2E_DATABASE_URL:-sqlite:///$DIR/data/e2e.db}" RUN_SCHEDULER=false DATA_DIR="$DIR/data" WEB_DIR=web/dist
+case "$DATABASE_URL" in sqlite*) ;; *) $PY -c "
+from sqlalchemy import text
+from app.db import get_engine
+with get_engine().begin() as c:
+    c.execute(text('DROP SCHEMA public CASCADE')); c.execute(text('CREATE SCHEMA public'))" ;; esac
 $PY -m app.cli migrate >/dev/null
 $PY -m app.cli seed >/dev/null
 $PY -m app.cli ingest-fixtures tests/fixtures/odfw_stocking >/dev/null

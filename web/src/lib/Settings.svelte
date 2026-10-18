@@ -4,6 +4,7 @@
   import Account from './Account.svelte';
   import Admin from './Admin.svelte';
   import Preferences from './Preferences.svelte';
+  import Storage from './Storage.svelte';
   let { theme, onTheme, onChanged, wbList = [], invite = null, picking = false, onpick, oninvitedone } = $props();
   const themes = [['fir', 'Fir & Steelhead'], ['redband', 'Redband'], ['nightbite', 'Night Bite']];
   let health = $state(null);
@@ -15,6 +16,7 @@
 
   <Account {invite} {oninvitedone} />
   <Preferences {wbList} {picking} {onpick} />
+  <Storage />
 
   <fieldset>
     <legend>Theme</legend>

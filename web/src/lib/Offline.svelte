@@ -2,6 +2,7 @@
   import { prepareTiles, tileList, cachedTileCount, clearTiles, basemapAvailable } from './tiles.js';
   import { loadDay } from './conditions.js';
   import { api, isoDay } from './api.js';
+  import { requestPersistence } from './storage.js';
   let { wbId = null, onclose } = $props();
   let maxZ = $state(10);
   let progress = $state({ done: 0, total: 0 });
@@ -16,6 +17,7 @@
 
   async function go() {
     busy = true; msg = ''; ctl = new AbortController();
+    requestPersistence(); // saved map tiles are exactly what a low-space cleanup would remove
     const parts = [];
     try {
       // data first (small), so a quota error on tiles can't cost us the conditions

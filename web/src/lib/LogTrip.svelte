@@ -5,6 +5,7 @@
   import { asOf } from './api.js';
   import Icon from './Icon.svelte';
   import { TRIP_KINDS } from './gearCatalog.js';
+  import { requestPersistence } from './storage.js';
 
   let { wbList = [], initialWb = null, onclose, onsaved } = $props();
 
@@ -98,6 +99,7 @@
           });
         }
       });
+      requestPersistence(); // a saved trip is data worth protecting from browser cleanup
       await metaSet('tripDraft', null);
       await countPending();
       syncNow(); // no-op offline; runs when connectivity returns

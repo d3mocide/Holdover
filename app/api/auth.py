@@ -22,6 +22,17 @@ def iso(d: datetime) -> str:
     return d.isoformat(timespec="seconds")
 
 
+def client_ip(request: Request) -> str:
+    """The caller's address. Behind `trusted_proxy_hops` proxies the right-most entries of X-Forwarded-For were added
+    by our own proxies and can be trusted; anything to their left is client-supplied and is ignored."""
+    hops = get_settings().trusted_proxy_hops
+    if hops > 0:
+        parts = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+        if len(parts) >= hops:
+            return parts[-hops]
+    return request.client.host if request.client else "?"
+
+
 def csrf_guard(request: Request) -> None:
     """Cookies ride along on cross-site requests, so state-changing calls must carry a header a cross-site page
     cannot send without a CORS preflight (which this server never approves). SameSite=Lax is the second layer."""

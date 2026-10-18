@@ -179,14 +179,16 @@ its server.
 
 **Gate:** installed on a real phone over HTTPS and used offline; a real LLM tried; a backup restored.
 
-- [ ] HTTPS via reverse proxy; verify the Secure cookie and forwarded headers; per-address login throttle
-- [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction; request persistent storage
+- [x] Per-address login throttle that works behind a proxy (`TRUSTED_PROXY_HOPS`; tested with spoofed headers)
+- [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
+- [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
+- [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction
 - [ ] Read myodfw.com, OHA, ODF and NWS terms of use; record in `docs/sources.md` before enabling the scheduler
 - [ ] Watch the scheduler for a day (timings, `/healthz`)
 - [ ] Choose a local model; run extraction and explanations on saved reports and review the output
-- [ ] Restore a nightly backup into a fresh container (the backup job exists, restore is untested)
+- [x] Restore a backup into a fresh container (drill done 2026-10-18; see [operations.md](operations.md)). Still to do: copy backups and photos off the machine
 - [ ] Data review: 7 unpinned waterbodies, 4 likely and 12 unverified pins, fishery hints, gauge links
-- [ ] Confirm the schema runs on Postgres (kept portable, never tested)
+- [x] Schema runs on Postgres 16: 115 tests plus the browser tests pass on it (SQLite-to-Postgres data copy not built)
 
 ## Phase 10: Journal depth and journal-informed scoring
 

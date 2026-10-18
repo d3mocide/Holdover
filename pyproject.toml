@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+postgres = ["psycopg[binary]>=3.2"]  # optional: run on Postgres instead of SQLite
 
 [tool.setuptools.packages.find]
 include = ["app*"]
