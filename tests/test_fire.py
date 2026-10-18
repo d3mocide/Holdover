@@ -134,3 +134,22 @@ def test_conditions_carry_both_fire_blocks(session):
     assert c["fire"] == {"danger": None, "nearby": None}  # before any fetch: unknown, not "no fire"
     run(session, odf_fire, ODF)
     assert conditions(session, wb, date(2026, 10, 18))["fire"]["danger"]["label"] == "Low"
+
+
+# ---- map layer -----------------------------------------------------------------------------------------------------
+def test_fire_map_endpoint_serves_stored_geometry(session, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+    seed_waterbodies(session)
+    client = TestClient(app)
+    empty = client.get("/api/fire/map").json()
+    assert empty["zones"]["features"] == [] and empty["fires_as_of"] is None  # nothing fetched: empty, not an error
+    real = nifc.active
+    monkeypatch.setattr(nifc, "active", lambda fires, now=None: real(fires, NOW))
+    run(session, odf_fire, ODF)
+    run(session, nifc, NIFC)
+    d = client.get("/api/fire/map").json()
+    assert len(d["zones"]["features"]) == 63 and {f["properties"]["label"] for f in d["zones"]["features"]} <= {"Low", "Moderate", "High", "Extreme"}
+    assert {f["properties"]["name"] for f in d["fires"]["features"]} == {"Grasshopper", "Austin", "Hagen", "407 DET"}
+    assert d["fires_as_of"] and d["zones_as_of"]

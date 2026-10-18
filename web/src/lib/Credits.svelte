@@ -9,6 +9,7 @@
     ['Reservoir levels', 'U.S. Army Corps of Engineers, Northwestern Division', 'https://www.nwd-wc.usace.army.mil/dd/common/dataquery/www/', 'Unverified data, subject to revision.'],
     ['Fire danger', 'Oregon Department of Forestry', 'https://gisapps.odf.oregon.gov/firerestrictions/PFR.html', 'Covers lands ODF protects. Check ODF for restrictions and closures.'],
     ['Wildfire perimeters', 'National Interagency Fire Center (interagency data)', 'https://data-nifc.opendata.arcgis.com', 'Perimeters can lag a new fire. A nearby fire is not by itself a closure.'],
+    ['River flood status', 'NOAA National Water Prediction Service', 'https://water.noaa.gov', 'NOAA\'s own flood category; not every river has flood stages.'],
     ['Map data', 'OpenStreetMap contributors (ODbL), tiles from Protomaps', 'https://www.openstreetmap.org/copyright', null],
     ['Map software', 'MapLibre GL JS', 'https://maplibre.org', null],
     ['Type', 'IBM Plex and Noto Sans (SIL Open Font License)', 'https://openfontlicense.org', null]

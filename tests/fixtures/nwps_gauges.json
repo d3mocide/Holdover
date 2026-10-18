@@ -1,0 +1,7524 @@
+{
+  "gauges": [
+    {
+      "lid": "ABQO3",
+      "name": "Abiqua Creek Near Silverton",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.9497195,
+      "longitude": -122.6495617,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 6.64,
+          "primaryUnit": "ft",
+          "secondary": 0.0145,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ACRO3",
+      "name": "Abernethy Creek near Redland",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.326388888889,
+      "longitude": -122.50888888889,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ALBO3",
+      "name": "Willamette River at Albany",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.638611111111,
+      "longitude": -123.106978,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.05,
+          "primaryUnit": "ft",
+          "secondary": 4.52,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 3.19,
+          "primaryUnit": "ft",
+          "secondary": 4.76,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "AURO3",
+      "name": "Pudding River at Aurora",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.233333333333,
+      "longitude": -122.75027777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.66,
+          "primaryUnit": "ft",
+          "secondary": 0.035,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 4.89,
+          "primaryUnit": "ft",
+          "secondary": 0.053,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BACO3",
+      "name": "Battle Creek (Marion Co., OR) at Commercial Street in Salem",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.86018,
+      "longitude": -123.01668,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BCKO3",
+      "name": "N Santiam River below Boulder Creek",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.706944444444,
+      "longitude": -122.1,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.52,
+          "primaryUnit": "ft",
+          "secondary": 0.283,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BCLO3",
+      "name": "N Santiam River at Niagara",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.753611111111,
+      "longitude": -122.29722222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.14,
+          "primaryUnit": "ft",
+          "secondary": 1.25,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 3.09,
+          "primaryUnit": "ft",
+          "secondary": 1.2,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "fcst_not_current",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BCOO3",
+      "name": "Beaver Creek (Marion Co., OR) at Aumsville",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.850391,
+      "longitude": -122.892659,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 4.06,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:55:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BCTO3",
+      "name": "Beaver Creek at Troutdale",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.519166666667,
+      "longitude": -122.38916666667,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 7.34,
+          "primaryUnit": "ft",
+          "secondary": 0.004,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BEAO3",
+      "name": "Nestucca River near Beaver",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.266666666667,
+      "longitude": -123.84583333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.94,
+          "primaryUnit": "ft",
+          "secondary": 0.07,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 3.98,
+          "primaryUnit": "ft",
+          "secondary": 0.075,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-25T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BENO3",
+      "name": "Deschutes River (OR) at Benham Falls",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PDT",
+        "name": "Pendleton"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.93011715,
+      "longitude": -121.4119746,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.08,
+          "primaryUnit": "ft",
+          "secondary": 0.497,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BFLO3",
+      "name": "Bull Run River at Lower Flume nr Brightwood",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.470952,
+      "longitude": -121.865357,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.78,
+          "primaryUnit": "ft",
+          "secondary": 0.013,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BKOO3",
+      "name": "Battle Creek (Marion Co., OR) at Lone Oak Rd near Salem",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.861111111111114,
+      "longitude": -123.04888888888888,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BLUO3",
+      "name": "Blue River near Blue River",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.162222222222,
+      "longitude": -122.3325,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.42,
+          "primaryUnit": "ft",
+          "secondary": 0.186,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 3.43,
+          "primaryUnit": "ft",
+          "secondary": 0.188,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BMFO3",
+      "name": "Bull Run River near Multnomah Falls",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.498174,
+      "longitude": -122.012305,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.26,
+          "primaryUnit": "ft",
+          "secondary": 0.032,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BONO3",
+      "name": "Columbia River at Bonneville Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.633079,
+      "longitude": -121.960731,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 6.61,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BRBO3",
+      "name": "Breitenbush River near Detroit",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.75262179,
+      "longitude": -122.1289648,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.39,
+          "primaryUnit": "ft",
+          "secondary": 0.097,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BRLO3",
+      "name": "Bull Run River near Brightwood",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.460951,
+      "longitude": -121.843967,
+      "pedts": {
+        "observed": "HPIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 3159.9,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BRTO3",
+      "name": "Blue River below Tidbits Creek",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.2179043,
+      "longitude": -122.2650676,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.74,
+          "primaryUnit": "ft",
+          "secondary": 0.01,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BRVO3",
+      "name": "Bull Run River near Bull Run Reservoir No 1",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.482619,
+      "longitude": -122.083418,
+      "pedts": {
+        "observed": "HPIRG",
+        "forecast": "HPIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1010.74,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BUMO3",
+      "name": "Butte Creek at Monitor",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.101606,
+      "longitude": -122.746234,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 4.98,
+          "primaryUnit": "ft",
+          "secondary": 0.006,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "BURO3",
+      "name": "Bull Run River at Bull Run Reservoir no 2",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.44761985,
+      "longitude": -122.1489748,
+      "pedts": {
+        "observed": "HPIRG",
+        "forecast": "HPIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 859.42,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CALO3",
+      "name": "Calapooya Creek near Oakland",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.401667,
+      "longitude": -123.362778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.59,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CANO3",
+      "name": "Molalla River near Canby",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.244166666667,
+      "longitude": -122.6875,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 8.79,
+          "primaryUnit": "ft",
+          "secondary": 0.053,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": 8.95,
+          "primaryUnit": "ft",
+          "secondary": 0.086,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CCAW1",
+      "name": "Canyon Creek near Amboy",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.940277777778,
+      "longitude": -122.31694444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.47,
+          "primaryUnit": "ft",
+          "secondary": 0.025,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CGRO3",
+      "name": "South Fork McKenzie River below Cougar Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.136074,
+      "longitude": -122.247205,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.38,
+          "primaryUnit": "ft",
+          "secondary": 0.322,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 1.4,
+          "primaryUnit": "ft",
+          "secondary": 0.331,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "fcst_not_current",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "COCO3",
+      "name": "Clackamas River near Oregon City",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.3792874,
+      "longitude": -122.5773134,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 22.98,
+          "primaryUnit": "ft",
+          "secondary": 0.735,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": 22.96,
+          "primaryUnit": "ft",
+          "secondary": 0.723,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CORO3",
+      "name": "Willamette River at Corvallis",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.566388888889,
+      "longitude": -123.25694444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 10.12,
+          "primaryUnit": "ft",
+          "secondary": 4.39,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": 10.27,
+          "primaryUnit": "ft",
+          "secondary": 4.65,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "COTO3",
+      "name": "Reservoir near Cottage Grove",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.720833333333,
+      "longitude": -123.04861111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.27,
+          "primaryUnit": "ft",
+          "secondary": 0.115,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 3.27,
+          "primaryUnit": "ft",
+          "secondary": 0.115,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CPAO3",
+      "name": "Calapooia River above Albany",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.62,
+      "longitude": -123.12833333333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.78,
+          "primaryUnit": "ft",
+          "secondary": 0.019,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CRAO3",
+      "name": "Deschutes River (OR) below Crane Prairie Reservoir",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PDT",
+        "name": "Pendleton"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.75,
+      "longitude": -121.78333333333,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.88,
+          "primaryUnit": "ft",
+          "secondary": 0.077,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T14:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "CRHO3",
+      "name": "Columbia River at Hood River",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.714444444444446,
+      "longitude": -121.50333333333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DCHO3",
+      "name": "Dairy Creek at Hwy 8 near Hillsboro",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.520085,
+      "longitude": -123.010791,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.49,
+          "primaryUnit": "ft",
+          "secondary": 0.023,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DCSO3",
+      "name": "Drift Creek near Silverton",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.9764,
+      "longitude": -122.8298,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 6.61,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DCWO3",
+      "name": "Drift Creek of Lincoln Co. above Waldport",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.4633,
+      "longitude": -123.964167,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 0.31,
+          "primaryUnit": "ft",
+          "secondary": 0.022,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DEBO3",
+      "name": "Deschutes River (OR) below Bend",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PDT",
+        "name": "Pendleton"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.08289525,
+      "longitude": -121.30781,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.82,
+          "primaryUnit": "ft",
+          "secondary": 0.435,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DEEO3",
+      "name": "Deer Creek at Roseburg",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.219166667,
+      "longitude": -123.279166667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.1,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 2.31,
+          "primaryUnit": "ft",
+          "secondary": 0.0056,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DEQO3",
+      "name": "Blowout Creek near Detroit",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.65305,
+      "longitude": -122.12972,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.76,
+          "primaryUnit": "ft",
+          "secondary": 0.004,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DETO3",
+      "name": "N Santiam River at Detroit Lake",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.722061,
+      "longitude": -122.250058,
+      "pedts": {
+        "observed": "HFIRR",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1491.45,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": 1491.53,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DEXO3",
+      "name": "Reservoir at Dexter",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.945833333333,
+      "longitude": -122.83611111111,
+      "pedts": {
+        "observed": "HFIRR",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 692.64,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DLLO3",
+      "name": "Tualatin River near Dilley",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.474722222222,
+      "longitude": -123.125,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 11.07,
+          "primaryUnit": "ft",
+          "secondary": 0.172,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 11.04,
+          "primaryUnit": "ft",
+          "secondary": 0.169,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DORO3",
+      "name": "Reservoir at Dorena Reservoir",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.78595685,
+      "longitude": -122.9553524,
+      "pedts": {
+        "observed": "HFIRR",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 793.15,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": 793.02,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DRRO3",
+      "name": "Row River above Pitcher Creek near Dorena",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.7359565,
+      "longitude": -122.8734019,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.93,
+          "primaryUnit": "ft",
+          "secondary": 0.018,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "DURO3",
+      "name": "Fanno Creek at Durham",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.403452,
+      "longitude": -122.754819,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.85,
+          "primaryUnit": "ft",
+          "secondary": 0.003,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ECDO3",
+      "name": "Elk creek near Drain",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.640833333333,
+      "longitude": -123.29833333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.72,
+          "primaryUnit": "ft",
+          "secondary": 0.0009,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": 0.87,
+          "primaryUnit": "ft",
+          "secondary": 0.0061,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ECWO3",
+      "name": "West Fork Ecola Creek near Cannon Beach",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.87361,
+      "longitude": -123.93417,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 0.59,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "EKTO3",
+      "name": "Umpqua River near Elkton",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.5859502,
+      "longitude": -123.5553727,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.9,
+          "primaryUnit": "ft",
+          "secondary": 1,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": 2.89,
+          "primaryUnit": "ft",
+          "secondary": 0.993,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ESTO3",
+      "name": "Clackamas River near Estacada",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.300555555556,
+      "longitude": -122.35444444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 10.75,
+          "primaryUnit": "ft",
+          "secondary": 0.643,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 10.8,
+          "primaryUnit": "ft",
+          "secondary": 0.674,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "EUGO3",
+      "name": "Willamette River at Eugene",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.0525,
+      "longitude": -123.0827778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 9.76,
+          "primaryUnit": "ft",
+          "secondary": 2.35,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 9.74,
+          "primaryUnit": "ft",
+          "secondary": 2.31,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FABO3",
+      "name": "Fall Creek below Fall Creek Dam near Lowell",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.94444444444444,
+      "longitude": -122.77444444444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.26,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FAIO3",
+      "name": "Fairview Creek at Glisan St near Gresham",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.527777777778,
+      "longitude": -122.4475,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.54,
+          "primaryUnit": "ft",
+          "secondary": 0.001,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FALO3",
+      "name": "Reservoir at Fall Creek",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.944444444444,
+      "longitude": -122.77361111111,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FNNO3",
+      "name": "Fanno Creek at 56th Ave - Portland",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.488111111111,
+      "longitude": -122.7349,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 8.31,
+          "primaryUnit": "ft",
+          "secondary": 0,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:35:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FOSO3",
+      "name": "Reservoir at Foster nr Sweet Home",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.414753,
+      "longitude": -122.670225,
+      "pedts": {
+        "observed": "HFIRR",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 613.35,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T06:59:00Z"
+        },
+        "forecast": {
+          "primary": 614.3,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FRMO3",
+      "name": "Tualatin River at Farmington",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.449444444444,
+      "longitude": -122.95027777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.07,
+          "primaryUnit": "ft",
+          "secondary": 0.162,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 4.14,
+          "primaryUnit": "ft",
+          "secondary": 0.17,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-19T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FRNO3",
+      "name": "Long Tom River below Fern Ridge Reservoir",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.123611111111,
+      "longitude": -123.29972222222,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.73,
+          "primaryUnit": "ft",
+          "secondary": 0.333,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": 3.27,
+          "primaryUnit": "ft",
+          "secondary": 0.569,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "fcst_not_current",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "FSSO3",
+      "name": "Nehalem River near Foss",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.703611111111,
+      "longitude": -123.755,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.56,
+          "primaryUnit": "ft",
+          "secondary": 0.094,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": 1.95,
+          "primaryUnit": "ft",
+          "secondary": 0.152,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GALO3",
+      "name": "Gales Creek near Forest Grove",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.510664,
+      "longitude": -123.115589,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.22,
+          "primaryUnit": "ft",
+          "secondary": 0.028,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GASO3",
+      "name": "Tualatin River near Gaston",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4387,
+      "longitude": -123.1412,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.56,
+          "primaryUnit": "ft",
+          "secondary": 0.046,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GCVO3",
+      "name": "Gate Creek at Vida",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.1460861,
+      "longitude": -122.5730333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 0.42,
+          "primaryUnit": "ft",
+          "secondary": 0.014,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GLIO3",
+      "name": "North Umpqua River near Glide",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.3215082,
+      "longitude": -122.8094992,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GOSO3",
+      "name": "Coast Fork Willamette River at Goshen",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.980555555556,
+      "longitude": -122.96527777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.19,
+          "primaryUnit": "ft",
+          "secondary": 0.713,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 2.19,
+          "primaryUnit": "ft",
+          "secondary": 0.713,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GPRO3",
+      "name": "Quartzville Creek at Green Peter Reservoir",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.45,
+      "longitude": -122.549,
+      "pedts": {
+        "observed": "HFIRR",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 864.57,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": 864.42,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GREO3",
+      "name": "Johnson Creek at Gresham",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.486388888889,
+      "longitude": -122.42194444444,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.29,
+          "primaryUnit": "ft",
+          "secondary": 0.001,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "GRWO3",
+      "name": "Wapato Creek at SW Gaston Road",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.44064166667,
+      "longitude": -123.125,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.13,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "HARO3",
+      "name": "Willamette River at Harrisburg",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.27040126,
+      "longitude": -123.1737036,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.58,
+          "primaryUnit": "ft",
+          "secondary": 3.71,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 1.67,
+          "primaryUnit": "ft",
+          "secondary": 3.86,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "HCRO3",
+      "name": "Hills Creek near Oakridge",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.709575,
+      "longitude": -122.421111,
+      "pedts": {
+        "observed": "HFIRR",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1450.5,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T06:59:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "HODO3",
+      "name": "Hood River near Hood River",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.654722222222,
+      "longitude": -121.54888888889,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.49,
+          "primaryUnit": "ft",
+          "secondary": 0.246,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 2.53,
+          "primaryUnit": "ft",
+          "secondary": 0.257,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "HSSW1",
+      "name": "East Fork Lewis River near Heisson",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.836666666667,
+      "longitude": -122.46611111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 10.09,
+          "primaryUnit": "ft",
+          "secondary": 0.04,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T14:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "JASO3",
+      "name": "Mid Fork Willamette River at Jasper",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.998611111111,
+      "longitude": -122.90555555556,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.55,
+          "primaryUnit": "ft",
+          "secondary": 1.59,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 2.54,
+          "primaryUnit": "ft",
+          "secondary": 1.58,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "JFFO3",
+      "name": "Santiam River at Jefferson",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.714722222222,
+      "longitude": -123.01416666667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.92,
+          "primaryUnit": "ft",
+          "secondary": 2.41,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 2.82,
+          "primaryUnit": "ft",
+          "secondary": 2.25,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "JWNO3",
+      "name": "Nehalem River at Jewell",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.935161,
+      "longitude": -123.492119,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "KCMO3",
+      "name": "Kellogg Creek near Milwaukie",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4317,
+      "longitude": -122.6275,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 3.56,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "KCPO3",
+      "name": "Kelley Creek at 159th Ave near Portland",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.47694444444444,
+      "longitude": -122.49722222222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 3.1,
+          "primaryUnit": "ft",
+          "secondary": 0,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "KLMW1",
+      "name": "Columbia River at Kalama",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.9833,
+      "longitude": -122.835,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.51,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 5.53,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-27T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LAPO3",
+      "name": "Little Deschutes River near La Pine",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PDT",
+        "name": "Pendleton"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.689166666667,
+      "longitude": -121.50166666667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.56,
+          "primaryUnit": "ft",
+          "secondary": 0.023,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LNEO3",
+      "name": "Little N. Santiam River at Elkhorn",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.83583333333333,
+      "longitude": -122.3536111111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.3,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LOBO3",
+      "name": "E Fk Lobster Creek near Alsea",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.2480555555556,
+      "longitude": -123.635277777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.01,
+          "primaryUnit": "ft",
+          "secondary": 0.001,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LONO3",
+      "name": "Coast Fork Willamette River at London",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.641666666667,
+      "longitude": -123.08472222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.12,
+          "primaryUnit": "ft",
+          "secondary": 0.008,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LOPO3",
+      "name": "Reservoir at Lookout Point nr Lowell",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.91666666666666,
+      "longitude": -122.7666666666667,
+      "pedts": {
+        "observed": "HFIRG",
+        "forecast": "HFIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 808.04,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": 807.97,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LRWW1",
+      "name": "Lewis River at Woodland",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.9056,
+      "longitude": -122.7383,
+      "pedts": {
+        "observed": "HGIRP",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": 9.47,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T01:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LSMO3",
+      "name": "Little N. Santiam River near Mehama",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.7916666666667,
+      "longitude": -122.577777777778,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.61,
+          "primaryUnit": "ft",
+          "secondary": 0.048,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:50:00Z"
+        },
+        "forecast": {
+          "primary": 2.71,
+          "primaryUnit": "ft",
+          "secondary": 0.061,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-27T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LSNO3",
+      "name": "Little Sandy River near Bull Run",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.415555555556,
+      "longitude": -122.17027777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.48,
+          "primaryUnit": "ft",
+          "secondary": 0.01,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "LWWW1",
+      "name": "Little White Salmon River at Willard Nat'l Fish Hatchery near Mill A",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.722056,
+      "longitude": -121.640806,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 0.93,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MCMO3",
+      "name": "South Yamhill River at McMinnville",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.2069444,
+      "longitude": -123.1816667,
+      "pedts": {
+        "observed": "HGIRA",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 9.34,
+          "primaryUnit": "ft",
+          "secondary": 0.036,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 9.42,
+          "primaryUnit": "ft",
+          "secondary": 0.043,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MCTO3",
+      "name": "Mill Creek (Marion Co., OR) at Turner Road near Salem",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.881388888889,
+      "longitude": -122.97722222222,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MCZO3",
+      "name": "McKenzie River near Walterville",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.069849,
+      "longitude": -122.771187,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.77,
+          "primaryUnit": "ft",
+          "secondary": 1.68,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 1.77,
+          "primaryUnit": "ft",
+          "secondary": 1.68,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MEHO3",
+      "name": "N Santiam River at Mehama",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.789166666667,
+      "longitude": -122.61861111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.28,
+          "primaryUnit": "ft",
+          "secondary": 1.32,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": 3.25,
+          "primaryUnit": "ft",
+          "secondary": 1.29,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MERW1",
+      "name": "Lewis River at Ariel",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.9519444444444,
+      "longitude": -122.562777777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.45,
+          "primaryUnit": "ft",
+          "secondary": 2.63,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": 2.43,
+          "primaryUnit": "ft",
+          "secondary": 2.6,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "fcst_not_current",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MFOO3",
+      "name": "Mid Fork Willamette River above Hills Creek Res nr Oakridge",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.60194444444444,
+      "longitude": -122.4563888888889,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MFSO3",
+      "name": "MID FORK WILLAMETTE R BELOW HILLS CREEK DAM NEAR OAKRIDGE",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.72083333333333,
+      "longitude": -122.4375,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.63,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MIAO3",
+      "name": "Miami River near Garibaldi",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.575,
+      "longitude": -123.87388888889,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.69,
+          "primaryUnit": "ft",
+          "secondary": 0,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MIWO3",
+      "name": "Johnson Creek at Milwaukie",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.453333333333,
+      "longitude": -122.64333333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 23.72,
+          "primaryUnit": "ft",
+          "secondary": 0.015,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MKLO3",
+      "name": "McKenzie River below Leaburg Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.12388888888889,
+      "longitude": -122.6263888888889,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.32,
+          "primaryUnit": "ft",
+          "secondary": 1.71,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MNRO3",
+      "name": "Long Tom River at Monroe",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.313055555556,
+      "longitude": -123.29638888889,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 5.24,
+          "primaryUnit": "ft",
+          "secondary": 0.637,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": 5.24,
+          "primaryUnit": "ft",
+          "secondary": 0.637,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MNSO3",
+      "name": "Mill Creek (Marion Co., OR) at North Salem High School at Salem",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.9425,
+      "longitude": -123.02388888889,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MOCO3",
+      "name": "McKenzie River at Outlet of Clear Lake",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.3611111111111,
+      "longitude": -121.994444444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.79,
+          "primaryUnit": "ft",
+          "secondary": 0.108,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MOLO3",
+      "name": "Molalla River at Shady Dell near Molalla 2ESE",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.138611111111,
+      "longitude": -122.53361111111,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MOWO3",
+      "name": "Molalla River near Wilhoit",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.0097,
+      "longitude": -122.4808,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.42,
+          "primaryUnit": "ft",
+          "secondary": 0.025,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MPLO3",
+      "name": "Siuslaw River near Mapleton",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.063333333333,
+      "longitude": -123.88277777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.87,
+          "primaryUnit": "ft",
+          "secondary": 0.088,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 2.99,
+          "primaryUnit": "ft",
+          "secondary": 0.117,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MRGO3",
+      "name": "McKenzie River above Coburg",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.1125,
+      "longitude": -123.04583333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 6.89,
+          "primaryUnit": "ft",
+          "secondary": 1.73,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MRHO3",
+      "name": "McKenzie River above Hayden Bridge at Springfield",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.071388888889,
+      "longitude": -122.96416666667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 52.72,
+          "primaryUnit": "ft",
+          "secondary": 1.62,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MRRO3",
+      "name": "Abernethy Creek at Mompano Reservoir",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.3142,
+      "longitude": -122.5053,
+      "pedts": {
+        "observed": "HPIRG",
+        "forecast": "HPIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 179.52,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MSSO3",
+      "name": "Mill Creek (Marion Co., OR) at Spenner Road near Sublimity",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.8179,
+      "longitude": -122.7549,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.2,
+          "primaryUnit": "ft",
+          "secondary": 0,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:20:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MTTO3",
+      "name": "Mill Creek (Marion Co., OR) at Turner",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.8444,
+      "longitude": -122.9532,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 5.15,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:05:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "MUSO3",
+      "name": "McKenzie River near Belknap Springs",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.2864,
+      "longitude": -122.0369,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2094.18,
+          "primaryUnit": "ft",
+          "secondary": 0.195,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NBRO3",
+      "name": "N Fk Bull Run River near Multnomah Falls",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.493888888889,
+      "longitude": -122.03555555556,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.38,
+          "primaryUnit": "ft",
+          "secondary": 0.008,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NEBO3",
+      "name": "Willamette River at Newberg",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.284722222222,
+      "longitude": -122.96027777778,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 56.17,
+          "primaryUnit": "ft",
+          "secondary": 16.2,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NMFO3",
+      "name": "N Fk of Middle Fk Willamette River near Oakridge",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.75694,
+      "longitude": -122.504167,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.06,
+          "primaryUnit": "ft",
+          "secondary": 0.105,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NOTO3",
+      "name": "Long Tom River near Noti",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.05,
+      "longitude": -123.42555555556,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.12,
+          "primaryUnit": "ft",
+          "secondary": 0.015,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:10:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NRNO3",
+      "name": "Nehalem River at Nehalem",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.7088,
+      "longitude": -123.888,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 5.72,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:10:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NSFO3",
+      "name": "Nestucca River Near Ferndale",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.310638889,
+      "longitude": -123.4135277778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NSGO3",
+      "name": "N Santiam River at Greens Bridge near Jefferson",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.708055555556,
+      "longitude": -122.97305555556,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 14.09,
+          "primaryUnit": "ft",
+          "secondary": 1.16,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NUMO3",
+      "name": "North Umpqua River above Copeland Creek",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.29611111,
+      "longitude": -122.53555555,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 4.82,
+          "primaryUnit": "ft",
+          "secondary": 0.737,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "NYFO3",
+      "name": "North Fork Yamhill River near Fairdale",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.365,
+      "longitude": -123.37944444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.15,
+          "primaryUnit": "ft",
+          "secondary": 0.002,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "OAKO3",
+      "name": "Mid Fork Willamette River near Oakridge",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.801388888889,
+      "longitude": -122.55972222222,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2,
+          "primaryUnit": "ft",
+          "secondary": 0.725,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:10:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "OCUO3",
+      "name": "Willamette River above Falls at Oregon City",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.348055555556,
+      "longitude": -122.62055555556,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 55.96,
+          "primaryUnit": "ft",
+          "secondary": 31.1,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:10:00Z"
+        },
+        "forecast": {
+          "primary": 55.95,
+          "primaryUnit": "ft",
+          "secondary": 31,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "OGCO3",
+      "name": "Oak Grove Fork near Government Camp",
+      "rfc": {
+        "abbreviation": "NERFC",
+        "name": "Northeast River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.113333333333,
+      "longitude": -121.81444444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.71,
+          "primaryUnit": "ft",
+          "secondary": 0.097,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "OKPO3",
+      "name": "Oak Grove Fork above Powerplant Intake nr Estacada 24SE",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.071388888889,
+      "longitude": -121.93944444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.88,
+          "primaryUnit": "ft",
+          "secondary": 0.29,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ORCO3",
+      "name": "Willamette River below Falls at Oregon City",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.3579,
+      "longitude": -122.6098,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.58,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": 6.1,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T01:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "PHIO3",
+      "name": "Marys River near Philomath",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.525,
+      "longitude": -123.334722,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.93,
+          "primaryUnit": "ft",
+          "secondary": 0.014,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 1.96,
+          "primaryUnit": "ft",
+          "secondary": 0.016,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "PRGO3",
+      "name": "Pringle Creek near Salem Hospital",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.93166,
+      "longitude": -123.034543,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 7.26,
+          "primaryUnit": "ft",
+          "secondary": 0.0015,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-17T16:55:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "PRTO3",
+      "name": "Willamette River at Portland",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.5175,
+      "longitude": -122.669166667,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.1,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "low_threshold",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 4.05,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T01:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "PUWO3",
+      "name": "Pudding River near Woodburn",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.151231,
+      "longitude": -122.804326,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.5,
+          "primaryUnit": "ft",
+          "secondary": 0.02,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "QCCO3",
+      "name": "Quartzville Creek near Cascadia",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.540277777778,
+      "longitude": -122.43527777778,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.54,
+          "primaryUnit": "ft",
+          "secondary": 0.015,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "RCBO3",
+      "name": "Rock Creek at Hwy 47 Bridge at Vernonia",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.858611111111,
+      "longitude": -123.19222222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.66,
+          "primaryUnit": "ft",
+          "secondary": 0.028,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "RSBO3",
+      "name": "South Umpqua River at Roseburg",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.211111111111,
+      "longitude": -123.34972222222,
+      "pedts": {
+        "observed": "HGIRP",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "RUNO3",
+      "name": "Bull Run River near Bull Run",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4375,
+      "longitude": -122.17944444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.78,
+          "primaryUnit": "ft",
+          "secondary": 0.034,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SARO3",
+      "name": "Sardine Creek near Niagra",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.7475,
+      "longitude": -122.2741944,
+      "pedts": {
+        "observed": "HGIRA",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 3.96,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SBRO3",
+      "name": "S Fk Bull Run River near Bull Run",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.444564,
+      "longitude": -122.109529,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.44,
+          "primaryUnit": "ft",
+          "secondary": 0.006,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SCGO3",
+      "name": "Sain Creek near Gaston",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.48083333333334,
+      "longitude": -123.24583333333334,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.14,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SCLO3",
+      "name": "Scoggins Creek above Henry Hagg Lake",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.46927968,
+      "longitude": -123.200109,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.73,
+          "primaryUnit": "ft",
+          "secondary": 0.004,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SCOO3",
+      "name": "Scoggins Creek below Scoggins Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.46944444444444,
+      "longitude": -123.1988888888889,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 5.39,
+          "primaryUnit": "ft",
+          "secondary": 0.074,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SCRO3",
+      "name": "Steamboat Creek near Glide",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.349842,
+      "longitude": -122.7289415,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -0.06,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "low_threshold",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -0.05,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "low_threshold",
+          "validTime": "2026-10-19T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SCSO3",
+      "name": "Silver Creek at Silverton",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.00949,
+      "longitude": -122.7895,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 0.88,
+          "primaryUnit": "ft",
+          "secondary": 0.011,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SCVO3",
+      "name": "Sunshine Creek near Valsetz",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.8108,
+      "longitude": -123.7447,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.69,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SFCO3",
+      "name": "South Fork McKenzie River above Cougar Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.046944444444,
+      "longitude": -122.21777777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.28,
+          "primaryUnit": "ft",
+          "secondary": 0.177,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SFSO3",
+      "name": "South Fork Necanicum River above Seaside",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.8928871,
+      "longitude": -123.8331898,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.62,
+          "primaryUnit": "ft",
+          "secondary": 0.008,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SGCO3",
+      "name": "Salmon River near Government Camp",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.265388,
+      "longitude": -121.717776,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 3.32,
+          "primaryUnit": "ft",
+          "secondary": 0.0115,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SGWO3",
+      "name": "Glenn Creek at Wallace Road",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.965333,
+      "longitude": -123.058122,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 3.89,
+          "primaryUnit": "ft",
+          "secondary": 0,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-17T16:50:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SHNO3",
+      "name": "Columbia River at St. Helens",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.863611111111,
+      "longitude": -122.79624,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.5,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 4.89,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T01:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SILO3",
+      "name": "Siletz River at Siletz",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.715277777778,
+      "longitude": -123.88861111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.15,
+          "primaryUnit": "ft",
+          "secondary": 0.063,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 2.14,
+          "primaryUnit": "ft",
+          "secondary": 0.062,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SLCO3",
+      "name": "Schafer Creek near Lacomb",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.619567,
+      "longitude": -122.465916,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.39,
+          "primaryUnit": "ft",
+          "secondary": 0,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SLMO3",
+      "name": "Willamette River at Salem",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.944166666667,
+      "longitude": -123.0425,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 5.23,
+          "primaryUnit": "ft",
+          "secondary": 6.67,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 5.33,
+          "primaryUnit": "ft",
+          "secondary": 6.97,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SNDO3",
+      "name": "Sandy River near Bull Run",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.448611111111,
+      "longitude": -122.245,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 7.57,
+          "primaryUnit": "ft",
+          "secondary": 0.274,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 7.61,
+          "primaryUnit": "ft",
+          "secondary": 0.29,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SPRO3",
+      "name": "Mohawk River (OR) near Springfield",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.093055555556,
+      "longitude": -122.95611111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.71,
+          "primaryUnit": "ft",
+          "secondary": 0.019,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 0.91,
+          "primaryUnit": "ft",
+          "secondary": 0.036,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SQKO3",
+      "name": "Whychus Creek near Sisters",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PDT",
+        "name": "Pendleton"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.287777777778,
+      "longitude": -121.54333333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 0.35,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SRDO3",
+      "name": "Smith River near Drain",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.78388888888889,
+      "longitude": -123.46888888888888,
+      "pedts": {
+        "observed": "HGIRP",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SRMO3",
+      "name": "Sandy River near Marmot",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.399564,
+      "longitude": -122.137307,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 689.62,
+          "primaryUnit": "ft",
+          "secondary": 0.208,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": 689.69,
+          "primaryUnit": "ft",
+          "secondary": 0.232,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SRRO3",
+      "name": "Salmon River of Lincoln Co. at Rose Lodge",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.01139,
+      "longitude": -123.885278,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 20.21,
+          "primaryUnit": "ft",
+          "secondary": 0.028,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SSCO3",
+      "name": "S. Santiam River below Cascadia",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.392222222222,
+      "longitude": -122.49666666667,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.94,
+          "primaryUnit": "ft",
+          "secondary": 0.031,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:40:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SSFO3",
+      "name": "S. Santiam River near Foster",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.4125,
+      "longitude": -122.6875,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 10.83,
+          "primaryUnit": "ft",
+          "secondary": 1.65,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:55:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "STVW1",
+      "name": "Columbia River at Stevenson",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.699444444444,
+      "longitude": -121.86722222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 75.67,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SUMO3",
+      "name": "SOUTH UMPQUA AT MELROSE",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.251667,
+      "longitude": -123.4477,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.82,
+          "primaryUnit": "ft",
+          "secondary": 0.109,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SUSO3",
+      "name": "Smith River (OR) above Belknap Springs",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.29,
+      "longitude": -122.0486,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2196.08,
+          "primaryUnit": "ft",
+          "secondary": 0.004,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SUVO3",
+      "name": "Luckiamute River near Suver",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.7825,
+      "longitude": -123.23472222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.96,
+          "primaryUnit": "ft",
+          "secondary": 0.041,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 2.13,
+          "primaryUnit": "ft",
+          "secondary": 0.049,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "SYCO3",
+      "name": "Johnson Creek near Sycamore",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4775,
+      "longitude": -122.50833333333,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.18,
+          "primaryUnit": "ft",
+          "secondary": 0.001,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 1.52,
+          "primaryUnit": "ft",
+          "secondary": 0.01,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-28T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TGCO3",
+      "name": "Tualatin River above Golf Course Rd near Cornelius",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.502222222222,
+      "longitude": -123.05611111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 5.98,
+          "primaryUnit": "ft",
+          "secondary": 0.087,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TIDO3",
+      "name": "Alsea River near Tidewater",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.385954,
+      "longitude": -123.831778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.12,
+          "primaryUnit": "ft",
+          "secondary": 0.067,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 1.16,
+          "primaryUnit": "ft",
+          "secondary": 0.071,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TLFO3",
+      "name": "Tualatin River below Lee Falls nr Gaston 6WNW",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.460833333333,
+      "longitude": -123.27916666667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.07,
+          "primaryUnit": "ft",
+          "secondary": 0.045,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TLMO3",
+      "name": "Wilson River near Tillamook",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.475833333333,
+      "longitude": -123.725,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.53,
+          "primaryUnit": "ft",
+          "secondary": 0.055,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 3.6,
+          "primaryUnit": "ft",
+          "secondary": 0.069,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-25T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TLYO3",
+      "name": "Clackamas River above Three Lynx Creek",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.125,
+      "longitude": -122.07222222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.33,
+          "primaryUnit": "ft",
+          "secondary": 0.583,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 0.34,
+          "primaryUnit": "ft",
+          "secondary": 0.588,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TRAO3",
+      "name": "Trask River near Tillamook",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4462181,
+      "longitude": -123.7103974,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 5.54,
+          "primaryUnit": "ft",
+          "secondary": 0.074,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": 5.63,
+          "primaryUnit": "ft",
+          "secondary": 0.091,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-25T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TRBO3",
+      "name": "McKenzie River below Trail Bridge Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.268055555556,
+      "longitude": -122.04861111111,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 6.18,
+          "primaryUnit": "ft",
+          "secondary": 0.588,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 6.18,
+          "primaryUnit": "ft",
+          "secondary": 0.588,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TRRO3",
+      "name": "Tualatin River at Rood Bridge near Hillsboro",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.49,
+      "longitude": -122.95166666667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.99,
+          "primaryUnit": "ft",
+          "secondary": 0.068,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TRSO3",
+      "name": "Thomas Creek near Scio",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.71206687,
+      "longitude": -122.7700878,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.83,
+          "primaryUnit": "ft",
+          "secondary": 0.009,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": 3.84,
+          "primaryUnit": "ft",
+          "secondary": 0.009,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-19T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TUAO3",
+      "name": "Tualatin River at Tualatin",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.387222222222,
+      "longitude": -122.7625,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 101.59,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TUCO3",
+      "name": "Tucca Creek near Blaine",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.3244444444444,
+      "longitude": -123.545277777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 10.38,
+          "primaryUnit": "ft",
+          "secondary": 0.001,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "TYCO3",
+      "name": "Tryon Creek near Lake Oswego",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4306747568568,
+      "longitude": -122.67370565,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.33,
+          "primaryUnit": "ft",
+          "secondary": 0.001,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "UNDW1",
+      "name": "White Salmon River near Underwood",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.751944444444,
+      "longitude": -121.52666666667,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.23,
+          "primaryUnit": "ft",
+          "secondary": 0.394,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": 3.25,
+          "primaryUnit": "ft",
+          "secondary": 0.405,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "VAPW1",
+      "name": "Columbia River at Vancouver",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.631388888889,
+      "longitude": -122.69638888889,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.26,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "low_threshold",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 4.65,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-27T01:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "VENO3",
+      "name": "Nehalem River near Vernonia",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.806944444444,
+      "longitude": -123.28194444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.71,
+          "primaryUnit": "ft",
+          "secondary": 0.005,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:50:00Z"
+        },
+        "forecast": {
+          "primary": 3.86,
+          "primaryUnit": "ft",
+          "secondary": 0.009,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "VIDO3",
+      "name": "McKenzie River near Vida",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.1248487,
+      "longitude": -122.47062,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.89,
+          "primaryUnit": "ft",
+          "secondary": 1.69,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 0.89,
+          "primaryUnit": "ft",
+          "secondary": 1.69,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WASW1",
+      "name": "Washougal River at Washougal",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.583611111111,
+      "longitude": -122.34472222222,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 4.36,
+          "primaryUnit": "ft",
+          "secondary": 0.268,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WAWO3",
+      "name": "Willamina Creek near Willamina",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.14333,
+      "longitude": -123.49472,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.36,
+          "primaryUnit": "ft",
+          "secondary": 0.013,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WCFO3",
+      "name": "Willamette River at Canby Ferry near Canby",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.298888888889,
+      "longitude": -122.69277777778,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 59.65,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-17T17:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WCLO3",
+      "name": "Winberry Creek at Winberry Creek",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.913888888889,
+      "longitude": -122.6875,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 0.63,
+          "primaryUnit": "ft",
+          "secondary": 0.003,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WCNW1",
+      "name": "Wind River near Carson",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "WA",
+        "name": "Washington"
+      },
+      "latitude": 45.726784,
+      "longitude": -121.794799,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.65,
+          "primaryUnit": "ft",
+          "secondary": 0.144,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WFHO3",
+      "name": "West Fork Hood River near Dee",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.598451,
+      "longitude": -121.635908,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 2.01,
+          "primaryUnit": "ft",
+          "secondary": 0.113,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:45:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WICO3",
+      "name": "Deschutes River (OR) below Wickiup Reservoir",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PDT",
+        "name": "Pendleton"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.683333333333,
+      "longitude": -121.68333333333,
+      "pedts": {
+        "observed": "HGIRR",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": 1.81,
+          "primaryUnit": "ft",
+          "secondary": 0.121,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T14:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WINO3",
+      "name": "North Umpqua River at Winchester Dam",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.283333333333,
+      "longitude": -123.35277777778,
+      "pedts": {
+        "observed": "HGIRZ",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "obs_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WLAO3",
+      "name": "South Yamhill River near Willamina",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.047222222222,
+      "longitude": -123.50277777778,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.53,
+          "primaryUnit": "ft",
+          "secondary": 0.0124,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": 1.67,
+          "primaryUnit": "ft",
+          "secondary": 0.0215,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "not_defined",
+          "validTime": "2026-10-26T12:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WNRO3",
+      "name": "North Umpqua River near Winchester",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "MFR",
+        "name": "Medford"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 43.27205997,
+      "longitude": -123.4122993,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 1.75,
+          "primaryUnit": "ft",
+          "secondary": 0.706,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:30:00Z"
+        },
+        "forecast": {
+          "primary": 1.81,
+          "primaryUnit": "ft",
+          "secondary": 0.752,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-26T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WSLO3",
+      "name": "Tualatin River at West Linn",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.350833333333,
+      "longitude": -122.675,
+      "pedts": {
+        "observed": "HGIRA",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.86,
+          "primaryUnit": "ft",
+          "secondary": 0.201,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:50:00Z"
+        },
+        "forecast": {
+          "primary": 2.89,
+          "primaryUnit": "ft",
+          "secondary": 0.21,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-19T06:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WTLO3",
+      "name": "S. Santiam River at Waterloo",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.497777777778,
+      "longitude": -122.82194444444,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 3.15,
+          "primaryUnit": "ft",
+          "secondary": 1.15,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": 3.13,
+          "primaryUnit": "ft",
+          "secondary": 1.13,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T18:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "WTSO3",
+      "name": "Wilson River at Sollie Smith Br at Tillamook",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.4771111,
+      "longitude": -123.8079722,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 8.63,
+          "primaryUnit": "ft",
+          "secondary": -999,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T16:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "YRCO3",
+      "name": "Yaquina River near Chitwood",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 44.657896,
+      "longitude": -123.838723,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": "HGIFZ"
+      },
+      "status": {
+        "observed": {
+          "primary": 2.62,
+          "primaryUnit": "ft",
+          "secondary": 0.013,
+          "secondaryUnit": "kcfs",
+          "floodCategory": "no_flooding",
+          "validTime": "2026-10-18T15:15:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "fcst_not_current",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "lid": "ZOLO3",
+      "name": "Zollner Creek near Mt Angel",
+      "rfc": {
+        "abbreviation": "NWRFC",
+        "name": "Northwest River Forecast Center"
+      },
+      "wfo": {
+        "abbreviation": "PQR",
+        "name": "Portland"
+      },
+      "state": {
+        "abbreviation": "OR",
+        "name": "Oregon"
+      },
+      "latitude": 45.10055555555556,
+      "longitude": -122.82055555555556,
+      "pedts": {
+        "observed": "HGIRG",
+        "forecast": ""
+      },
+      "status": {
+        "observed": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        },
+        "forecast": {
+          "primary": -999,
+          "primaryUnit": "",
+          "secondary": -999,
+          "secondaryUnit": "",
+          "floodCategory": "out_of_service",
+          "validTime": "0001-01-01T00:00:00Z"
+        }
+      }
+    }
+  ]
+}

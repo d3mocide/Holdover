@@ -140,6 +140,20 @@ class FireNearby(Base):
     raw_fetch_id: Mapped[int | None] = mapped_column(Integer, index=True)
 
 
+class RiverStatus(Base):
+    __tablename__ = "river_status"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    lid: Mapped[str] = mapped_column(Text, index=True)  # NWPS gauge id
+    category: Mapped[str | None] = mapped_column(Text)
+    stage_ft: Mapped[float | None] = mapped_column(Float)
+    flow_kcfs: Mapped[float | None] = mapped_column(Float)
+    valid_time: Mapped[str | None] = mapped_column(Text)
+    fc_category: Mapped[str | None] = mapped_column(Text)
+    fc_stage_ft: Mapped[float | None] = mapped_column(Float)
+    fc_valid_time: Mapped[str | None] = mapped_column(Text)
+    raw_fetch_id: Mapped[int | None] = mapped_column(Integer, index=True)
+
+
 class ForecastCache(Base):
     __tablename__ = "forecast_cache"
     __table_args__ = (PrimaryKeyConstraint("waterbody_id", "fetched_at"),)

@@ -155,6 +155,9 @@ fire-restrictions map). **Verified live:** 63 protection zones, fields `regusear
 
 ## 7. River flood status and forecasts (NOAA NWPS), found in Vertex
 
+**Status: built 2026-10-18** (`app/sources/nwps.py`). The response has no USGS site numbers, so the 14 mapped pairs were matched by name
+and position (all within 120 m) and written down in `LIDS`. Gauges with no flood stages defined (most of them) show nothing.
+
 `https://api.water.noaa.gov/nwps/v1/gauges?bbox.xmin=..&bbox.ymin=..&bbox.xmax=..&bbox.ymax=..&srid=EPSG_4326`, keyless.
 **Verified:** 165 gauges in the Willamette area, each with observed stage and flow and an **official flood category**
 (`no_flooding`, `action`, `minor`, `moderate`, `major`, or `not_defined`) plus forecast crest. Its Willamette at Albany

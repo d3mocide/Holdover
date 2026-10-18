@@ -195,6 +195,8 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 | Rounded square, fish and 1-4 pips | Report rating | Colour and pips: excellent (lime, 4), good (teal, 3), fair (warn, 2), slow (slate, 1) |
 | White pin | A trip or pin you logged | Always from local data, so it works offline |
 | Coral pin with a house | Your home | |
+| Tinted area with a thin outline | ODF fire danger zone | `--warn`. Low is an outline only; Moderate, High and Extreme add a stronger tint. The Legend and each sheet say the level in words, so colour is never the only signal |
+| Dashed outline with a faint fill and a name | Active wildfire perimeter | `--accent`; the name shows from zoom 8.5. It means a fire is burning there, not that anything is closed |
 
 Pins are the brightest things on the map. Everything else recedes.
 

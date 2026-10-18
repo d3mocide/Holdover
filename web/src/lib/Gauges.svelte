@@ -1,6 +1,7 @@
 <script>
   import { api, asOf, TREND } from './api.js';
   import Icon from './Icon.svelte';
+  import { floodText, floodElevated } from './floodText.js';
   let gauges = $state([]);
   let note = $state('');
   let error = $state('');
@@ -20,6 +21,7 @@
           {#if g.values.water_temp_f}<span><Icon name="temp" size={14} /> {Math.round(g.values.water_temp_f.value)}°F</span>{/if}
           {#if g.trend}<span class="trend">{TREND[g.trend]}</span>{/if}
         </div>
+        {#if g.flood}<span class="small flood" class:warn={floodElevated(g.flood)}>{floodText(g.flood)} · {asOf(g.flood.as_of)} {#if g.flood.stale}<b class="stale">Stale</b>{/if} · <a href={g.flood.page} target="_blank" rel="noopener">NOAA</a></span>{/if}
         <span class="quiet small">USGS {g.site_no} · provisional · {asOf(g.as_of)}</span>
       </li>
     {/each}
@@ -35,6 +37,6 @@
   .big { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin: 10px 0 2px; color: var(--text); } .big small { font-size: 13px; color: var(--text-quiet); font-weight: 400; letter-spacing: 0; }
   .vals { display: flex; gap: 14px; margin: 2px 0 10px; flex-wrap: wrap; font-size: 13px; color: var(--text-quiet); }
   .vals span { display: inline-flex; align-items: center; gap: 5px; } .vals :global(svg) { color: var(--fresh-2); }
-  .small { font-size: 12px; }
+  .small { font-size: 12px; } .flood { display: block; margin-bottom: 4px; color: var(--text-quiet); } .warn { color: var(--accent); font-weight: 500; }
   .stale { color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 0 8px; font-size: 11px; flex: none; }
 </style>

@@ -22,11 +22,16 @@
   {#each items as [name, col, label, extra]}
     <span class="item"><svg width="24" height="24" viewBox="0 0 40 40" aria-hidden="true">{@html mk(name, col, extra)}</svg>{label}</span>
   {/each}
+  <span class="item"><span class="sw zone" aria-hidden="true"></span>High fire danger</span>
+  <span class="item"><span class="sw perim" aria-hidden="true"></span>Wildfire perimeter</span>
   <span class="note quiet">Larger pin, more fish stocked. Report chips show fish pips: more is better.</span>
 </div>
 
 <style>
   .legend-body { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; padding: 8px 14px 12px; font-size: 12.5px; }
   .item { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .sw { width: 24px; height: 18px; border-radius: 4px; flex: none; }
+  .zone { background: color-mix(in srgb, var(--warn) 30%, transparent); border: 1.5px solid var(--warn); }
+  .perim { background: color-mix(in srgb, var(--accent) 34%, transparent); border: 2px dashed var(--accent); }
   .note { grid-column: 1 / -1; font-size: 11.5px; white-space: normal; max-width: 320px; }
 </style>

@@ -12,7 +12,7 @@
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, inset = 0, home = null, pickMode = false, onpick } = $props();
+  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -138,6 +138,16 @@
     map.addSource('stocking', { type: 'geojson', data: data ?? { type: 'FeatureCollection', features: [] } });
     map.addSource('journal', { type: 'geojson', data: journal ?? { type: 'FeatureCollection', features: [] } });
     map.addSource('home', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    const none = { type: 'FeatureCollection', features: [] };
+    map.addSource('fire-zones', { type: 'geojson', data: fire?.zones ?? none });
+    map.addSource('fire-perims', { type: 'geojson', data: fire?.fires ?? none });
+    // Danger zones: Low is only an outline, so the tint appears when it matters (Moderate and up, stronger for High and Extreme).
+    map.addLayer({ id: 'fire-zone-fill', type: 'fill', source: 'fire-zones', paint: { 'fill-color': c.warn, 'fill-opacity': ['match', ['get', 'level'], 2, 0.07, 3, 0.2, 4, 0.34, 0] } });
+    map.addLayer({ id: 'fire-zone-line', type: 'line', source: 'fire-zones', paint: { 'line-color': c.warn, 'line-width': ['match', ['get', 'level'], 3, 1.4, 4, 1.8, 0.8], 'line-opacity': ['match', ['get', 'level'], 1, 0.22, 0.55] } });
+    map.addLayer({ id: 'fire-perim-fill', type: 'fill', source: 'fire-perims', paint: { 'fill-color': c.accent, 'fill-opacity': 0.34 } });
+    map.addLayer({ id: 'fire-perim-line', type: 'line', source: 'fire-perims', paint: { 'line-color': c.accent, 'line-width': 2, 'line-dasharray': [2, 1.5] } });
+    map.addLayer({ id: 'fire-perim-label', type: 'symbol', source: 'fire-perims', minzoom: 8.5, layout: { 'text-field': ['concat', ['get', 'name'], ' fire'], 'text-font': ['Noto Sans Medium'], 'text-size': 12 },
+      paint: { 'text-color': c.accent, 'text-halo-color': c.bg, 'text-halo-width': 1.6 } });
     map.addLayer({ id: 'journal-pts', type: 'symbol', source: 'journal', layout: {
       'icon-image': 'journal-icon', 'icon-size': 0.6, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
     map.addLayer({ id: 'home-pts', type: 'symbol', source: 'home', layout: {
@@ -202,6 +212,8 @@
     return () => { dead = true; map?.remove(); };
   });
 
+  $effect(() => { if (ready && fire) { map.getSource('fire-zones').setData(fire.zones); map.getSource('fire-perims').setData(fire.fires); } });
+  $effect(() => { if (ready) for (const id of ['fire-zone-fill', 'fire-zone-line', 'fire-perim-fill', 'fire-perim-line', 'fire-perim-label']) map.setLayoutProperty(id, 'visibility', showFire ? 'visible' : 'none'); });
   $effect(() => { if (ready && journal) map.getSource('journal').setData(journal); });
   $effect(() => { if (ready) map.setLayoutProperty('journal-pts', 'visibility', showJournal ? 'visible' : 'none'); });
   let fitted = false;
@@ -258,6 +270,9 @@
         map.setPaintProperty('roads', 'line-color', c.line);
         map.setPaintProperty('roads-minor', 'line-color', c.minor);
       }
+      for (const id of ['fire-zone-fill', 'fire-zone-line']) map.setPaintProperty(id, id.endsWith('fill') ? 'fill-color' : 'line-color', c.warn);
+      map.setPaintProperty('fire-perim-fill', 'fill-color', c.accent); map.setPaintProperty('fire-perim-line', 'line-color', c.accent);
+      map.setPaintProperty('fire-perim-label', 'text-color', c.accent); map.setPaintProperty('fire-perim-label', 'text-halo-color', c.bg);
       map.setPaintProperty('stocking-pts', 'circle-color', p.color);
       map.setPaintProperty('stocking-pts', 'circle-stroke-color', p.stroke);
       map.setPaintProperty('stocking-halo', 'circle-color', p.halo);

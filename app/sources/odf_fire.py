@@ -85,3 +85,17 @@ def current(session: Session, wb_id: int) -> dict | None:
     if row is None:
         return {"covered": False, "as_of": last.fetched_at, "page": PAGE_URL}
     return {"covered": True, "level": row.level, "label": LABELS[row.level], "area": row.area, "as_of": last.fetched_at, "page": PAGE_URL}
+
+
+def _latest_ok(session: Session) -> RawFetch | None:
+    return session.scalar(select(RawFetch).where(RawFetch.source == SOURCE, RawFetch.parse_ok == 1).order_by(RawFetch.id.desc()).limit(1))
+
+
+def map_features(session: Session) -> dict:
+    """Zone polygons with their level, from the newest stored response (for the map layer)."""
+    raw = _latest_ok(session)
+    if raw is None:
+        return {"as_of": None, "features": []}
+    feats = [{"type": "Feature", "geometry": z["geometry"],
+              "properties": {"area": z["area"], "level": z["level"], "label": LABELS[z["level"]]}} for z in parse(raw.body)]
+    return {"as_of": raw.fetched_at, "features": feats}

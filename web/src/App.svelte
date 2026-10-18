@@ -35,6 +35,8 @@
   let showStocking = $state(true);
   let showGauges = $state(true);
   let showAdvisories = $state(true);
+  let showFire = $state(true);
+  let fireData = $state(null);
   let showReports = $state(true);
   let dayFor = $state(null);
   let offset = $state(0);
@@ -90,7 +92,7 @@
     api.spots(isoDay(o), f, home).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
   });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
-  $effect(() => { load(); loadReport(); });
+  $effect(() => { load(); loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
   const select = (id) => { selectedId = id; dayFor = null; if (view !== 'map') view = 'map'; };
@@ -124,7 +126,7 @@
     {/if}
   </main>
   <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && view === 'map'} class:wide={!!dayFor && view === 'map'}>
-      <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
+      <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
       <div class="layers glass" role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
         {#if layersOpen}
@@ -133,6 +135,7 @@
           <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
           <label class="lyr"><input type="checkbox" bind:checked={showJournal} /> My pins &amp; trips</label>
           <label class="lyr"><input type="checkbox" bind:checked={showAdvisories} /> Advisories</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showFire} /> Fire danger and fires</label>
         {/if}
       </div>
       <div class="legend glass" aria-label="Map legend">

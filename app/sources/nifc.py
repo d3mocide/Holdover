@@ -96,3 +96,14 @@ def current(session: Session, wb_id: int) -> dict | None:
     return {"as_of": last.fetched_at, "page": PAGE_URL, "near_km": NEAR_KM,
             "fires": [{"name": r.incident, "acres": round(r.acres) if r.acres else None, "percent_contained": r.percent_contained,
                        "updated": r.updated_at, "distance_km": r.distance_km, "inside": bool(r.inside)} for r in rows]}
+
+
+def map_features(session: Session, now: datetime | None = None) -> dict:
+    """Active wildfire perimeters from the newest stored response (for the map layer)."""
+    raw = session.scalar(select(RawFetch).where(RawFetch.source == SOURCE, RawFetch.parse_ok == 1).order_by(RawFetch.id.desc()).limit(1))
+    if raw is None:
+        return {"as_of": None, "features": []}
+    feats = [{"type": "Feature", "geometry": f["geometry"],
+              "properties": {"name": f["name"], "acres": round(f["acres"]) if f["acres"] else None,
+                             "percent_contained": f["contained"], "updated": f["updated"]}} for f in active(parse(raw.body), now)]
+    return {"as_of": raw.fetched_at, "features": feats}

@@ -2,6 +2,7 @@
   import Tile from './Tile.svelte';
   import Icon from './Icon.svelte';
   import { asOf, cToF, TREND } from './api.js';
+  import { floodText, floodElevated } from './floodText.js';
   import { dangerText, dangerHigh, fireLine, nearbyText } from './fireText.js';
   // level: the heading level for this block's section titles. A sheet titles itself with an h2, the day view with an h1,
   // so each passes the level that keeps the outline in order (no skipped levels).
@@ -47,6 +48,7 @@
       <span class="mono">{g.values.discharge_cfs ? `${Math.round(g.values.discharge_cfs.value).toLocaleString()} cfs` : '—'}
         {#if g.values.gage_height_ft}· {g.values.gage_height_ft.value} ft{/if}</span>
       <span class="quiet small full">{g.trend ? TREND[g.trend] + ' (3 h) · ' : ''}Provisional USGS data, {asOf(g.as_of)} {#if g.stale}<b class="stale">Stale</b>{/if}</span>
+      {#if g.flood}<span class="quiet small full" class:warn={floodElevated(g.flood)}>{floodText(g.flood)} · {asOf(g.flood.as_of)} {#if g.flood.stale}<b class="stale">Stale</b>{/if} · <a href={g.flood.page} target="_blank" rel="noopener">NOAA</a></span>{/if}
     </div>
   {/each}
 {/if}

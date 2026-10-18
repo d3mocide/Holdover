@@ -274,3 +274,27 @@ terms in `docs/sources.md`. The wording never states restrictions or closures an
 - Not checked: ODF's and NIFC's terms beyond their metadata (no ODF text exists), behaviour when ODF changes the layer,
   fires just across the Washington border, and a real phone. FIRMS and the map layer are not built (owner undecided on FIRMS).
 
+### 2026-10-18 · this commit · Phase 11 · Fire map layer, river flood status (NWPS), and a correction
+**Fire map layer.** ODF danger zones (tint grows with level; Low is an outline only) and NIFC wildfire perimeters (dashed
+outline, named from zoom 8.5) on the map, with a "Fire danger and fires" toggle in Layers and two Legend entries. Geometry is
+served by `GET /api/fire/map`, parsed from the newest stored responses (the raw-first rule again), and an empty database
+returns empty collections, not an error. **River flood status.** `app/sources/nwps.py` (migration 0006, table `river_status`,
+hourly job, `/healthz` entry, credit): NOAA's official category, stage and forecast for 14 of the 16 USGS gauges, shown under
+each flow row on the sheet and on the Gauges page, worded as "NOAA flood category: ..." and never as safe.
+- Verified: 164 `pytest` (10 new: map endpoint empty and populated; NWPS real response, `-999` handling, synthetic minor and
+  moderate flooding with a forecast, stale observation, undefined categories silent, failure keeps the last status, mapping
+  integrity) and 33 frontend tests (3 new). **Live**: the NWPS job stored 14 gauges; `/api/fire/map` returned 63 zones and 5
+  perimeters; the map shows a High-danger zone near Hood River and its fire perimeter, and the Gauges page shows the NOAA lines.
+  Axe: zero violations on the map, sheet, day view, Plan, Journal, Gear, Gauges and Settings (Fir desktop) and on the Redband and
+  Night Bite maps.
+- Found: matching NWPS gauges to USGS ones needed a human check: two of the nearest NWPS gauges (Dexter, Cottage Grove) are
+  reservoir gauges, not the river points, so they are excluded. Every defined gauge reads "no flooding" in this dry autumn, so
+  flooding wording is covered only by synthetic tests, not by a real event.
+- **Correction (to the Reservoir levels and Fire card entries above).** Those entries blame a "headless compositor artifact"
+  for a phone screenshot in which the list showed through the sheet. That was wrong. The app reads the theme from
+  `localStorage` as a plain string, and my test script stored it JSON-quoted (`"fir"`), which is not a theme, so no colour tokens
+  applied: that is what made the sheet see-through, the map blank on desktop and the chrome flat grey. With a valid value the
+  same flows render correctly with no special GPU flags. No app bug was found. Still not verified on a real phone.
+- Not checked: NWPS's own usage policy (none found), the layer on a phone-width screen, FIRMS (not built), flood status for
+  ungauged waters.
+
