@@ -43,15 +43,13 @@ export async function loadAuth() {
 }
 
 async function localJournalCounts() {
-  const [dirty, total] = await Promise.all([
-    db.trips.where('dirty').equals(1).count().then(async (a) => a + await db.catches.where('dirty').equals(1).count() + await db.pins.where('dirty').equals(1).count()),
-    db.trips.count()
-  ]);
-  return { dirty, total };
+  const tables = [db.trips, db.catches, db.pins, db.gear, db.setups];
+  const dirty = (await Promise.all(tables.map((t) => t.where('dirty').equals(1).count()))).reduce((a, b) => a + b, 0);
+  return { dirty, total: await db.trips.count() };
 }
 
 export async function clearDeviceJournal() {
-  await Promise.all([db.trips.clear(), db.catches.clear(), db.pins.clear(), db.meta.delete('lastPull'), db.meta.delete('syncOwner')]);
+  await Promise.all([db.trips.clear(), db.catches.clear(), db.pins.clear(), db.gear.clear(), db.setups.clear(), db.meta.delete('lastPull'), db.meta.delete('syncOwner')]);
 }
 
 async function onSignedIn(user) {

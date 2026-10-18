@@ -14,36 +14,40 @@ async function authed(path, opts = {}) {
 }
 
 export async function countPending() {
-  const [a, b, c] = await Promise.all([db.trips.where('dirty').equals(1).count(), db.catches.where('dirty').equals(1).count(), db.pins.where('dirty').equals(1).count()]);
-  syncState.pending = a + b + c;
+  const counts = await Promise.all([db.trips, db.catches, db.pins, db.gear, db.setups].map((t) => t.where('dirty').equals(1).count()));
+  syncState.pending = counts.reduce((a, b) => a + b, 0);
   return syncState.pending;
 }
 
+// Sync pushes gear and setups before trips (a trip can point at them), and every table works the same way.
+const tables = () => [['gear', db.gear], ['setups', db.setups], ['trips', db.trips], ['pins', db.pins], ['catches', db.catches]];
+
 async function uploadPhotos() {
-  for (const c of await db.catches.where('dirty').equals(1).toArray()) {
-    if (c.photo_blob && !c.photo_path) {
-      const fd = new FormData();
-      fd.append('file', c.photo_blob, 'photo');
-      const r = await authed('/api/journal/photo', { method: 'POST', body: fd });
-      await db.catches.update(c.uuid, { photo_path: r.photo_path, updated_at: new Date().toISOString() });
+  for (const table of [db.catches, db.gear]) {
+    for (const c of await table.where('dirty').equals(1).toArray()) {
+      if (c.photo_blob && !c.photo_path) {
+        const fd = new FormData();
+        fd.append('file', c.photo_blob, 'photo');
+        const r = await authed('/api/journal/photo', { method: 'POST', body: fd });
+        await table.update(c.uuid, { photo_path: r.photo_path, updated_at: new Date().toISOString() });
+      }
     }
   }
 }
 
 export async function push() {
   await uploadPhotos();
-  const trips = await db.trips.where('dirty').equals(1).toArray();
-  const catches = await db.catches.where('dirty').equals(1).toArray();
-  const pins = await db.pins.where('dirty').equals(1).toArray();
-  if (!trips.length && !catches.length && !pins.length) return;
+  const dirty = {};
+  for (const [key, table] of tables()) dirty[key] = await table.where('dirty').equals(1).toArray();
+  if (!Object.values(dirty).some((rows) => rows.length)) return;
   const res = await authed('/api/sync/push', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ trips: trips.map(strip), catches: catches.map(strip), pins: pins.map(strip) })
+    body: JSON.stringify(Object.fromEntries(Object.entries(dirty).map(([k, rows]) => [k, rows.map(strip)])))
   });
   const rejected = new Set(res.rejected.map((r) => r.uuid));
   // Clear dirty only if the row wasn't edited while the request was in flight.
-  for (const [table, rows] of [[db.trips, trips], [db.catches, catches], [db.pins, pins]]) {
-    for (const r of rows) {
+  for (const [key, table] of tables()) {
+    for (const r of dirty[key]) {
       if (rejected.has(r.uuid)) continue;
       await table.where('uuid').equals(r.uuid).modify((cur) => { if (cur.updated_at === r.updated_at) cur.dirty = 0; });
     }
@@ -53,8 +57,8 @@ export async function push() {
 export async function pull() {
   const since = await metaGet('lastPull');
   const res = await authed(`/api/sync/pull${since ? `?since=${encodeURIComponent(since)}` : ''}`);
-  for (const [table, rows] of [[db.trips, res.trips], [db.catches, res.catches], [db.pins, res.pins]]) {
-    for (const row of rows) {
+  for (const [key, table] of tables()) {
+    for (const row of res[key] ?? []) {
       const local = await table.get(row.uuid);
       if (!local || (!local.dirty && local.updated_at < row.updated_at)) await table.put({ ...local, ...row, dirty: 0 });
     }
