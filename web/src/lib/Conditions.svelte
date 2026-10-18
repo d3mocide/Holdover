@@ -2,7 +2,9 @@
   import Tile from './Tile.svelte';
   import Icon from './Icon.svelte';
   import { asOf, cToF, TREND } from './api.js';
-  let { c } = $props();
+  // level: the heading level for this block's section titles. A sheet titles itself with an h2, the day view with an h1,
+  // so each passes the level that keeps the outline in order (no skipped levels).
+  let { c, level = 3 } = $props();
   const w = $derived(c.weather?.day);
   const flowGauge = $derived(c.gauges.find((g) => g.values.discharge_cfs));
 </script>
@@ -19,7 +21,7 @@
 </div>
 
 {#if c.gauges.length}
-  <h3 class="eyebrow head"><Icon name="flow" size={14} /> Flow</h3>
+  <svelte:element this={`h${level}`} class="eyebrow head"><Icon name="flow" size={14} /> Flow</svelte:element>
   {#each c.gauges as g (g.id)}
     <div class="g">
       <span class="grow">{g.name}</span>

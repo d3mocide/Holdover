@@ -7,7 +7,7 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | --- | --- | --- |
 | `offline.mjs` | Airplane-mode journal: service worker, offline tiles, trip logged offline, sync after reconnect, no duplicates | 11 |
 | `accounts.mjs` | Sign-in, cookie flags, invites, a second user, isolation, merging local favorites, two people on one browser | 37 |
-| `gear.mjs` | Starter catalog, items, setups, the trip picker, stats, trip editing, your history on the sheet, sync, offline create, cross-account isolation, axe on every gear view | 43 |
+| `gear.mjs` | Starter catalog, items, setups, the trip picker, stats, trip editing, your history on the sheet, the pack list, sync, offline create, cross-account isolation, axe on every gear view | 46 |
 
 ## One-time setup
 

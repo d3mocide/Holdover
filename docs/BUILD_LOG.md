@@ -172,3 +172,14 @@ the findings into `docs/sources.md`; added "Data sources and credits" to Setting
   them (owner). The state's site terms do not address scraping. The OHA layer has no licence text.
 - Not checked: whether the state terms govern myodfw.com; ODF's terms (feed not built); any answer from ODFW or OHA.
 
+### 2026-10-18 · this commit · Phase 10 · Pack list knows your gear
+The day view's pack list shows "You have: ..." under template items your gear covers (matching by gear type, fishery
+tag and name hints; retired, lost and deleted gear ignored; it never claims anything is missing).
+- Verified: 25 frontend unit tests (5 new for the matcher); `pytest` 118, including a test that fails if a gear rule
+  names a pack item id the Python pack list can no longer produce; `gear.mjs` 46 checks; accounts and offline e2e clean.
+- Found: **axe had never scanned the Day view**, and it skips a heading level (an h3 straight after the h1). Fixed with a
+  heading-level prop on the shared conditions block. My first "never claims anything missing" assertion matched hidden
+  text in the planner's collapsed "Why this score" note ("missing inputs count as neutral"), a false positive; it now
+  checks rendered text.
+- Not checked: matching quality for gear named unusually (hints are English words; unmatched gear just shows nothing).
+

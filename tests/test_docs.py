@@ -141,3 +141,24 @@ def test_brand_contrast_table_matches_the_real_colours():
         for theme, said in zip(themes, claimed):
             actual = _ratio(tokens[theme][fg], tokens[theme][bg])
             assert abs(actual - float(said)) < 0.06, f"{fg} on {bg} in {theme}: BRAND.md says {said}, tokens give {actual:.2f}"
+
+
+# ---- pack list ids vs the gear matcher ------------------------------------------------------------------------
+
+def test_gear_pack_rules_only_name_pack_items_that_exist():
+    """The pack list is built in Python and matched to your gear in JavaScript. A renamed or removed item id would
+    silently stop matching, so every rule's id must be one the pack list can actually produce."""
+    from datetime import date
+    from itertools import product
+
+    from app.packlist import pack_list
+
+    js = read("web/src/lib/gearPack.js")
+    block = js[js.index("export const RULES = {"):js.index("/** Names of active gear")]
+    rule_ids = set(re.findall(r"^\s{2}'?([\w-]+)'?:", block, flags=re.M))
+    assert len(rule_ids) >= 10, f"could not read the rule ids: {rule_ids}"
+    emitted = set()
+    for fishery, kind, temp, precip, wind, month in product(("trout", "steelhead", "warmwater"), (None, "river", "lake"),
+                                                           (30, 60, 85, None), (0, 60, None), (5, 20, None), (1, 5, 7, 10)):
+        emitted |= {i["id"] for i in pack_list(date(2026, month, 15), fishery, temp, precip, wind, kind)["items"]}
+    assert rule_ids <= emitted, f"gear rules for pack items that do not exist: {sorted(rule_ids - emitted)}"

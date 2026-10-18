@@ -198,7 +198,7 @@ its server.
 - [x] Edit an existing trip (in place; keeps the conditions captured at the time; removed catches are soft-deleted)
 - [x] Per-waterbody history on the sheet: trips, fish, catches by species, best day with its conditions, most productive lure
 - [ ] Journal-informed scoring factor (for example, waters and lures that worked under similar flows)
-- [ ] Gear in the pack list ("you already own this")
+- [x] Gear in the pack list: the day view shows "You have: ..." under template items you own (never says anything is missing)
 
 ## Phase 11: More sources and statewide coverage
 

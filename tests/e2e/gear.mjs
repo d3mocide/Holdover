@@ -111,6 +111,15 @@ ok(await p.getByText('Most productive here:').isVisible() && await p.getByText('
 await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/sheet-history.png' : undefined });
 await axe(p, 'Sheet with history');
 await p.getByRole('button', { name: 'Close details' }).click(); await p.waitForTimeout(300);
+// ---- the pack list says what you already own
+await nav(p, 'Map'); await p.waitForTimeout(400);
+await p.getByRole('button', { name: /Dexter Reservoir/ }).first().click(); await p.waitForTimeout(1800);
+await p.getByRole('button', { name: /Plan the day/ }).click(); await p.waitForTimeout(2500);
+ok(await p.getByText(/You have: Panther Martin spinner/).first().isVisible(), 'pack list: shows gear you already own for a template item');
+const claim = (await p.evaluate(() => document.body.innerText)).match(/.{0,50}(missing|you need to buy|you should buy).{0,50}/i);
+ok(!claim, 'pack list: never claims anything is missing' + (claim ? ` -> ${JSON.stringify(claim[0])}` : ''));
+await axe(p, 'Day view with owned gear');
+await p.getByRole('button', { name: 'Back' }).click(); await p.waitForTimeout(400);
 await nav(p, 'Journal'); await p.waitForTimeout(400);
 await p.getByRole('button', { name: 'Edit trip' }).first().click(); await p.waitForTimeout(500);
 await p.getByLabel('Species 1').fill(''); await p.getByRole('button', { name: /Fewer/ }).first().click().catch(() => {});

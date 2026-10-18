@@ -2,6 +2,9 @@
   import { isoDay, longDate, weekLabel, hhmm } from './api.js';
   import { loadDay } from './conditions.js';
   import Conditions from './Conditions.svelte';
+  import { liveQuery } from 'dexie';
+  import { db } from './db.js';
+  import { ownedFor, ownedText } from './gearPack.js';
   import Icon from './Icon.svelte';
   let { id, fishery = 'trout', startOffset = 0, onback, onlog, onoffline } = $props();
   let offset = $state(startOffset);
@@ -22,6 +25,8 @@
   const c = $derived(d?.conditions);
   const pack = $derived(d?.pack);
   const packKey = $derived(`holdover.pack.${id}.${isoDay(offset)}.${fishery}`);
+  let myGear = $state([]);
+  $effect(() => { const sub = liveQuery(() => db.gear.toArray()).subscribe((v) => (myGear = v)); return () => sub.unsubscribe(); });
   let checked = $state({});
   $effect(() => { try { checked = JSON.parse(localStorage.getItem(packKey) || '{}'); } catch { checked = {}; } });
   const toggle = (itemId) => { checked = { ...checked, [itemId]: !checked[itemId] }; try { localStorage.setItem(packKey, JSON.stringify(checked)); } catch { /* storage blocked */ } };
@@ -47,7 +52,7 @@
   {#if error}
     <p role="alert">Couldn't load the day view ({error}).</p>
   {:else if c}
-    <Conditions {c} />
+    <Conditions {c} level={2} />
 
     <h2 class="quiet small">What to expect</h2>
     <ul class="facts">
@@ -70,7 +75,7 @@
       {#each groups as g}
         <fieldset class="pk"><legend class="small quiet">{g}</legend>
           {#each pack.items.filter((i) => i.group === g) as it (it.id)}
-            <label class="ck"><input type="checkbox" checked={!!checked[it.id]} onchange={() => toggle(it.id)} /> <span class:done={checked[it.id]}>{it.label}</span></label>
+            <label class="ck"><input type="checkbox" checked={!!checked[it.id]} onchange={() => toggle(it.id)} /> <span class:done={checked[it.id]}>{it.label}{#if ownedText(ownedFor(it.id, myGear))}<span class="own">{ownedText(ownedFor(it.id, myGear))}</span>{/if}</span></label>
           {/each}
         </fieldset>
       {/each}
@@ -98,6 +103,8 @@
   .facts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
   .pk { border: 0; padding: 0; margin: 0; } .pk legend { padding: 0; }
   .ck { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text); margin: 0; font-size: 14px; }
+  .own { display: block; font-size: 12.5px; color: var(--fresh-2); }
+  .ck { align-items: flex-start; padding: 6px 0; } .ck input { margin-top: 2px; }
   .ck input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; } .done { text-decoration: line-through; color: var(--text-quiet); }
   .bar { flex: none; display: flex; gap: 8px; padding: 12px 0 16px; border-top: 1px solid var(--hair); }
   .bar button { flex: 1; }
