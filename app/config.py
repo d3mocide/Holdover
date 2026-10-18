@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     llm_base_url: str = ""
     llm_model: str = ""
     llm_api_key: str = ""
+    llm_timeout: float = 180  # seconds per request; a reasoning model can take several minutes on a long report
     home_lat: float | None = None
     home_lon: float | None = None
     user_agent: str = "Holdover/0.1 (set USER_AGENT with a contact address)"

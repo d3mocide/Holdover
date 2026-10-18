@@ -80,7 +80,7 @@ def test_hallucinated_sentence_is_rejected(session):
 
 def test_invalid_model_output_is_rejected_whole(session):
     r = willamette(session)
-    for bad in [{"items": [{"waterbody_raw": "x"}]}, {"items": [{"waterbody_raw": "x", "source_sentence": "y", "rating": "stellar"}]}]:
+    for bad in [{"items": [{"waterbody_raw": "x"}]}, {"items": [{"waterbody_raw": "", "source_sentence": "y"}]}]:  # missing or empty required fields
         with pytest.raises(ValueError):
             extract_report(session, r, llm_with(lambda req, b=bad: reply(b)))
     bad_json = llm_with(lambda req: httpx.Response(200, json={"choices": [{"message": {"content": "not json"}}]}))
@@ -170,7 +170,7 @@ def test_a_bare_list_from_a_server_that_ignores_the_schema_is_wrapped_and_still_
     item = {"waterbody_raw": "Detroit Lake", "species": ["rainbow trout"], "rating": "good", "note": "", "source_sentence": "Fishing was good."}
     out = llm_with(lambda r: reply([item])).chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).ExtractionResult)
     assert out.items[0].waterbody_raw == "Detroit Lake"
-    bad = dict(item, rating="amazing")  # an invalid value is still rejected after wrapping
+    bad = dict(item, source_sentence="")  # an invalid item is still rejected after wrapping
     with pytest.raises(ValueError):
         llm_with(lambda r: reply([bad])).chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).ExtractionResult)
 
@@ -207,3 +207,22 @@ def test_answer_in_a_reasoning_field_is_read_when_content_is_empty():
         assert out.digest.startswith("Coho are moving")
     plain = {"choices": [{"message": {"content": json.dumps({"digest": "From content."}), "reasoning": "thinking..."}}]}
     assert llm_with(lambda r: httpx.Response(200, json=plain)).chat_json("s", "u", DigestResult).digest == "From content."  # content wins
+
+
+def test_an_unknown_rating_word_becomes_unknown_instead_of_rejecting_the_report():
+    from app.llm.schemas import ExtractedItem
+    base = {"waterbody_raw": "Detroit Lake", "source_sentence": "Fishing was great."}
+    assert ExtractedItem(**base, rating="great").rating == "unknown"
+    assert ExtractedItem(**base, rating="Good ").rating == "good"
+    assert ExtractedItem(**base).rating == "unknown"
+
+
+def test_the_request_timeout_comes_from_settings_unless_given(monkeypatch):
+    from app.config import get_settings
+    monkeypatch.setenv("LLM_TIMEOUT", "900")
+    get_settings.cache_clear()
+    try:
+        assert LLMClient("http://x/v1", "m")._http.timeout.read == 900
+        assert LLMClient("http://x/v1", "m", timeout=5)._http.timeout.read == 5
+    finally:
+        get_settings.cache_clear()

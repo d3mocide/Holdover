@@ -14,12 +14,12 @@ class LLMUnavailable(Exception):
 
 class LLMClient:
     def __init__(self, base_url: str | None = None, model: str | None = None, api_key: str | None = None,
-                 transport: httpx.BaseTransport | None = None, timeout: float = 120):
+                 transport: httpx.BaseTransport | None = None, timeout: float | None = None):
         s = get_settings()
         self.base_url = (base_url or s.llm_base_url).rstrip("/")
         self.model = model or s.llm_model
         self.api_key = api_key if api_key is not None else s.llm_api_key
-        self._http = httpx.Client(transport=transport, timeout=timeout)
+        self._http = httpx.Client(transport=transport, timeout=timeout if timeout is not None else s.llm_timeout)
 
     @property
     def configured(self) -> bool:

@@ -10,6 +10,12 @@ class ExtractedItem(BaseModel):
     note: str = ""
     source_sentence: str = Field(min_length=1)
 
+    @field_validator("rating", mode="before")
+    @classmethod
+    def _unknown_if_not_a_known_word(cls, v):
+        # A rating word outside the list ("great", "moderate") is not guessed at: it becomes "unknown" and the item still reaches review.
+        return v.strip().lower() if isinstance(v, str) and v.strip().lower() in ("excellent", "good", "fair", "slow", "unknown") else "unknown"
+
     @field_validator("species", mode="before")
     @classmethod
     def _one_species_as_text(cls, v):
