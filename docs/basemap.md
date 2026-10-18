@@ -2,6 +2,8 @@
 
 Installed: Protomaps daily build 2026-10-16, Oregon bbox extract (503 MB). Data is OpenStreetMap, ODbL; keep the attribution. The app runs without a basemap (pins on a themed ground) and shows a note.
 
+**Easiest:** from the folder with `docker-compose.yml`, run `scripts/install-basemap.sh` (optionally with a build date such as `20261016`). It downloads the `pmtiles` CLI if needed, extracts Oregon from the newest daily build, installs it into the running container and restarts it (about 15 seconds on a fast connection; tested 2026-10-18 on x86_64, **not yet on a Pi's arm64**). The manual steps follow.
+
 To refresh or reinstall, put an Oregon extract at `/data/tiles/oregon.pmtiles`. With the `pmtiles` CLI and a Protomaps daily build:
 
     pmtiles extract https://build.protomaps.com/YYYYMMDD.pmtiles oregon.pmtiles \
