@@ -18,6 +18,9 @@ await p.evaluate(() => fetch('/api/auth/login', { method: 'POST', credentials: '
 await p.evaluate(async () => { await navigator.serviceWorker.ready; });
 await p.reload(); await p.waitForTimeout(3000);
 ok(await p.evaluate(() => !!navigator.serviceWorker.controller), 'service worker controls the page');
+// OpenStreetMap's licence (ODbL) requires visible credit: the map's attribution control must not be empty.
+await p.waitForTimeout(2500);
+ok(/OpenStreetMap/.test(await p.locator('.maplibregl-ctrl-attrib-inner').first().innerText()), 'map attribution credits OpenStreetMap');
 
 // select a stocked waterbody with a gauge, then prepare for offline
 await p.getByRole('button', { name: /Dexter Reservoir/ }).click(); await p.waitForTimeout(1000);

@@ -1,16 +1,56 @@
 # Data sources: terms and robots review
 
-Record the outcome here **before** first scraping a source. Status as of 2026-10-17.
+Record the outcome here **before** first scraping a source. Reviewed 2026-10-18 by fetching each source's own policy
+pages. **This is a summary of what the sources publish, not legal advice**: the decisions marked "Owner" are yours.
 
-| Source | robots.txt | Terms of use | Status |
+| Source | robots.txt | Terms and policy (what they say) | Status |
 | --- | --- | --- | --- |
-| myodfw.com stocking schedule | Read. `User-agent: *` disallows only admin, search, user and Drupal internals. `/fishing/species/trout/stocking-schedule` is allowed. No `Crawl-delay`. | **Not yet read.** Owner to confirm before enabling the scheduler in production. | Daily poll, one request per page with a 2 s gap (about 5 requests a day). |
-| myodfw.com Recreation Report | Same robots file | Not yet read | Phase 2 |
-| USGS waterservices (IV) | Not checked | Public domain, keyless. Legacy `waterservices.usgs.gov/nwis/iv` verified live 2026-10-17; USGS is migrating, so it is isolated in `app/sources/usgs.py`. All values provisional. | Live, every 30 min |
-| NWS api.weather.gov | Not checked | Free, requires identifying User-Agent. points/forecast/forecastHourly shapes verified 2026-10-17. | Live, hourly for starred waterbodies, plus on demand in the day view |
-| OHA algae advisories | oregon.gov robots read (only layout/admin paths blocked) | Not read | The OHA web page builds its table client-side, so the app reads the public ArcGIS feature service behind OHA's own advisory map (`HABs_Advisories_(Points)`). It is not a documented API. Daily. |
-| ODF wildfire | Not checked | Not read | **Not implemented.** No feed inspected. |
-| ODFW ArcGIS (zone polygons) | Not checked | Not read | Later |
+| myodfw.com stocking schedule and Recreation Report | Read. `User-agent: *` disallows only admin, search, user and Drupal internals; the stocking schedule is allowed; no `Crawl-delay` | **No terms-of-use page found.** The site footer links only Accessibility and shows "© Copyright 2026 Oregon Department of Fish & Wildlife". The stocking page states nothing about reuse or automated access. See "ODFW and the state terms" below | Daily poll, one request per page with a 2 s gap (about 5 requests a day); the report twice a day Wed to Fri, skipped when unchanged. **Owner: decide on contacting ODFW** |
+| OHA algae advisories (Oregon Health Authority) | oregon.gov robots read (only layout and admin paths blocked) | Read from OHA's public ArcGIS layer, which carries **no copyright or licence text** in its metadata. State terms below | Daily. **Owner: consider asking OHA** |
+| USGS waterservices (IV) | Not checked | **Public domain** ("USGS-authored or produced data and information are considered to be in the U.S. Public Domain"). USGS asks for credit ("U.S. Geological Survey"). Values are provisional (the app says so) | Live, every 30 min. Credit now in Settings |
+| NWS api.weather.gov | Not checked | **Open data, free for any purpose.** A User-Agent identifying the app is required (sent on every request), with a contact so they can reach you. Rate limit is not public; if exceeded, retry after about 5 seconds. Cache-friendly; re-check `/points` periodically because grid cells can change | Live, hourly for favorites plus one stocked waterbody per ~0.25 degree cell; `/points` is resolved on every refresh, so grid changes are picked up |
+| Protomaps daily builds (basemap) | n/a | **ODbL "Produced Work": OpenStreetMap attribution is required.** No usage limits stated; hotlinking the downloads is discouraged, region extracts with the `pmtiles` CLI are supported | One extract downloaded and served locally (no hotlinking). **Attribution was missing from the map until 2026-10-18; fixed and tested** |
+| ODF wildfire | Not checked | Not read | **Not implemented.** No feed inspected |
+| ODFW ArcGIS (zone polygons) | Not checked | Not read | Not implemented |
+| Fonts (IBM Plex, Noto Sans) | n/a | SIL Open Font License; notice kept in `web/public/fonts/NOTICE.txt` | Bundled |
+
+## Review findings, 2026-10-18
+
+### ODFW and the state terms
+
+- **No ODFW terms page exists that I could find.** The homepage, the footer and the stocking page were read. The
+  only policy-like text is the copyright line and the data disclaimers on the stocking page: the schedule "is
+  subject to change without notice", "shows the WEEK a waterbody will be stocked, not the exact date", the Monday
+  date "indicate[s] the START of the week", some waterbodies "may not be stocked as scheduled because of poor water
+  conditions", and "only 2 years of stocking history is available". Holdover already repeats the week-not-day
+  and may-change messages.
+- The State of Oregon publishes site-wide [Terms & Conditions](https://www.oregon.gov/pages/terms-and-conditions.aspx)
+  for oregon.gov. They say content is provided "as is" with no warranty of accuracy, individual agencies may have
+  their own separate terms, and visitors agree to indemnify the state for losses from their use of site content.
+  They **do not mention robots, crawlers, scraping or automated access**, and say nothing about reuse of data.
+  It is not stated whether they govern myodfw.com, which is a different domain.
+- Contact listed on the stocking page: `odfw.info@odfw.oregon.gov`, (503) 947-6000. No contact is listed for data requests.
+- **What Holdover does:** about five requests a day for stocking plus a few for the report, an identifying
+  User-Agent with a link, hash comparison to skip unchanged pages, backoff on errors, and robots-compliant paths. It shows
+  facts (counts, weeks) with attribution and a link to ODFW's own pages.
+- **Quoted report text.** Holdover shows short verbatim sentences from the Recreation Report (it requires them, so
+  every generated claim can be traced) and links to the original. The report carries ODFW's copyright. Short,
+  attributed quotation is common practice but it is **your call** whether to keep it.
+- **Suggested (Owner):** email ODFW once, say it is a small personal and household app that reads the public stocking
+  schedule and report a few times a day, and ask whether they have a feed or any objection. Keep the polling
+  rates as they are until you hear back. A written answer belongs in this file.
+
+### OHA
+
+The data comes from OHA's public ArcGIS feature layer, not the OHA web page. The layer has no licence text and is
+not a documented API (it may change). Holdover credits OHA, says only some waters are monitored, and links to OHA's page.
+**Owner:** consider a short note to OHA asking whether using the layer is acceptable.
+
+### Credit and attribution (done)
+
+Settings now has a "Data sources and credits" section naming ODFW, OHA, NWS, USGS, OpenStreetMap contributors with
+Protomaps, MapLibre, and the font licences. The map's attribution control shows "© OpenStreetMap contributors ·
+Protomaps" (it was empty, which did not meet the ODbL; `tests/e2e/offline.mjs` now fails if it is empty).
 
 ## Stocking schedule: observed facts (2026-10-17)
 

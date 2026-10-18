@@ -161,3 +161,14 @@ best day with the conditions captured that day, and the most productive lure.
 - Found: nothing broke; the only test change was a stale server on the e2e port in an earlier run (guarded since).
 - Not checked: editing on a phone; "best day" is by fish count only (no weighting by effort or hours).
 
+### 2026-10-18 · this commit · Phase 9 · Source terms review, attribution fix
+Fetched the policy pages for ODFW, the State of Oregon, NWS, USGS and Protomaps, and the OHA layer's metadata; wrote
+the findings into `docs/sources.md`; added "Data sources and credits" to Settings.
+- Verified: **negative control**: the new offline-e2e check ("map attribution credits OpenStreetMap") fails with the
+  fix removed and passes with it; offline e2e 12 of 12.
+- Found: **the map's attribution control was empty**, so the ODbL requirement for visible OpenStreetMap credit was
+  unmet since the basemap was installed (fixed). USGS's credit request had no home in the app (fixed). **ODFW publishes
+  no terms of use that I could find**, so there is nothing to confirm or object to: the decision is whether to ask
+  them (owner). The state's site terms do not address scraping. The OHA layer has no licence text.
+- Not checked: whether the state terms govern myodfw.com; ODF's terms (feed not built); any answer from ODFW or OHA.
+

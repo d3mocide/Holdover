@@ -5,6 +5,7 @@
   import Admin from './Admin.svelte';
   import Preferences from './Preferences.svelte';
   import Storage from './Storage.svelte';
+  import Credits from './Credits.svelte';
   let { theme, onTheme, onChanged, wbList = [], invite = null, picking = false, onpick, oninvitedone } = $props();
   const themes = [['fir', 'Fir & Steelhead'], ['redband', 'Redband'], ['nightbite', 'Night Bite']];
   let health = $state(null);
@@ -26,6 +27,8 @@
   </fieldset>
 
   {#if auth.user?.is_admin}<Admin {onChanged} />{/if}
+
+  <Credits />
 
   <section class="card">
     <h2 class="eyebrow">Source status</h2>

@@ -39,7 +39,9 @@
     const style = { version: 8, glyphs: `${location.origin}/fonts/{fontstack}/{range}.pbf`, sources: {},
       layers: [{ id: 'bg', type: 'background', paint: { 'background-color': withTiles ? c.water : c.land } }] };
     if (withTiles) {
-      style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 };
+      // ODbL requires visible credit for OpenStreetMap data; the Protomaps builds ask for theirs too.
+      style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors · <a href="https://protomaps.com" target="_blank" rel="noopener">Protomaps</a>' };
       style.layers.push(
         { id: 'earth', type: 'fill', source: 'oregon', 'source-layer': 'earth', paint: { 'fill-color': c.land } },
         { id: 'landuse', type: 'fill', source: 'oregon', 'source-layer': 'landuse',

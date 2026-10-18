@@ -183,7 +183,8 @@ its server.
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
 - [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction
-- [ ] Read myodfw.com, OHA, ODF and NWS terms of use; record in `docs/sources.md` before enabling the scheduler
+- [x] Read the published terms for ODFW, OHA, NWS, USGS and Protomaps/OSM and record them (`docs/sources.md`); found and fixed missing OpenStreetMap attribution and added data credits
+- [ ] **Owner:** decide whether to email ODFW (and OHA) about using their public data; ODF terms still unread (feed not built)
 - [ ] Watch the scheduler for a day (timings, `/healthz`)
 - [ ] Choose a local model; run extraction and explanations on saved reports and review the output
 - [x] Restore a backup into a fresh container (drill done 2026-10-18; see [operations.md](operations.md)). Still to do: copy backups and photos off the machine
