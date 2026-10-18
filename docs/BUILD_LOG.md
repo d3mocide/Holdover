@@ -385,3 +385,27 @@ explanations and pack intros for trout, steelhead and warmwater.
 - Dev notes: the Vite dev server serves the map through its `/tiles` proxy (range requests checked); the dev volume has no tiles
   until `scripts/install-basemap.sh` is run against it (`COMPOSE="docker compose -f docker-compose.dev.yml" SERVICE=api`).
 
+### 2026-10-18 · this commit · Phase 9 · Map tab is the map, form drawers, plain-HTTP fix, wider inspector, 9B model trial
+Found by using the dev stack from a second PC over plain HTTP.
+- **Bug: "crypto.randomUUID is not a function" when saving a trip.** `randomUUID` exists only on secure origins (HTTPS or
+  localhost); opening the app by a LAN address broke saving a trip and any gear or setup. New `uuid.js` falls back to
+  `getRandomValues` (tested with `randomUUID` removed). The GPS buttons now explain "Location only works on a secure (HTTPS)
+  address" instead of showing the browser's raw error. Reproduced and re-tested in a real browser over `http://<lan-ip>:5173`.
+- **Map tab is now the map alone**; the ranked spot list lives in Plan (they were identical). Choosing a spot from Plan on a wide
+  screen opens the sheet beside the list; on a phone it switches to the map. The hide-panel toggle only applies to other tabs.
+- **Log a trip, Add gear and setups open as a drawer** next to the panel they came from (full screen on a phone). While one is
+  open, Legend slides clear of it (and above the map credit) and Prepare for offline is now an icon under the zoom control (under
+  Layers at tablet widths where zoom is hidden). Drawer, panel and the top controls line up to the pixel at 1440, 1024 and 900 px (the
+  drawer was 16 px low: an absolutely positioned grid child needs `grid-area: auto`).
+- **Inspector width.** The sheet scales 440 to 700 px with the screen (Day view 560 to 860), and the Plan list narrows to 380 px
+  while a sheet is open so the sheet can be wide even at 900 to 1100 px.
+- **Browser suites updated** (spot lists now in Plan) and re-run: offline 12/12, accounts 37/37, gear 46/46. The offline banner check
+  needed the browser's `offline` event fired after the form mounts: Chromium 152 reports `navigator.onLine` as true after a reload
+  under offline emulation (same on the old build and on a page without the app, so not a regression).
+- **9B model trial** (`ornith-1.5-9b-uncensored` vs `gemma4-e4b`, identical copies of the same data): the 9B answered with text that
+  is not JSON for **every** request (all 5 report zones, all 19 explanations and all 18 pack intros rejected), and was 2.7x to 6x
+  slower (344 s vs 127 s for reports). `gemma4-e4b` extracted 13 items from 5 zones with 0 errors and 16 of 19 explanations accepted.
+  Not usable as configured; the cause (a reasoning model's preamble, or no JSON mode) was not investigated.
+- Verified: 172 `pytest`, 42 frontend tests, axe zero on every view touched (desktop, tablet, phone). Not verified: a real phone, the
+  Plan list with a sheet open at exactly 900 px (24 px of map shows), and iOS.
+

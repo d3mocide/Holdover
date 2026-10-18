@@ -27,8 +27,8 @@
   let collapsed = $state(stored('holdover.panelHidden', '') === '1');
   const setCollapsed = (v) => { collapsed = v; try { localStorage.setItem('holdover.panelHidden', v ? '1' : ''); } catch { /* not remembered */ } };
   const go = (k) => { view = k; if (collapsed) setCollapsed(false); };  // choosing a tab means you want its content
-  // The side panel sizes to its content. Map and Plan show the same list, so they share a width and switching between them does not jump.
-  const PANEL = { map: 'min(520px, 44vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
+  // The side panel sizes to its content. The Map tab is the map alone (no panel); the spot list lives in Plan.
+  const PANEL = { map: '0px', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
   let panelW = $state(520);
   let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
   $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
@@ -99,10 +99,14 @@
   $effect(() => { load(); loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
-  const select = (id) => { selectedId = id; dayFor = null; if (view !== 'map') view = 'map'; };
+  // Where a waterbody's sheet can open: over the map, which is visible on the Map tab and, on a wide screen, beside the Plan list.
+  const drawerOpen = $derived(gearEdit !== undefined || setupEdit !== undefined || editTrip !== undefined || logFor !== undefined);
+  const onMap = $derived(view === 'map' || (view === 'plan' && wide));
+  // With a sheet open beside the Plan list, the list narrows so the sheet can be wide.
+  const select = (id) => { selectedId = id; dayFor = null; if (!onMap) view = 'map'; };
 </script>
 
-<div class="shell" class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (PANEL[view] ?? PANEL.map)}>
+<div class="shell" class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
   <nav class="rail" aria-label="Main">
     <span class="logo"><Logo /></span>
     {#each tabs as [k, label, icon]}
@@ -130,7 +134,7 @@
       <Gauges />
     {/if}
   </main>
-  <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && view === 'map'} class:wide={!!dayFor && view === 'map'}>
+  <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap}>
       <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
       <div class="layers glass" role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
@@ -151,11 +155,11 @@
       {#if picking}
         <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
       {/if}
-      <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline"><Icon name="offline" size={18} /> <span class="olbl">Prepare for offline</span></button>
+      <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
   </div>
-    {#if dayFor && view === 'map'}
+    {#if dayFor && onMap}
       <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
-    {:else if selectedId && view === 'map'}
+    {:else if selectedId && onMap}
       <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} onday={(id) => (dayFor = id)} onlog={(id) => (logFor = id)} /></div>
     {/if}
 
@@ -175,9 +179,9 @@
 </div>
 
 <style>
-  .shell { --sheet-w: min(420px, calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(600px, calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
+  .shell { --sheet-w: min(clamp(440px, 38vw, 700px), calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(clamp(560px, 46vw, 860px), calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
   .shell > :global(*) { grid-row: 1; }
-  .planner.gone { display: none; }
+  .planner.gone, .shell.nopanel .planner, .shell.nopanel .ptoggle { display: none; }
   /* The toggle straddles the panel's right edge (desktop) or its top edge (phone). The arrow is the trend_steady icon, rotated. */
   .ptoggle { position: absolute; z-index: 4; top: 50%; left: calc(96px + var(--panel-w, 380px) - 22px); width: 44px; height: 44px; margin-top: -22px; padding: 0; border-radius: 999px;
     background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); color: var(--text);
@@ -209,24 +213,35 @@
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: calc(112px + var(--panel-w, 380px)); transition: left 0.25s ease; bottom: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
+  .legend { position: absolute; left: calc(112px + var(--panel-w, 380px) + var(--drawer-shift, 0px)); transition: left 0.25s ease; bottom: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
   .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .overlay { position: absolute; inset: 0; z-index: 15; background: var(--page-bg); overflow: hidden; }
+  .overlay { grid-area: auto !important; position: absolute; inset: 0; z-index: 15; background: var(--page-bg); overflow: hidden; }
+  /* On a wide screen, forms (log a trip, gear, setups) open as a side drawer over the map instead of taking the whole page. */
+  @media (min-width: 900px) {
+    /* While a form drawer is open the map's left-hand controls (Prepare for offline, Legend) slide over to clear it. */
+    .shell.drawer { --drawer-shift: calc(min(520px, calc(100% - 128px - var(--panel-w, 0px))) + 16px); }
+    /* Beside the drawer, Legend rises clear of the map credit (a licence requirement). */
+    .shell.drawer .mapwrap .legend { bottom: 44px; }
+    /* It opens right beside the panel it came from (Journal, Gear, ...), not at the far edge of the screen. */
+    .overlay { inset: 16px auto 16px calc(112px + var(--panel-w, 0px)); width: min(520px, calc(100% - 128px - var(--panel-w, 0px))); border-radius: 20px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
+      border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  }
   .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
   .sym.diamond { background: var(--gauge); border-color: var(--bg); box-shadow: 0 0 0 1px var(--gauge); }
   .sym.diamond { transform: rotate(45deg); }
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
   .sheetwrap.wide { width: var(--wide-w); }
-  .pickbar { position: absolute; left: calc(112px + var(--panel-w, 380px)); top: 72px; z-index: 3; border-radius: 14px; padding: 4px 4px 4px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
-  .offline { position: absolute; left: calc(112px + var(--panel-w, 380px)); transition: left 0.25s ease; top: 16px; z-index: 2; color: var(--text); gap: 10px; padding: 0 20px; }
+  .pickbar { position: absolute; left: calc(112px + var(--panel-w, 380px) + var(--drawer-shift, 0px)); top: 72px; z-index: 3; border-radius: 14px; padding: 4px 4px 4px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  /* Icon only, tucked under the zoom control in the top-right column; it slides over with the sheet like Layers and zoom do. */
+  .offline { position: absolute; right: calc(16px + var(--sheet-inset, 0px)); transition: right 0.25s ease; top: 114px; z-index: 2; color: var(--text); padding: 0; width: 44px; justify-content: center; }
 
   @media (max-width: 1099px) {
     .mapwrap :global(.maplibregl-ctrl-top-right) { display: none; }
     .layers { right: calc(16px + var(--sheet-inset)); }
   }
   @media (min-width: 900px) and (max-width: 1099px) {
-    .olbl { display: none; } .offline { padding: 0; width: 44px; }
+    .offline { top: 82px; }  /* the zoom control is hidden at this width, so it tucks under Layers instead */
   }
   @media (max-width: 899px) {
     .shell { --nav-h: calc(64px + env(safe-area-inset-bottom, 0px)); grid-template-columns: 1fr; grid-template-rows: 1fr var(--nav-h); gap: 0; padding: 0; }
@@ -241,6 +256,7 @@
     /* Collapsed: bottom right, above the map's attribution (a licence requirement, never covered). */
     .shell.collapsed .ptoggle, .shell.collapsed.tall .ptoggle, .shell.collapsed.full .ptoggle { top: auto; left: auto; right: 16px; margin: 0; bottom: calc(var(--nav-h) + 52px); }
     .ptoggle :global(svg) { transform: rotate(90deg); } .shell.collapsed .ptoggle :global(svg) { transform: rotate(-90deg); }
+    .shell.nopanel .mapwrap .legend { bottom: 16px; }
     .shell.collapsed .mapwrap.hide { display: block; }  /* Plan hides the map on a phone: hiding the panel brings it back */
     .shell.collapsed .mapwrap .legend, .shell.collapsed.tall .mapwrap .legend { bottom: 16px; }
     .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
@@ -256,7 +272,7 @@
     .offline { top: calc(16px + var(--safe-top)); }
     .lyr.off { display: none; }
     .legend { left: 16px; bottom: calc(42% + 16px); }
-    .offline { left: 16px; }
+    .offline { left: 16px; right: auto; }
     .pickbar { left: 16px; }
     .mapwrap { inset: 0 0 var(--nav-h) 0; }
   }

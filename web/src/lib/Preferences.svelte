@@ -1,4 +1,5 @@
 <script>
+  import { gpsMessage } from './gpsHelp.js';
   import { auth, prefs, setHome, toggleFavorite } from './auth.svelte.js';
   import Icon from './Icon.svelte';
   let { wbList = [], picking = false, onpick } = $props();
@@ -11,6 +12,7 @@
   function useGps() {
     msg = '';
     if (!navigator.geolocation) { msg = 'This browser has no location service.'; return; }
+    if (!isSecureContext) { msg = gpsMessage(null, false); return; }
     navigator.geolocation.getCurrentPosition(
       async (p) => {
         const { latitude: lat, longitude: lon } = p.coords;

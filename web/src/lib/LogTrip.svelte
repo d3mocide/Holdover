@@ -1,4 +1,5 @@
 <script>
+  import { gpsMessage } from './gpsHelp.js';
   import { db, uuid, nowIso, metaGet, metaSet } from './db.js';
   import { captureConditions } from './conditions.js';
   import { countPending, syncNow } from './sync.svelte.js';
@@ -79,10 +80,12 @@
   });
 
   function useGps() {
+    if (!navigator.geolocation) { gpsMsg = 'This browser has no location service. Pick a waterbody instead.'; return; }
+    if (!isSecureContext) { gpsMsg = gpsMessage(null, false); return; }
     gpsMsg = 'Finding you…';
     navigator.geolocation.getCurrentPosition(
       (p) => { gps = { lat: +p.coords.latitude.toFixed(5), lon: +p.coords.longitude.toFixed(5) }; gpsMsg = ''; },
-      (e) => { gpsMsg = `No GPS fix (${e.message}).`; }, { enableHighAccuracy: true, timeout: 15000 });
+      (e) => { gpsMsg = gpsMessage(e); }, { enableHighAccuracy: true, timeout: 15000 });
   }
 
   const step = (s, d) => (s.count = Math.max(0, s.count + d));

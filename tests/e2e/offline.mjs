@@ -22,7 +22,8 @@ ok(await p.evaluate(() => !!navigator.serviceWorker.controller), 'service worker
 await p.waitForTimeout(2500);
 ok(/OpenStreetMap/.test(await p.locator('.maplibregl-ctrl-attrib-inner').first().innerText()), 'map attribution credits OpenStreetMap');
 
-// select a stocked waterbody with a gauge, then prepare for offline
+// select a stocked waterbody with a gauge (the spot list is in the Plan tab), then prepare for offline
+await p.getByRole('button', { name: 'Plan', exact: true }).first().click(); await p.waitForTimeout(500);
 await p.getByRole('button', { name: /Dexter Reservoir/ }).click(); await p.waitForTimeout(1000);
 await p.getByRole('button', { name: 'Prepare for offline' }).first().click();
 await p.getByLabel('Map detail').selectOption('8');
@@ -37,12 +38,16 @@ await p.getByRole('button', { name: 'Close', exact: true }).click();
 await ctx.setOffline(true);
 await p.reload(); await p.waitForTimeout(3500);
 ok((await p.title()) === 'Holdover', 'app shell loads offline');
+await p.getByRole('button', { name: 'Plan', exact: true }).first().click(); await p.waitForTimeout(500);
 ok(await p.getByRole('button', { name: /Dexter Reservoir/ }).isVisible(), 'cached stocking list renders offline');
 await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/offline-map.png' : undefined });
 
 await p.getByRole('button', { name: 'Journal' }).click();
 await p.getByRole('button', { name: /Log (a|your first) trip/ }).first().click();
 await p.getByLabel('Where').selectOption({ label: 'Dexter Reservoir' });
+// Chromium 152 reports navigator.onLine as true after a reload under context.setOffline (a page without the app does too), so tell
+// the mounted form what a real device would: the browser fires `offline`.
+await p.evaluate(() => window.dispatchEvent(new Event('offline'))); await p.waitForTimeout(200);
 ok(await p.getByText('Saved on this phone, syncs when you have signal').isVisible(), 'offline banner shown');
 await p.getByLabel('Species 1').fill('rainbow trout');
 await p.getByRole('button', { name: /More/ }).first().click();

@@ -24,7 +24,7 @@ db.version(2).stores({
   setups: 'uuid, dirty, updated_at'
 });
 
-export const uuid = () => crypto.randomUUID();
+export { uuid } from './uuid.js';
 export const nowIso = () => new Date().toISOString();
 
 export async function metaGet(key, fallback = null) {
