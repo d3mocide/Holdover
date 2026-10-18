@@ -6,6 +6,7 @@
     ['Algae advisories', 'Oregon Health Authority', 'https://www.oregon.gov/oha/ph/healthyenvironments/recreation/harmfulalgaeblooms/pages/blue-greenalgaeadvisories.aspx', 'Only some waters are monitored.'],
     ['Weather forecasts', 'National Weather Service', 'https://www.weather.gov', null],
     ['Streamflow and water temperature', 'U.S. Geological Survey', 'https://waterdata.usgs.gov', 'Provisional data, subject to revision.'],
+    ['Reservoir levels', 'U.S. Army Corps of Engineers, Northwestern Division', 'https://www.nwd-wc.usace.army.mil/dd/common/dataquery/www/', 'Unverified data, subject to revision.'],
     ['Map data', 'OpenStreetMap contributors (ODbL), tiles from Protomaps', 'https://www.openstreetmap.org/copyright', null],
     ['Map software', 'MapLibre GL JS', 'https://maplibre.org', null],
     ['Type', 'IBM Plex and Noto Sans (SIL Open Font License)', 'https://openfontlicense.org', null]

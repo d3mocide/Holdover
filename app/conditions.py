@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.astro import daylight, moon_phase
 from app.freshness import freshness
 from app.models import Gauge, GaugeReading, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias, WaterbodyGauge
-from app.sources import nws, oha
+from app.sources import corps, nws, oha
 
 GAUGE_STALE_H = 3
 FORECAST_STALE_H = 6
@@ -79,6 +79,8 @@ def conditions(session: Session, wb: Waterbody, day: date, today: date | None = 
     else:
         out["daylight"] = None
     out["moon"] = moon_phase(day)
+
+    out["reservoir"] = corps.for_waterbody(session, wb)
 
     out["advisories"] = [{"kind": a.kind, "text": a.text, "issued": a.observed_at} for a in oha.current(session, wb.id)]
     out["advisory_page"] = oha.PAGE_URL

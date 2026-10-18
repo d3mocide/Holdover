@@ -236,3 +236,21 @@ the reusable findings in `docs/data-source-options.md` after verifying each endp
   ArcGIS's "HTTP 200 with an error object" as a failure. Vertex is the owner's own work, so code can move between the
   projects (same license); the plan is to reuse endpoints and patterns, adapted to Holdover's raw-first, pure-parser design.
 
+### 2026-10-18 · this commit · Phase 11 · Reservoir levels (Army Corps)
+Pool elevations for nine Willamette reservoirs (Detroit, Green Peter, Dexter, Foster, Cottage Grove, Dorena, Fall Creek,
+Blue River, Hills Creek) on each waterbody's sheet: elevation, change over 24 h and 7 days, and the same date in the three
+previous years from the Corps' own history. New table `reservoir_reading` (migration 0004), adapter `app/sources/corps.py`,
+hourly job, a `corps` entry in `/healthz` (stale after 2 h), a credit, and the terms record in `docs/sources.md`.
+- Verified: 142 `pytest` (10 new: parse of a real captured response for all nine projects, wrong units and garbage
+  rejected, UTC request, raw-first storage, gap-based lookback, failure keeps old data, changes and earlier years, stale,
+  every project maps to a seeded waterbody). **Live**: the adapter ran against the real service from the host and from inside
+  the rebuilt container (8,707 readings plus three years of history); Hills Creek 1,450.3 ft, 1.6 ft lower over 7 days,
+  10 ft lower than a year ago. Browser: the card shows on desktop and phone in all three themes with zero axe violations.
+- Found: the certificate problem is exactly the missing intermediate; adding that one public certificate for this host
+  makes verification pass, so nothing is disabled. `timezone=GMT` works and `startdate/enddate` select history; the
+  `start_date` form from the research is ignored. A phone screenshot with software GL flags showed the list bleeding
+  through the sheet; without those flags it renders correctly and a DOM hit test confirmed the sheet is on top, so it was
+  a headless rendering artifact, not an app bug.
+- Not checked: the Corps' terms (there is no page to read), how the service behaves under its own maintenance, a
+  real phone. Lookout Point, Big Cliff, Cougar and Fern Ridge exist at the Corps but have no waterbody here yet.
+

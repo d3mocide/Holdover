@@ -108,6 +108,15 @@ class GaugeReading(Base):
     provisional: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
 
 
+class ReservoirReading(Base):
+    __tablename__ = "reservoir_reading"
+    __table_args__ = (PrimaryKeyConstraint("project", "observed_at"),)
+    project: Mapped[str] = mapped_column(Text)  # Army Corps location code, e.g. DET
+    observed_at: Mapped[str] = mapped_column(Text)  # UTC, minute precision
+    elevation_ft: Mapped[float] = mapped_column(Float)
+    raw_fetch_id: Mapped[int | None] = mapped_column(Integer)
+
+
 class ForecastCache(Base):
     __tablename__ = "forecast_cache"
     __table_args__ = (PrimaryKeyConstraint("waterbody_id", "fetched_at"),)

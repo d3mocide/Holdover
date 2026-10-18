@@ -7,6 +7,8 @@
   let { c, level = 3 } = $props();
   const w = $derived(c.weather?.day);
   const flowGauge = $derived(c.gauges.find((g) => g.values.discharge_cfs));
+  const r = $derived(c.reservoir);
+  const ft = (v) => (v == null ? '—' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)} ft`);
 </script>
 
 <div class="grid">
@@ -19,6 +21,20 @@
     sub={c.water_temp_f ? 'USGS, provisional' : 'No temperature gauge'} asof={c.water_temp_f ? asOf(c.water_temp_f.observed_at) : ''} />
   <Tile icon="moon" label="Moon" value={c.moon.phase} sub={`Day ${c.moon.age_days} of cycle`} asof="computed" />
 </div>
+
+{#if r}
+  <svelte:element this={`h${level}`} class="eyebrow head"><Icon name="gauge" size={14} /> Reservoir level</svelte:element>
+  <div class="g">
+    <span class="grow">Pool elevation</span>
+    <span class="mono">{r.elevation_ft.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ft</span>
+    <span class="quiet small full">Past 24 h {ft(r.change_24h_ft)} · past 7 days {ft(r.change_7d_ft)}</span>
+    {#if r.earlier_years.length}
+      <span class="quiet small full">Same date: {r.earlier_years.map((y) => `${y.year} ${y.elevation_ft.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ft`).join(' · ')}</span>
+    {/if}
+    <span class="quiet small full">Feet above sea level, unverified Army Corps data, {asOf(r.as_of)} {#if r.stale}<b class="stale">Stale</b>{/if}
+      · <a href={r.page} target="_blank" rel="noopener">Corps water data</a></span>
+  </div>
+{/if}
 
 {#if c.gauges.length}
   <svelte:element this={`h${level}`} class="eyebrow head"><Icon name="flow" size={14} /> Flow</svelte:element>

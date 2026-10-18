@@ -55,6 +55,10 @@ legacy path. Also record the migration in sources.md. Roughly a day of work, low
 
 ## 2. Reservoir levels (Army Corps): the best new feature
 
+**Status: built 2026-10-18** (`app/sources/corps.py`). Findings while building: `timezone=GMT` returns UTC (avoids the November
+DST ambiguity); `startdate=` and `enddate=` (not `start_date`) select a historical window, so the same date in earlier
+years costs a small request instead of 400 days of 15-minute data (4.7 MB per reservoir); the site has no terms page.
+
 **What it is.** The Corps' Portland District runs the big Willamette reservoirs, and their pool levels determine boat-ramp
 access, fish passage drawdowns and where the water is. The Corps publishes the elevations.
 

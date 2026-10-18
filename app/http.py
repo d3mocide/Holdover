@@ -1,9 +1,11 @@
 """Polite fetching: identifying UA, backoff on 429/5xx, raw body stored before any parsing."""
 import hashlib
+import ssl
 import time
 from collections.abc import Callable
 from datetime import datetime, timezone
 
+import certifi
 import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -19,14 +21,20 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def http_fetch(url: str, *, retries: int = 3, timeout: float = 30) -> tuple[int | None, bytes]:
+def http_fetch(url: str, *, retries: int = 3, timeout: float = 30, extra_ca: str | None = None) -> tuple[int | None, bytes]:
+    """extra_ca: a PEM file added to the trust store for hosts that send an incomplete certificate chain.
+    Verification is never switched off."""
+    verify: bool | ssl.SSLContext = True
+    if extra_ca:
+        verify = ssl.create_default_context(cafile=certifi.where())
+        verify.load_verify_locations(extra_ca)
     headers = {"User-Agent": get_settings().user_agent}
     delay = 2.0
     status: int | None = None
     body = b""
     for attempt in range(retries + 1):
         try:
-            r = httpx.get(url, headers=headers, follow_redirects=True, timeout=timeout)
+            r = httpx.get(url, headers=headers, follow_redirects=True, timeout=timeout, verify=verify)
             status, body = r.status_code, r.content
         except httpx.HTTPError as exc:
             status, body = None, str(exc).encode()
