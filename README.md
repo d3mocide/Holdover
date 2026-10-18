@@ -2,20 +2,29 @@
 
 Self-hosted PWA for Oregon fishing: where to fish, when, and what to bring, plus a technical angler's journal. One container, one SQLite file, a local LLM for text only.
 
-Status: phases 1 to 5 built (stocking map, report and LLM pipeline, conditions, offline journal, planner), plus a design pass (glass UI, custom icon set, three themes). Phase 6 items not started. **Read `docs/laptop-handoff.md` first**: it lists what was verified and what was not.
+Status: version 0.5.0. Stocking map, weekly report and LLM pipeline, conditions (weather, USGS flow, Army Corps reservoir levels, NOAA flood status, fire danger and wildfire perimeters), planner, offline journal, optional accounts, gear database, three themes. See [docs/ROADMAP.md](docs/ROADMAP.md) for what is done and what is next.
 
 ## Run
 
-    cp .env.example .env   # set USER_AGENT (with a contact address); optionally HOLDOVER_PORT, HOME_LAT/LON
-    docker compose up --build
-    docker compose exec holdover python -m app.cli create-user YOURNAME   # first account = admin; see docs/accounts.md
+The published image (amd64 and arm64, so a Raspberry Pi works) needs no checkout. Put `docker-compose.yml` and a `.env` in a folder:
 
-- Data lives in the named volume `holdover-data` (mounted at `/data`: SQLite file and `tiles/`). It is not in the repo and is not created by `docker compose down`; `down -v` deletes it.
-- The app listens on `HOLDOVER_PORT` (default 8000). Change it if something else holds 8000.
-- **Basemap is a manual step**: the 503 MB Oregon PMTiles file is not downloaded for you. Install it once per machine or volume: see `docs/basemap.md`. Without it the app still works, with pins on a plain ground.
-- Put a TLS reverse proxy in front for real use (service workers, offline mode and Add to Home Screen need HTTPS; localhost is exempt).
+    # .env
+    USER_AGENT=Holdover/0.5 (you@example.com)   # identifies you to the data agencies; use a real contact
+
+    docker compose pull && docker compose up -d
+    docker compose exec holdover python -m app.cli create-user YOURNAME   # first account = admin; see docs/accounts.md
+    ./install-basemap.sh    # one time: Oregon map tiles (scripts/install-basemap.sh in this repo); see docs/basemap.md
+
+- `HOLDOVER_TAG` picks the image: `latest` (default) is the newest release, `0.5.0` pins one, `main` is whatever is on the main branch.
+- To build from source instead: `cp .env.example .env`, then `docker compose up -d --build`.
+- Data lives in the named volume `holdover-data` (mounted at `/data`: SQLite file, tiles, photos, backups). `down` keeps it; `down -v` deletes it.
+- The app listens on `HOLDOVER_PORT` (default 8000). On first start it fetches every data source once, then keeps them fresh on a schedule (`docker compose logs holdover | grep job`).
+- Without the basemap the app still works, with pins on a plain ground.
+- Put a TLS reverse proxy or tunnel in front for real use (service workers, offline mode and Add to Home Screen need HTTPS; localhost is exempt).
 
 ## Develop
+
+The easy way is the dev stack (API with reload on :8020, Vite on :5173, its own data volume): `docker compose -f docker-compose.dev.yml up --build`, then `scripts/dev-fetch.sh` once to load data. Or by hand:
 
     pip install -e '.[dev]'
     python -m app.cli migrate && python -m app.cli seed

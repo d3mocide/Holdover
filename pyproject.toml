@@ -1,6 +1,6 @@
 [project]
 name = "holdover"
-version = "0.1.0"
+version = "0.5.0"
 description = "Oregon fishing planner and journal"
 license = "GPL-3.0-only"
 license-files = ["LICENSE"]

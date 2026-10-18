@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from app import scheduler
 from app.api import accounts, admin, conditions, fire, journal, planner, reports, stocking
 from app.config import get_settings
+from app.version import __version__
 
 def configure_logging() -> None:
     """Our own loggers (scheduler, jobs) at INFO with a timestamp, and the access log without the noise of static files."""
@@ -68,6 +69,7 @@ def healthz():
     s = get_settings()
     return {
         "ok": True,
+        "version": __version__,
         "scheduler_running": scheduler.scheduler.running,
         "sources": sources,
         "stale": [k for k, v in sources.items() if v["stale"]],

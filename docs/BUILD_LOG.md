@@ -333,3 +333,19 @@ only web requests.
 - Not checked: the tablet layouts by eye beyond the widths, a real phone, and the catch-up after a long outage (the same
   code path; only the empty-database case was run).
 
+### 2026-10-18 · this commit · Phase 9 · Hide-panel toggle, version 0.5.0, release gating, README
+- **Hide the panel.** A round tab on the side panel's edge (desktop) or above the bottom panel (phone) hides it to show the
+  whole map, and brings it back. Tapping any nav tab re-opens it; the choice is remembered on the device. It reuses the arrow
+  icon rotated by CSS (no new artwork). On a phone the collapsed tab sits above the map attribution, which it first covered
+  (an ODbL requirement; caught in a screenshot and moved).
+- **Version 0.5.0** in `pyproject.toml` and `web/package.json` (a test keeps them equal), reported by `/healthz` and shown in
+  Settings. **Release flow:** `ci.yml` is now one workflow; the image is built for every pull request and push but pushed only from
+  `main` (`main`, `sha-...`) and from `v*` tags (`X.Y.Z`, `X.Y`, `latest`), and **only after the backend and frontend tests pass**
+  (before, the image job ran in parallel and would have published a commit whose tests failed). `docker.yml` was merged into
+  it. The compose default tag is `latest`. The README, which still described phases 1 to 5, was rewritten for the published image.
+- Verified: 169 `pytest`, 38 frontend tests; the toggle checked at desktop and phone in all three themes (44 px target,
+  persists across reload, nav re-opens, zero axe violations); `/healthz` reports 0.5.0 on the rebuilt container; the workflow
+  parses as YAML. A scan of tracked files found no secrets, keys, `.env` or databases (largest file 456 KB).
+- Not verified: **the workflow has still never run** (including the tag logic and the `latest` expression), arm64, and the
+  first publish needs a push. Git author emails in history include a personal address (`info@d3mo.us`); left as is.
+

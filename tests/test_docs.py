@@ -173,3 +173,14 @@ def test_license_is_present_and_declared_consistently():
     assert 'license = "GPL-3.0-only"' in read("pyproject.toml")
     assert '"license": "GPL-3.0-only"' in read("web/package.json")
     assert "GPL-3.0" in read("AGENTS.md")
+
+
+# ---- versions --------------------------------------------------------------------------------------------------------
+def test_python_and_web_versions_match_and_the_app_reports_it():
+    import json
+    import re
+    py = re.search(r'^version = "([^"]+)"', read("pyproject.toml"), re.M).group(1)
+    assert json.loads(read("web/package.json"))["version"] == py
+    assert re.fullmatch(r"\d+\.\d+\.\d+", py)
+    from app.version import __version__
+    assert __version__ in (py, "dev")

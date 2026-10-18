@@ -71,12 +71,23 @@ schema with the same migrations.
 - **Not covered:** the nightly backup (SQLite only; use `pg_dump`), performance and PostGIS (geometry is plain lat/lon).
 - Existing SQLite data is not migrated automatically: there is no SQLite-to-Postgres copy tool yet.
 
-## Publishing and deploying the image
+## Publishing, versions and deploying
 
-GitHub Actions (`.github/workflows/`) runs the tests on every pull request and on `main` (`ci.yml`), and builds the image
-(`docker.yml`): pull requests only prove it builds; pushes to `main` and `v*` tags publish `ghcr.io/d3mocide/holdover`
-for **amd64 and arm64** (tags `main`, `latest`, a short commit sha, and the version for tags). The first publish creates
-the package as private: make it public in the repository's package settings if you want to pull without logging in.
+One workflow, `.github/workflows/ci.yml`. Tests run on every pull request and every push to `main`. The image
+(`ghcr.io/d3mocide/holdover`, amd64 and arm64) is built on all of them but **pushed only from `main` and from version
+tags, and only after the tests pass**:
+
+| Event | Image tags | Use |
+| --- | --- | --- |
+| push to `main` | `main`, `sha-xxxxxxx` | edge: whatever main is now |
+| tag `v0.5.1` | `0.5.1`, `0.5`, `latest` | a release: what you deploy |
+
+The first publish creates the package as private: make it public in the package settings to pull without logging in.
+
+**Releasing** (the version lives in `pyproject.toml` and `web/package.json`, which a test keeps equal; the app shows it in
+Settings and `/healthz`): bump both (`cd web && npm version X.Y.Z --no-git-tag-version`, and edit `pyproject.toml`), commit,
+then `git tag vX.Y.Z && git push --tags`. Use 0.x while things change; patch for fixes, minor for features. Nothing is
+published as `latest` until a tag is pushed.
 
 On any machine with Docker (a Raspberry Pi 4 or 5 on a 64-bit OS works; no VM and no source checkout needed):
 
@@ -84,10 +95,9 @@ On any machine with Docker (a Raspberry Pi 4 or 5 on a 64-bit OS works; no VM an
     docker compose pull && docker compose up -d
     docker compose exec holdover python -m app.cli create-user YOURNAME
 
-Pin a version with `HOLDOVER_TAG=v0.1.0` (default `main`). To build from source instead: `docker compose up -d --build`.
-On a Pi keep the volume on an SSD or a good card (SQLite writes), keep the nightly backup (above) and copy it off the Pi,
-and prefer HTTPS via a tunnel or reverse proxy (below). **Not yet verified on real arm64 hardware or in a real workflow
-run** (neither was possible from the build machine).
+Pin a version with `HOLDOVER_TAG=0.5.0` (default `latest`; `main` for edge). To build from source instead:
+`docker compose up -d --build`. On a Pi keep the volume on an SSD or a good card (SQLite writes), keep the nightly backup
+(above) and copy it off the Pi, and prefer HTTPS via a tunnel or reverse proxy (below).
 
 ## Development stack
 

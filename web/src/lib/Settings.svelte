@@ -38,6 +38,8 @@
 
   <Credits />
 
+  <p class="quiet small ver">Holdover {__APP_VERSION__}</p>
+
   <section class="card">
     <h2 class="eyebrow">Source status</h2>
     {#if health}
