@@ -1,4 +1,5 @@
 <script>
+  import { clock, setClock } from './clock.svelte.js';
   import { api } from './api.js';
   import { auth } from './auth.svelte.js';
   import Account from './Account.svelte';
@@ -24,6 +25,13 @@
     {#each themes as [k, label]}
       <label class="opt"><input type="radio" name="theme" value={k} checked={theme === k} onchange={() => onTheme(k)} /> {label}</label>
     {/each}
+  </fieldset>
+
+  <fieldset>
+    <legend>Time format</legend>
+    <label class="opt"><input type="radio" name="clock" value="12" checked={clock.mode === '12'} onchange={() => setClock('12')} /> 12-hour (7:29 AM)</label>
+    <label class="opt"><input type="radio" name="clock" value="24" checked={clock.mode === '24'} onchange={() => setClock('24')} /> 24-hour (07:29)</label>
+    <p class="quiet small">Saved on this device.</p>
   </fieldset>
 
   {#if auth.user?.is_admin}<Admin {onChanged} />{/if}

@@ -1,5 +1,7 @@
 <script>
-  import { isoDay, longDate, weekLabel, hhmm } from './api.js';
+  import { isoDay, longDate, weekLabel } from './api.js';
+  import { hhmm } from './clock.svelte.js';
+  import { stockingSections } from './stockingGroups.js';
   import { loadDay } from './conditions.js';
   import Conditions from './Conditions.svelte';
   import { liveQuery } from 'dexie';
@@ -55,13 +57,21 @@
     <Conditions {c} level={2} />
 
     <h2 class="quiet small">What to expect</h2>
-    <ul class="facts">
-      {#each c.stocking as s}
-        <li><span class="dot {s.freshness}"></span> {weekLabel(s.week_of)}{s.freshness === 'upcoming' ? ' (scheduled)' : ''}:
-          <span class="mono">{s.legals.toLocaleString()} legals{s.trophy ? ` + ${s.trophy.toLocaleString()} trophy` : ''}</span></li>
-      {:else}
-        <li class="quiet">No stocking in the last two weeks or scheduled.</li>
+    {#each stockingSections(c.stocking) as sec (sec.key)}
+      <p class="quiet small sec">{sec.title}</p>
+      {#each sec.years as y (y.year)}
+        <p class="yr">{y.year}</p>
+        <ul class="facts">
+          {#each y.items as s (s.week_of)}
+            <li><span class="dot {s.freshness}"></span> {weekLabel(s.week_of)}{s.freshness === 'upcoming' ? ' (scheduled)' : ''}:
+              <span class="mono">{s.legals.toLocaleString()} legals{s.trophy ? ` + ${s.trophy.toLocaleString()} trophy` : ''}</span></li>
+          {/each}
+        </ul>
       {/each}
+    {:else}
+      <p class="quiet">No stocking in the last two weeks or scheduled.</p>
+    {/each}
+    <ul class="facts">
       {#each c.report_items as r}
         <li>{r.note} <span class="quiet small">ODFW report, {longDate(r.issued_on)}: “{r.source_sentence}”</span></li>
       {/each}
@@ -100,6 +110,7 @@
   h1 { font-size: 20px; } .small { font-size: 13px; margin: 0; } .zone { text-transform: capitalize; }
   .badge { border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sec { margin: 10px 0 0; } .yr { margin: 8px 0 4px; font-size: 12.5px; font-weight: 600; color: var(--text-quiet); letter-spacing: 0.04em; }
   .facts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
   .pk { border: 0; padding: 0; margin: 0; } .pk legend { padding: 0; }
   .ck { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text); margin: 0; font-size: 14px; }

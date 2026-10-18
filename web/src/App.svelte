@@ -23,9 +23,9 @@
   const stored = (k, d) => { try { return localStorage.getItem(k) || d; } catch { return d; } };
   let theme = $state(stored('holdover.theme', 'fir'));
   let view = $state('map');
-  // The side panel sizes to its content: roomy for lists with detail, compact for the map list.
-  const PANEL = { map: 'min(380px, 40vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
-  let panelW = $state(380);
+  // The side panel sizes to its content. Map and Plan show the same list, so they share a width and switching between them does not jump.
+  const PANEL = { map: 'min(520px, 44vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
+  let panelW = $state(520);
   let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
   $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
   let data = $state(null);
@@ -170,7 +170,7 @@
 </div>
 
 <style>
-  .shell { --sheet-w: min(340px, calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(520px, calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
+  .shell { --sheet-w: min(420px, calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(600px, calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
   .shell > :global(*) { grid-row: 1; }
   .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .planner, .sheetwrap, .layers, .legend { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }

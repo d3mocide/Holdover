@@ -1,7 +1,8 @@
 <script>
   import Icon from './Icon.svelte';
   import { isFavorite } from './auth.svelte.js';
-  import { FRESH_LABEL, weekLabel, hhmm, longDate, dayLabel, FISHERIES, FACTOR_LABEL } from './api.js';
+  import { FRESH_LABEL, weekLabel, longDate, dayLabel, FISHERIES, FACTOR_LABEL } from './api.js';
+  import { hhmm, clockText } from './clock.svelte.js';
   let { data, report, spots, offset, fishery, onoffset, onfishery, spotsError, selectedId, error, onselect, onreview, canReview } = $props();
   const rep = $derived(report?.report);
   const unlocated = $derived(data?.meta.needs_coords ?? []);
@@ -50,7 +51,7 @@
           <span class="mono rank">{s.rank}</span>
           <span class="body">
             <span class="name">{s.waterbody.name}{#if isFavorite(s.waterbody.id)} <span class="fav" title="Favorite"><Icon name="star_fill" size={14} /></span>{/if}</span>
-            <span class="why small quiet">{s.explanation.text}</span>
+            <span class="why small quiet">{clockText(s.explanation.text)}</span>
           </span>
           <span class="end">
             {#if f}<span class="dot {f.freshness}" title={FRESH_LABEL[f.freshness]}></span>{/if}
@@ -67,7 +68,7 @@
                 <span class="fl">{FACTOR_LABEL[ft.name]}</span>
                 <span class="bar" aria-hidden="true"><i style="width:{ft.value == null ? 50 : ft.value * 100}%" class:nodata={ft.value == null}></i></span>
                 <span class="mono pts">{ft.points}</span>
-                <span class="quiet fd">{ft.value == null ? 'no data (neutral)' : ft.detail}</span>
+                <span class="quiet fd">{ft.value == null ? 'no data (neutral)' : clockText(ft.detail)}</span>
               </div>
             {/if}
           {/each}

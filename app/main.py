@@ -11,6 +11,19 @@ from app import scheduler
 from app.api import accounts, admin, conditions, fire, journal, planner, reports, stocking
 from app.config import get_settings
 
+def configure_logging() -> None:
+    """Our own loggers (scheduler, jobs) at INFO with a timestamp, and the access log without the noise of static files."""
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    logging.getLogger("holdover").setLevel(logging.INFO)
+
+    class Quiet(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            return not any(f'"GET {p}' in record.getMessage() for p in ("/assets/", "/fonts/", "/tiles/", "/healthz", "/icon", "/manifest", "/sw.js", "/workbox"))
+
+    logging.getLogger("uvicorn.access").addFilter(Quiet())
+
+
+configure_logging()
 log = logging.getLogger("holdover")
 
 

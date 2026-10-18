@@ -1,3 +1,4 @@
+import { formatTime } from './clockFormat.js';
 let onUnauthorized = () => {};
 /** The auth store registers here so any signed-in call that comes back 401 flips the app to signed-out. */
 export function setUnauthorizedHandler(fn) { onUnauthorized = fn; }
@@ -70,10 +71,8 @@ export function weekLabel(iso) {
   const [, m, d] = iso.split('-').map(Number);
   return `Week of ${MONTHS[m - 1]} ${d}`;
 }
-export function hhmm(iso) {
-  if (!iso) return '';
-  return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-}
+// Components use the setting-aware versions in clock.svelte.js; these stay 24-hour for plain callers and tests.
+export const hhmm = (iso) => formatTime(iso, '24');
 export const FRESH_LABEL = {
   this_week: 'Stocked this week', recent: 'Stocked in the last 2 weeks',
   older: 'Stocked earlier', upcoming: 'Scheduled'

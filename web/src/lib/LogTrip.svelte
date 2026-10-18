@@ -2,7 +2,7 @@
   import { db, uuid, nowIso, metaGet, metaSet } from './db.js';
   import { captureConditions } from './conditions.js';
   import { countPending, syncNow } from './sync.svelte.js';
-  import { asOf } from './api.js';
+  import { asOf } from './clock.svelte.js';
   import Icon from './Icon.svelte';
   import { TRIP_KINDS } from './gearCatalog.js';
   import { requestPersistence } from './storage.js';

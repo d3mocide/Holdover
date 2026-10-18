@@ -2,7 +2,8 @@
   import { liveQuery } from 'dexie';
   import { db, nowIso } from './db.js';
   import { syncState, syncNow, countPending } from './sync.svelte.js';
-  import { longDate, hhmm } from './api.js';
+  import { longDate } from './api.js';
+  import { hhmm } from './clock.svelte.js';
   import { auth } from './auth.svelte.js';
   import Icon from './Icon.svelte';
   import { namesFor } from './gearStats.js';

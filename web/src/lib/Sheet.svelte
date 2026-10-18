@@ -1,5 +1,7 @@
 <script>
-  import { api, FRESH_LABEL, weekLabel, hhmm, longDate } from './api.js';
+  import { api, FRESH_LABEL, weekLabel, longDate } from './api.js';
+  import { hhmm } from './clock.svelte.js';
+  import { stockingSections } from './stockingGroups.js';
   import Conditions from './Conditions.svelte';
   import { db } from './db.js';
   import Icon from './Icon.svelte';
@@ -13,10 +15,7 @@
   let favMsg = $state('');
   const star = async () => { favMsg = ''; try { await toggleFavorite(id); } catch (e) { favMsg = e.message; } };
 
-  // Scheduled weeks first (soonest first), then past weeks (newest first).
-  const ordered = $derived(
-    wb ? [...wb.stocking.filter((s) => s.freshness === 'upcoming').reverse(), ...wb.stocking.filter((s) => s.freshness !== 'upcoming')] : []
-  );
+  const sections = $derived(wb ? stockingSections(wb.stocking) : []);
   const fish = (s) => [s.legals && `${s.legals.toLocaleString()} legals`, s.trophy && `${s.trophy.toLocaleString()} trophy`].filter(Boolean).join(' + ') || `${s.total.toLocaleString()} fish`;
 
   $effect(() => {
@@ -48,16 +47,22 @@
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
     <h3 class="eyebrow">Stocking</h3>
-    <ul>
-      {#each ordered as s (s.week_of)}
-        <li class="srow">
-          <span class="dot {s.freshness}" title={FRESH_LABEL[s.freshness]}></span>
-          <span class="grow wk">{weekLabel(s.week_of)}</span>
-          {#if s.freshness === 'upcoming'}<span class="tag">scheduled</span>{/if}
-          <span class="fish">{fish(s)}</span>
-        </li>
+    {#each sections as sec (sec.key)}
+      <p class="eyebrow sub">{sec.title}</p>
+      {#each sec.years as y (y.year)}
+        <p class="yr">{y.year}</p>
+        <ul>
+          {#each y.items as s (s.week_of)}
+            <li class="srow">
+              <span class="dot {s.freshness}" title={FRESH_LABEL[s.freshness]}></span>
+              <span class="grow wk">{weekLabel(s.week_of)}</span>
+              {#if s.freshness === 'upcoming'}<span class="tag">scheduled</span>{/if}
+              <span class="fish">{fish(s)}</span>
+            </li>
+          {/each}
+        </ul>
       {/each}
-    </ul>
+    {/each}
     <p class="quiet small">Weeks, not days. The schedule can change without notice. As of {hhmm(wb.stocking[0]?.scraped_at)}.</p>
 
     {#if wb.report_items?.length}
@@ -106,6 +111,7 @@
   ul { list-style: none; margin: 0; padding: 0; }
   .srow { display: flex; gap: 8px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--hair); }
   .wk { white-space: nowrap; }
+  .sub { margin: 10px 0 0; } .yr { margin: 8px 0 0; font-size: 12.5px; font-weight: 600; color: var(--text-quiet); letter-spacing: 0.04em; }
   .tag { font-size: 10px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--fresh-1); border: 1px solid color-mix(in srgb, var(--fresh-1) 45%, transparent); border-radius: 999px; padding: 1px 7px; flex: none; }
   .fish { flex: none; white-space: nowrap; font-size: 12.5px; color: var(--text-quiet); text-align: right; font-variant-numeric: tabular-nums; }
   .grow { flex: 1; }

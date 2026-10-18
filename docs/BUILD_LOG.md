@@ -310,3 +310,26 @@ Vite dev server proxying to it, its own volumes, scheduler off by default. Added
   not been built or run on a Pi, hot reload was not exercised by an edit, and `scripts/dev-fetch.sh` was not run (it would
   poll the agencies).
 
+### 2026-10-18 · this commit · Phase 9 · First-run catch-up, job logging, and layout and wording fixes from the Pi
+Found by running the published image on a Raspberry Pi with an empty database: **everything was stale** and the logs showed
+only web requests.
+- **Poller kick-off.** Scheduled jobs only fire at their next interval or cron time, so a new install had no data for up to a
+  day. A catch-up job now runs 5 seconds after start and runs, one at a time and in dependency order (stocking before NWS),
+  every source that has no recent success; the timers carry on from there. **Logging:** each job run logs one line
+  (`job usgs ok {...}` or `FAILED`), our loggers are at INFO with timestamps, and the access log no longer lists static files,
+  tiles or `/healthz`. The "frontend vs backend" log split is not needed: it is one process (the scheduler must stay in the
+  single worker), so the lines you saw were just its web access log. `docker compose logs holdover | grep job` now shows the pollers.
+- **Layout.** The Map tab's side panel now has the same width as Plan (520 px, so switching tabs does not jump) and the
+  waterbody sheet is 420 px (was 340), the Day view 600 px, shrinking on tablets.
+- **Stocking weeks.** The sheet and Day view mixed 2026 weeks with schedule weeks of 2027 under labels without a year. They
+  are now "Coming up" (soonest first) and "Already stocked" (newest first), each grouped under year headings.
+- **Time format setting.** Settings has 12-hour (default) or 24-hour, per device. It applies to "as of" times, the Synced time, the
+  daylight tile and the times inside planner sentences (the server still sends 24-hour text; the browser rewrites it).
+- Verified: 168 `pytest` (4 new on catch-up order, skipping fresh sources, job log lines, scheduling) and 38 frontend tests (5
+  new: grouping, 12-hour edge cases incl. midnight and noon, text rewriting). **Live**: from an empty database all nine sources
+  ran in order in about 80 seconds, logged as above (stocking 500 rows, USGS 22,057 readings, NWS 28 forecasts). Browser: the
+  setting flips, persists across a reload, and defaults to 12-hour; axe zero violations on the sheet and Day view in all three
+  themes at desktop and phone width, and on Settings; panel widths 520 px (Map and Plan equal) at 1440, 451 px at 1024, 396 px at 900.
+- Not checked: the tablet layouts by eye beyond the widths, a real phone, and the catch-up after a long outage (the same
+  code path; only the empty-database case was run).
+

@@ -1,5 +1,6 @@
 <script>
-  import { api, asOf, TREND } from './api.js';
+  import { api, TREND } from './api.js';
+  import { asOf } from './clock.svelte.js';
   import Icon from './Icon.svelte';
   import { floodText, floodElevated } from './floodText.js';
   let gauges = $state([]);

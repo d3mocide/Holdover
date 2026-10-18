@@ -1,7 +1,8 @@
 <script>
   import Tile from './Tile.svelte';
   import Icon from './Icon.svelte';
-  import { asOf, cToF, TREND } from './api.js';
+  import { cToF, TREND } from './api.js';
+  import { asOf, clockText } from './clock.svelte.js';
   import { floodText, floodElevated } from './floodText.js';
   import { dangerText, dangerHigh, fireLine, nearbyText } from './fireText.js';
   // level: the heading level for this block's section titles. A sheet titles itself with an h2, the day view with an h1,
@@ -19,8 +20,8 @@
   <Tile icon="forecast" label="Forecast" value={w ? `${w.temp_f}°F` : null}
     sub={w ? `${w.short}${w.precip_pct != null ? `, ${w.precip_pct}% rain` : ''}, wind ${w.wind} ${w.wind_dir ?? ''}` : 'No forecast cached'}
     stale={c.weather?.stale} asof={c.weather ? `NWS ${asOf(c.weather.as_of)}` : ''} />
-  <Tile icon="sun" label="Daylight" value={c.daylight ? `${c.daylight.sunrise}–${c.daylight.sunset}` : null}
-    sub={c.daylight ? `Light ${c.daylight.first_light}–${c.daylight.last_light}` : 'No location'} asof="computed" />
+  <Tile icon="sun" label="Daylight" value={c.daylight ? clockText(`${c.daylight.sunrise}–${c.daylight.sunset}`) : null}
+    sub={c.daylight ? clockText(`Light ${c.daylight.first_light}–${c.daylight.last_light}`) : 'No location'} asof="computed" />
   <Tile icon="temp" label="Water temp" value={c.water_temp_f ? `${Math.round(c.water_temp_f.value)}°F` : null}
     sub={c.water_temp_f ? 'USGS, provisional' : 'No temperature gauge'} asof={c.water_temp_f ? asOf(c.water_temp_f.observed_at) : ''} />
   <Tile icon="moon" label="Moon" value={c.moon.phase} sub={`Day ${c.moon.age_days} of cycle`} asof="computed" />

@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy import func, select
@@ -23,7 +23,7 @@ OPTIONAL: set[str] = set()
 def run_stocking() -> dict:
     with session_factory()() as s:
         try:
-            return odfw_stocking.run_job(s)
+            return _logged("stocking", odfw_stocking.run_job(s))
         except Exception:  # keep the scheduler alive; the failure shows in /healthz
             log.exception("stocking job crashed")
             s.rollback()
@@ -40,17 +40,24 @@ def run_reports() -> dict:
             s.rollback()
             fetched = {"ok": False}
         try:
-            return {"fetch": fetched, "llm": process_pending(s)}
+            return {"fetch": _logged("reports", fetched), "llm": process_pending(s)}
         except Exception:
             log.exception("llm job crashed")
             s.rollback()
             return {"fetch": fetched, "llm": {"error": "job crashed, see logs"}}
 
 
+def _logged(name: str, result: dict) -> dict:
+    """One line per job run, so `docker compose logs holdover | grep job` shows what the pollers are doing."""
+    ok = result.get("ok", True) if isinstance(result, dict) else True
+    (log.info if ok else log.warning)("job %s %s %s", name, "ok" if ok else "FAILED", {k: v for k, v in result.items() if k != "ok"} if isinstance(result, dict) else "")
+    return result
+
+
 def _run(name: str, mod) -> dict:
     with session_factory()() as s:
         try:
-            return mod.run_job(s)
+            return _logged(name, mod.run_job(s))
         except Exception:
             log.exception("%s job crashed", name)
             s.rollback()
@@ -114,6 +121,26 @@ def run_llm_retry() -> None:
             s.rollback()
 
 
+# Order matters: NWS forecasts are fetched for stocked waterbodies, so stocking goes first.
+CATCH_UP = [(odfw_stocking.SOURCE, "run_stocking"), (oha.SOURCE, "run_oha"), (usgs.SOURCE, "run_usgs"), (corps.SOURCE, "run_corps"),
+            (odf_fire.SOURCE, "run_odf_fire"), (nifc.SOURCE, "run_nifc"), (nwps.SOURCE, "run_nwps"), (nws.SOURCE, "run_nws"),
+            (odfw_report.SOURCE, "run_reports")]
+
+
+def catch_up() -> list[str]:
+    """Run, one after another, every source that has no recent success. Scheduled jobs only fire at their next interval
+    or cron time, so without this a new install (or one that was off for a day) shows no data until then."""
+    status = source_status()
+    ran = []
+    for source, fn in CATCH_UP:
+        if status.get(source, {}).get("stale", True):
+            log.info("catch-up: %s is stale, running it now", source)
+            globals()[fn]()
+            ran.append(source)
+    log.info("catch-up finished, ran: %s", ran or "nothing")
+    return ran
+
+
 def start() -> None:
     scheduler.add_job(run_stocking, "cron", hour=6, minute=15, id="stocking", replace_existing=True,
                       misfire_grace_time=3600, coalesce=True)
@@ -131,6 +158,7 @@ def start() -> None:
     scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)
     scheduler.add_job(run_oha, "cron", hour=5, minute=45, id="oha", replace_existing=True, coalesce=True)
     scheduler.add_job(backup, "cron", hour=3, minute=30, id="backup", replace_existing=True)
+    scheduler.add_job(catch_up, "date", run_date=datetime.now(scheduler.timezone) + timedelta(seconds=5), id="catch_up", replace_existing=True)
     scheduler.start()
 
 
