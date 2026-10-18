@@ -21,7 +21,7 @@
 
   function palette() {
     return {
-      land: css('--land'), water: css('--water'), river: css('--river'), line: css('--line'),
+      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), line: css('--road'), gauge: css('--gauge'),
       f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), accent: css('--accent'), bg: css('--bg')
     };
   }
@@ -32,9 +32,14 @@
     if (withTiles) {
       style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 };
       style.layers.push(
+        { id: 'landuse', type: 'fill', source: 'oregon', 'source-layer': 'landuse',
+          filter: ['in', ['get', 'kind'], ['literal', ['park', 'forest', 'wood', 'national_park', 'nature_reserve', 'protected_area']]],
+          paint: { 'fill-color': c.forest, 'fill-opacity': 0.85 } },
+        { id: 'natural', type: 'fill', source: 'oregon', 'source-layer': 'natural',
+          filter: ['in', ['get', 'kind'], ['literal', ['forest', 'wood']]], paint: { 'fill-color': c.forest, 'fill-opacity': 0.85 } },
         { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', paint: { 'fill-color': c.water } },
         { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'LineString'],
-          paint: { 'line-color': c.river, 'line-width': 1 } },
+          paint: { 'line-color': c.river, 'line-width': 1.2 } },
         { id: 'roads', type: 'line', source: 'oregon', 'source-layer': 'roads',
           paint: { 'line-color': c.line, 'line-width': 0.8 } }
       );
@@ -59,7 +64,7 @@
     const c = palette();
     const stroke = css('--text');
     for (const [name, img] of Object.entries({
-      'gauge-icon': icon((g) => { g.fillStyle = c.bg; g.strokeStyle = stroke; g.lineWidth = 3; g.beginPath();
+      'gauge-icon': icon((g) => { g.fillStyle = c.gauge; g.strokeStyle = c.bg; g.lineWidth = 3; g.beginPath();
         g.moveTo(16, 3); g.lineTo(29, 16); g.lineTo(16, 29); g.lineTo(3, 16); g.closePath(); g.fill(); g.stroke(); }),
       'report-icon': icon((g) => { g.fillStyle = css('--text-quiet'); g.fillRect(6, 6, 20, 20); })
     })) { if (map.hasImage(name)) map.removeImage(name); map.addImage(name, img); }
@@ -120,7 +125,7 @@
       hasBasemap = withTiles;
       map = new maplibregl.Map({
         container: el, style: baseStyle(withTiles), center: [-122.9, 44.6], zoom: 7.4,
-        attributionControl: { compact: true }, maxBounds: [[-125.5, 41.5], [-116, 47]]
+        attributionControl: { compact: true }, padding: { left: window.innerWidth >= 900 ? 456 : 0 }, maxBounds: [[-125.5, 41.5], [-116, 47]]
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       map.on('load', () => { addLayers(); ready = true; });
@@ -163,6 +168,8 @@
       const c = palette(); const p = freshnessPaint();
       map.setPaintProperty('bg', 'background-color', c.land);
       if (hasBasemap) {
+        map.setPaintProperty('landuse', 'fill-color', c.forest);
+        map.setPaintProperty('natural', 'fill-color', c.forest);
         map.setPaintProperty('water', 'fill-color', c.water);
         map.setPaintProperty('waterway', 'line-color', c.river);
         map.setPaintProperty('roads', 'line-color', c.line);

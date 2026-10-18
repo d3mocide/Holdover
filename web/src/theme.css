@@ -1,9 +1,18 @@
+:root {
+  --glass: color-mix(in srgb, var(--bg) 58%, transparent);
+  --glass-strong: color-mix(in srgb, var(--bg) 78%, transparent);
+  --glass-line: rgba(255, 255, 255, 0.09);
+  --glass-fill: rgba(255, 255, 255, 0.045);
+  --glass-blur: blur(20px) saturate(1.5);
+  --road: var(--line); --forest: var(--land); --gauge: #6cb4ee; --glow-1: transparent; --glow-2: transparent;
+}
 :root[data-theme='fir'] {
-  --bg: #0f1a17; --surface: #17261f; --line: #25382f;
-  --primary: #2f6b52; --accent: #e8735a;
+  --bg: #0b1613; --surface: #16261f; --line: #2a4036;
+  --primary: #2f6b52; --accent: #f08a5d;
   --text: #e8f0ec; --text-quiet: #9db3a9;
-  --fresh-1: #3dd6b5; --fresh-2: #2a9d8f; --fresh-3: #46635d;
-  --land: #12201b; --water: #0c1613; --river: #2f7c86;
+  --fresh-1: #c4f16a; --fresh-2: #35d0b0; --fresh-3: #6b86a8;
+  --land: #0f1f19; --forest: #123022; --water: #0d3550; --river: #4aa8d0; --road: #3a5246;
+  --gauge: #6cb4ee; --glow-1: rgba(53, 208, 176, 0.16); --glow-2: rgba(240, 138, 93, 0.10);
   --on-accent: var(--bg); --on-primary: var(--text);
 }
 :root[data-theme='redband'] {
@@ -22,7 +31,9 @@
 * { box-sizing: border-box; }
 html, body, #app { height: 100%; margin: 0; }
 body {
-  background: var(--bg); color: var(--text);
+  background: radial-gradient(900px 600px at 8% -10%, var(--glow-1), transparent 60%),
+    radial-gradient(800px 600px at 100% 110%, var(--glow-2), transparent 60%), var(--bg);
+  background-attachment: fixed; color: var(--text);
   font: 400 15px/1.45 'IBM Plex Sans', system-ui, sans-serif;
   -webkit-text-size-adjust: 100%;
 }
@@ -54,3 +65,7 @@ label { display: block; margin-bottom: 4px; color: var(--text-quiet); font-size:
 .dot.older { background: var(--fresh-3); }
 .dot.upcoming { background: transparent; border: 2px solid var(--fresh-1); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.glass { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.dot.this_week { box-shadow: 0 0 8px var(--fresh-1); }

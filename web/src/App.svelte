@@ -132,46 +132,53 @@
 </div>
 
 <style>
-  .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; }
+  .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; gap: 12px; padding: 12px; }
+  .shell > :global(*) { grid-row: 1; }
   .shell > :global(.page) { grid-column: 2 / -1; }
-  .rail { background: var(--bg); border-right: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
+  .rail, .planner, .layers, .legend, .offline, .sheetwrap { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
   .logo { margin-bottom: 12px; }
   .navbtn { flex-direction: column; border: 0; background: none; width: 56px; height: 56px; gap: 2px; border-radius: 12px; color: var(--text-quiet); padding: 0; }
-  .navbtn[aria-current='page'] { background: var(--surface); color: var(--fresh-1); }
+  .navbtn[aria-current='page'] { background: var(--glass-fill); color: var(--fresh-1); box-shadow: inset 0 0 0 1px var(--glass-line), 0 0 18px var(--glow-1); }
   .lbl { font-size: 10px; }
   .spacer { flex: 1; }
-  .planner { border-right: 1px solid var(--line); background: var(--bg); overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
-  .mapwrap { position: relative; min-width: 0; }
-  .sheetwrap { position: absolute; top: 0; right: 0; bottom: 0; width: 340px; background: var(--bg); border-left: 1px solid var(--line); z-index: 5; }
+  .planner { grid-column: 2; z-index: 3; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+  .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-column: 1 / -1; }
+  .sheetwrap { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
   .page { overflow: auto; }
-  .layers { position: absolute; top: 12px; right: 56px; padding: 6px 12px; z-index: 2; background: var(--surface); }
+  .layers { position: absolute; top: 12px; right: 60px; padding: 6px 14px; z-index: 2; border-radius: 14px; }
   .lyr { display: flex; align-items: center; gap: 8px; min-height: 36px; margin: 0; color: var(--text); font-size: 13px; }
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 14px; padding: 8px 12px; font-size: 12px; z-index: 2; flex-wrap: wrap; max-width: calc(100% - 24px); }
+  .legend { position: absolute; left: 456px; bottom: 12px; border-radius: 14px; display: flex; gap: 14px; padding: 8px 12px; font-size: 12px; z-index: 2; flex-wrap: wrap; max-width: calc(100% - 24px); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .overlay { position: absolute; inset: 0; z-index: 15; background: var(--bg); }
   .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
+  .sym.diamond { background: var(--gauge); border-color: var(--bg); box-shadow: 0 0 0 1px var(--gauge); }
   .sym.diamond { transform: rotate(45deg); }
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
   .sheetwrap.wide { width: min(520px, 60%); }
-  .offline { position: absolute; left: 12px; top: 12px; z-index: 2; }
+  .page { grid-column: 2 / -1; }
+  .offline { position: absolute; left: 456px; top: 12px; z-index: 2; color: var(--text); }
 
   @media (max-width: 899px) {
-    .shell { grid-template-columns: 1fr; grid-template-rows: 1fr 64px; }
-    .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-right: 0; border-top: 1px solid var(--line); padding: 0 4px; order: 9; gap: 0; }
+    .shell { grid-template-columns: 1fr; grid-template-rows: 1fr 64px; gap: 0; padding: 0; }
+    .shell > :global(.page) { grid-column: 1; }
+    .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-radius: 0; border-width: 1px 0 0; padding: 0 4px; order: 9; gap: 0; }
     .logo, .spacer { display: none; }
     .navbtn { flex: 1; width: auto; height: 100%; }
     .shell > :global(*) { grid-column: 1; grid-row: 1; }
     .shell > .rail { grid-row: 2; }
-    .planner { z-index: 3; align-self: end; height: 42%; border: 1px solid var(--line); border-radius: 16px 16px 0 0; }
+    .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
     .planner.full { height: 100%; border-radius: 0; }
     .mapwrap.hide { display: none; }
-    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; height: 62%; z-index: 4; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; }
-    .layers { right: 12px; top: 64px; }
-    .offline { top: 64px; }
+    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: 0; height: 62%; z-index: 4; border-radius: 20px 20px 0 0; }
+    .layers { right: 60px; top: 12px; }
+    .offline { top: 12px; }
     .lyr.off { display: none; }
-    .legend { bottom: calc(42% + 12px); }
+    .legend { left: 12px; bottom: calc(42% + 12px); }
+    .offline { left: 12px; }
+    .mapwrap { inset: 0 0 64px 0; grid-column: 1; }
   }
 </style>
