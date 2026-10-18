@@ -43,6 +43,7 @@
     {/each}
   </div>
 
+  <div class="scroll">
   {#if error}
     <p role="alert">Couldn't load the day view ({error}).</p>
   {:else if c}
@@ -79,6 +80,7 @@
       <a href={d.waterbody.regs_url} target="_blank" rel="noopener">Official regulations on ODFW <Icon name="external" /></a>
     </div>
   {:else}<p class="quiet">Loading…</p>{/if}
+  </div>
 
   <div class="bar">
     <button class="primary" onclick={() => onlog(id)}>Log a trip here</button>
@@ -87,7 +89,8 @@
 </section>
 
 <style>
-  .day { padding: 16px 16px 96px; overflow-y: auto; height: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .day { padding: 16px 16px 0; overflow: hidden; height: 100%; display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 8px; }
   header { display: flex; gap: 12px; align-items: center; } .grow { flex: 1; min-width: 0; }
   h1 { font-size: 20px; } .small { font-size: 13px; margin: 0; } .zone { text-transform: capitalize; }
   .badge { border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
@@ -96,6 +99,6 @@
   .pk { border: 0; padding: 0; margin: 0; } .pk legend { padding: 0; }
   .ck { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text); margin: 0; font-size: 14px; }
   .ck input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; } .done { text-decoration: line-through; color: var(--text-quiet); }
-  .bar { position: sticky; bottom: 0; display: flex; gap: 8px; padding: 12px 0; background: var(--bg); margin-top: auto; }
+  .bar { flex: none; display: flex; gap: 8px; padding: 12px 0 16px; border-top: 1px solid var(--hair); }
   .bar button { flex: 1; }
 </style>

@@ -21,7 +21,7 @@
   let theme = $state(stored('holdover.theme', 'fir'));
   let view = $state('map');
   // The side panel sizes to its content: roomy for lists with detail, compact for the map list.
-  const PANEL = { map: 'min(380px, 40vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gauges: 'min(660px, 52vw)', settings: 'min(520px, 44vw)' };
+  const PANEL = { map: 'min(380px, 40vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
   let panelW = $state(380);
   let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
   $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
@@ -125,7 +125,7 @@
         {#if legendOpen}<Legend {theme} />
         {/if}
       </div>
-      <button class="offline" onclick={() => (offlineFor = selectedId)}><Icon name="offline" size={18} /> Prepare for offline</button>
+      <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline"><Icon name="offline" size={18} /> <span class="olbl">Prepare for offline</span></button>
   </div>
     {#if dayFor && view === 'map'}
       <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
@@ -140,7 +140,7 @@
 </div>
 
 <style>
-  .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
+  .shell { --sheet-w: min(340px, calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(520px, calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
   .shell > :global(*) { grid-row: 1; }
   .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .planner, .sheetwrap, .layers, .legend { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
@@ -154,10 +154,10 @@
   /* grid-area: auto keeps absolutely positioned children relative to the shell's padding box, so the map is
      full-bleed and every overlay offset is measured from the screen edge, not from the grid's inner padding. */
   .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-area: auto !important; }
-  .sheetwrap { grid-area: auto !important; position: absolute; top: 16px; right: 16px; bottom: 16px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
+  .sheetwrap { grid-area: auto !important; position: absolute; top: 16px; right: 16px; bottom: 16px; width: var(--sheet-w); border-radius: 20px; overflow: hidden; z-index: 5; }
   .mapwrap { --sheet-inset: 0px; }
-  .mapwrap.sheet { --sheet-inset: 356px; }
-  .mapwrap.wide { --sheet-inset: calc(min(520px, 60%) + 16px); }
+  .mapwrap.sheet { --sheet-inset: calc(var(--sheet-w) + 16px); }
+  .mapwrap.wide { --sheet-inset: calc(var(--wide-w) + 16px); }
   .mapwrap :global(.maplibregl-ctrl-top-right) { right: var(--sheet-inset); top: 16px; transition: right 0.25s ease; }
   .mapwrap :global(.maplibregl-ctrl-top-right .maplibregl-ctrl) { margin: 0 16px 0 0; }
   .layers { position: absolute; top: 16px; right: calc(76px + var(--sheet-inset)); padding: 6px; z-index: 2; border-radius: 14px; display: flex; flex-direction: column; transition: right 0.25s ease; }
@@ -175,9 +175,16 @@
   .sym.diamond { background: var(--gauge); border-color: var(--bg); box-shadow: 0 0 0 1px var(--gauge); }
   .sym.diamond { transform: rotate(45deg); }
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
-  .sheetwrap.wide { width: min(520px, 60%); }
+  .sheetwrap.wide { width: var(--wide-w); }
   .offline { position: absolute; left: calc(112px + var(--panel-w, 380px)); transition: left 0.25s ease; top: 16px; z-index: 2; color: var(--text); gap: 10px; padding: 0 20px; }
 
+  @media (max-width: 1099px) {
+    .mapwrap :global(.maplibregl-ctrl-top-right) { display: none; }
+    .layers { right: calc(16px + var(--sheet-inset)); }
+  }
+  @media (min-width: 900px) and (max-width: 1099px) {
+    .olbl { display: none; } .offline { padding: 0; width: 44px; }
+  }
   @media (max-width: 899px) {
     .shell { --nav-h: calc(64px + env(safe-area-inset-bottom, 0px)); grid-template-columns: 1fr; grid-template-rows: 1fr var(--nav-h); gap: 0; padding: 0; }
     .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-radius: 0; border-width: 1px 0 0; padding: 0 4px env(safe-area-inset-bottom, 0px); order: 9; gap: 0; }
