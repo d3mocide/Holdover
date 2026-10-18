@@ -3,7 +3,8 @@
   import Icon from './lib/Icon.svelte';
   import Logo from './lib/Logo.svelte';
   import MapView from './lib/MapView.svelte';
-  import Planner from './lib/Planner.svelte';
+  import PlanView from './lib/PlanView.svelte';
+  import MapCard from './lib/MapCard.svelte';
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
   import Gauges from './lib/Gauges.svelte';
@@ -45,8 +46,8 @@
   let dayFor = $state(null);
   let offset = $state(0);
   let fishery = $state('trout');
-  let spots = $state(null);
-  let spotsError = $state('');
+  let mapSpots = $state(null);  // today's ranking, for the Map card
+  let mapSpotsError = $state('');
   let showJournal = $state(true);
   let layersOpen = $state(false);
   let legendOpen = $state(false);
@@ -89,12 +90,12 @@
   async function load() {
     try { data = await api.map(); error = ''; } catch (e) { error = e.message; }
   }
-  $effect(() => {
-    const o = offset, f = fishery;
-    spotsError = '';
+  function loadMapSpots() {
+    mapSpotsError = '';
     const home = homeForRequests(); // signed in: the server uses the account's home; signed out: this device's
-    api.spots(isoDay(o), f, home).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
-  });
+    api.spots(isoDay(0), fishery, home).then((v) => (mapSpots = v)).catch((e) => (mapSpotsError = e.message));
+  }
+  $effect(() => { fishery; loadMapSpots(); });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
   $effect(() => { load(); loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
@@ -103,11 +104,13 @@
   const drawerOpen = $derived(gearEdit !== undefined || setupEdit !== undefined || editTrip !== undefined || logFor !== undefined);
   $effect(() => { if (drawerOpen) legendOpen = false; });
   const onMap = $derived(view === 'map' || (view === 'plan' && wide));
-  // With a sheet open beside the Plan list, the list narrows so the sheet can be wide.
+  // Only on a tight window (under 1280 px) does the Plan list narrow while a sheet is open; with room to spare it stays put.
+  let tight = $state(typeof innerWidth === 'number' ? innerWidth < 1280 : false);
+  $effect(() => { const f = () => (tight = innerWidth < 1280); addEventListener('resize', f); return () => removeEventListener('resize', f); });
   const select = (id) => { selectedId = id; dayFor = null; if (!onMap) view = 'map'; };
 </script>
 
-<div class="shell" class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
+<div class="shell" class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && tight && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
   <nav class="rail" aria-label="Main">
     <span class="logo"><Logo /></span>
     {#each tabs as [k, label, icon]}
@@ -123,10 +126,10 @@
 
   <button class="ptoggle" onclick={() => setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={collapsed ? 'Show panel' : 'Hide panel'} title={collapsed ? 'Show panel' : 'Hide panel'}><Icon name="trend_steady" size={18} /></button>
   <main class="planner" bind:clientWidth={panelW} class:gone={collapsed} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
-    {#if view === 'map' || view === 'plan'}
-      <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} />
+    {#if view === 'plan'}
+      <PlanView {data} {report} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} />
     {:else if view === 'settings'}
-      <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} />
+      <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); loadMapSpots(); }} />
     {:else if view === 'journal'}
       <Journal {wbList} onlog={() => (logFor = null)} onedit={(t) => (editTrip = t)} />
     {:else if view === 'gear'}
@@ -148,8 +151,8 @@
           <label class="lyr"><input type="checkbox" bind:checked={showFire} /> Fire danger and fires</label>
         {/if}
       </div>
-      <div class="legend glass" class:open={legendOpen} aria-label="Map legend">
-        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> <span class="lgl">Legend</span></button>
+      <div class="legend glass" class:open={legendOpen} role="group" aria-label="Map legend">
+        <button class="pill" aria-label="Legend" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> <span class="lgl">Legend</span></button>
         {#if legendOpen}<Legend {theme} />
         {/if}
       </div>
@@ -157,6 +160,9 @@
         <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
       {/if}
       <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
+      {#if view === 'map' && !drawerOpen}
+        <MapCard spots={mapSpots} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={select} onplan={() => go('plan')} error={mapSpotsError} />
+      {/if}
   </div>
     {#if dayFor && onMap}
       <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
@@ -195,7 +201,7 @@
   .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
   .logo { margin-bottom: 12px; }
   .navbtn { flex-direction: column; border: 0; background: none; width: 56px; height: 56px; gap: 2px; border-radius: 12px; color: var(--text-quiet); padding: 0; }
-  .navbtn[aria-current='page'] { background: var(--glass-fill); color: var(--fresh-1); box-shadow: inset 0 0 0 1px var(--glass-line), 0 0 18px var(--glow-1); }
+  .navbtn[aria-current='page'] { background: var(--glass-fill); color: var(--fresh-1); box-shadow: inset 0 0 0 1px var(--glass-line); }
   .lbl { font-size: 10px; }
   .spacer { flex: 1; }
   .planner { grid-column: 2; z-index: 3; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
@@ -223,6 +229,9 @@
   @media (min-width: 900px) {
     /* While a form drawer is open the map's left-hand controls (Legend) slide over to clear it. */
     .shell.drawer { --drawer-shift: calc(min(520px, calc(100% - 128px - var(--panel-w, 0px))) + 16px); }
+    /* On the Map tab the Best bets card sits where the side panel does, and Legend moves to its right. */
+    .shell.nopanel .legend { left: calc(112px + min(380px, calc(100% - 144px)) + 16px); }
+    .shell.nopanel.drawer .legend { left: calc(112px + var(--panel-w, 0px) + var(--drawer-shift, 0px)); }
     /* Beside the drawer there is little room: Legend shrinks to its icon (and its list is closed when a drawer opens). */
     .shell.drawer .lgl { display: none; }
     /* It opens right beside the panel it came from (Journal, Gear, ...), not at the far edge of the screen. */

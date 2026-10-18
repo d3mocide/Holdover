@@ -8,5 +8,4 @@
 
 <style>
   svg :global(.a) { fill: var(--fresh-1); opacity: 0.3; stroke: none; }
-  svg { filter: drop-shadow(0 0 10px var(--glow-1)); }
 </style>

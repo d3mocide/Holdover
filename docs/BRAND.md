@@ -117,7 +117,7 @@ Shared defaults (all themes, in `:root`): `--warn: #e9b44c`, `--glass-line: rgba
 | `--gauge` | Stream gauges | The diamond marker and its icon, always |
 | `--warn` | "Fair" and favorite star | Report chip "fair", the favorite star |
 | `--land`, `--forest`, `--water`, `--river`, `--shore`, `--road`, `--road-minor` | Basemap | Never used for UI chrome |
-| `--glow-1`, `--glow-2` | Atmosphere | The soft gradient behind non-map pages and glow on selections |
+| `--glow-1`, `--glow-2` | Atmosphere | The soft gradient behind non-map pages. No glows on UI elements (selection is a crisp outline) |
 
 Rules:
 - **Do not use red and green to mean good and bad.** Freshness uses separated hues plus size and shape, so it reads
@@ -169,7 +169,7 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
   (68% tall for pages, 62% for the detail sheet) above a 64 px nav bar plus the safe area.
 - **Breakpoints:** 900 px (phone layout below), 1100 px (zoom buttons and the offline label are hidden below it).
 - **Phone sheets are opaque** (`--bg`, no blur): nothing may ghost through.
-- Page backgrounds carry a soft two-glow gradient from `--glow-1` and `--glow-2`.
+- Page backgrounds carry a soft two-tint gradient from `--glow-1` and `--glow-2`. **No glowing halos on UI elements** (buttons, nav, scores, icons): they read as cheesy; use outlines and fills. Map markers keep their own halos because those encode meaning.
 
 ## 7. Iconography
 

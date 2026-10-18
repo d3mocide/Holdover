@@ -87,7 +87,7 @@
   h3 { margin-top: 10px; }
   .close { position: absolute; top: 8px; right: 8px; padding: 0; }
   .star { position: absolute; top: 8px; right: 60px; padding: 0; border: 0; background: none; color: var(--text-quiet); }
-  .star.on { color: var(--warn); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--warn) 55%, transparent)); }
+  .star.on { color: var(--warn); }
   .small { font-size: 13px; margin: 0; } .err { color: var(--accent); }
   ul { list-style: none; margin: 0; padding: 0; }
   .grow { flex: 1; }

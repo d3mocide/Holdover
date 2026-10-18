@@ -83,14 +83,12 @@ label { display: block; margin-bottom: 4px; color: var(--text-quiet); font-size:
 
 .glass { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
-.dot.this_week { box-shadow: 0 0 8px var(--fresh-1); }
 
 .glass-dense { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
   border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
 .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); }
 button:hover:not(:disabled):not(.primary) { background: rgba(255, 255, 255, 0.08); }
-button.primary { box-shadow: 0 4px 18px color-mix(in srgb, var(--accent) 35%, transparent); font-weight: 600; }
-button.chip[aria-pressed='true'] { box-shadow: 0 0 16px var(--glow-1); }
+button.primary { font-weight: 600; }
 
 /* Branded checkbox + radio: replaces the browser defaults */
 input[type='checkbox'], input[type='radio'] {
@@ -103,7 +101,7 @@ input[type='radio'] { border-radius: 50%; }
 input[type='checkbox']:checked { background: var(--accent); border-color: var(--accent); }
 input[type='checkbox']:checked::after { content: ''; width: 5px; height: 10px; border: solid var(--on-accent); border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px, -1px); }
 input[type='radio']:checked { border-color: var(--accent); }
-input[type='radio']:checked::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+input[type='radio']:checked::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
 /* Scrollbars */
@@ -143,4 +141,4 @@ input[type='file']::file-selector-button { min-height: 44px; margin-right: 12px;
 input[type='file']::file-selector-button:hover { background: rgba(255, 255, 255, 0.08); }
 fieldset { min-width: 0; }
 .stat-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
-.stat-dot.ok { background: var(--fresh-2); box-shadow: 0 0 8px var(--fresh-2); } .stat-dot.bad { background: var(--accent); }
+.stat-dot.ok { background: var(--fresh-2); } .stat-dot.bad { background: var(--accent); }

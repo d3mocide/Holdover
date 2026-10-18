@@ -409,3 +409,29 @@ Found by using the dev stack from a second PC over plain HTTP.
 - Verified: 172 `pytest`, 42 frontend tests, axe zero on every view touched (desktop, tablet, phone). Not verified: a real phone, the
   Plan list with a sheet open at exactly 900 px (24 px of map shows), and iOS.
 
+### 2026-10-18 · this commit · Phase 5 · Map answers "where today?", Plan looks ahead; sheet and chrome cleanup
+Owner feedback after using the dev stack. The Map tab and the Plan tab had become the same list; they are now different jobs.
+- **Map: a "Best bets today" card** (`MapCard.svelte`) where the side panel used to sit: the day's top five for the chosen fishery with
+  a short reason, tap to open the waterbody, "Plan ahead" link; collapsible (collapsed by default on a phone). Legend sits to its right.
+- **Plan: look ahead** (`PlanView.svelte`). "Next 7 days": one ranking per day (seven requests in parallel), each day a row showing its
+  top three, tap to open the full ranked list with "why this score" (`SpotList.svelte`); the weekly-report card moved to `ReportCard.svelte`.
+  "Further out": ODFW's published stocking schedule by month (about a year ahead), weeks from this week onward, each expandable to the
+  waterbodies and fish counts; new endpoint `GET /api/schedule` (weeks in a range, newest snapshot wins, confirmed waterbodies only, plus a
+  forward-looking month summary). It is the trout schedule only, and says weeks, not days. Header is now a light underlined tab bar
+  over the fishery chips (the two identical chip rows felt heavy); the Plan list no longer narrows when a sheet opens unless the window is
+  under 1280 px.
+- **The sheet shows only alerts**: no "no algae advisory" or "no wildfire" sentences; the Fire block appears only with a wildfire within
+  50 km or ODF danger of Moderate or higher. **Stocking is its own section** (`StockingList.svelte`): coming up first, a year on a week only
+  when it is not the current year, four rows then "Show N more weeks", same in the Day view.
+- **Chrome**: Layers and Legend use the clear glass until opened (dense when their lists show); Legend is top-left; Prepare for offline is
+  an icon under the zoom control; trip and gear forms open as a drawer beside the panel; native select lists use theme colours.
+  **All glows removed** (nav, chips, scores, icons, the logo, the favourite star, primary buttons): outlines and fills only; the map's own
+  marker halos stay. BRAND.md updated.
+- Verified: 177 `pytest` (4 new on the schedule endpoint), 47 frontend tests (3 new), axe zero on the Map card, Plan (both modes), sheets
+  and the drawers at desktop, tablet and phone widths; browser suites offline 12/12, accounts 37/37, gear 46/46 (selectors now target
+  `.spot` rows because the day headers repeat spot names; Legend gained an accessible name and a group role after axe flagged its
+  icon-only state). Not verified: a real phone; the Further out view with the LLM-era report data; months with no schedule.
+- Open, in this order: the AI/LLM review (traces from b50 show the 9B is a reasoning model whose answer arrives in a `reasoning` field, now
+  handled; prompts re-run), then a dedicated Reports page (owner approved reposting ODFW's wording), then "what's biting where" from our
+  own report data.
+

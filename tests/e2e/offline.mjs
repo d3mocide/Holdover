@@ -24,7 +24,7 @@ ok(/OpenStreetMap/.test(await p.locator('.maplibregl-ctrl-attrib-inner').first()
 
 // select a stocked waterbody with a gauge (the spot list is in the Plan tab), then prepare for offline
 await p.getByRole('button', { name: 'Plan', exact: true }).first().click(); await p.waitForTimeout(500);
-await p.getByRole('button', { name: /Dexter Reservoir/ }).click(); await p.waitForTimeout(1000);
+await p.locator('.spot', { hasText: 'Dexter Reservoir' }).click(); await p.waitForTimeout(1000);
 await p.getByRole('button', { name: 'Prepare for offline' }).first().click();
 await p.getByLabel('Map detail').selectOption('8');
 await p.getByRole('button', { name: 'Save for offline' }).click();
@@ -39,7 +39,7 @@ await ctx.setOffline(true);
 await p.reload(); await p.waitForTimeout(3500);
 ok((await p.title()) === 'Holdover', 'app shell loads offline');
 await p.getByRole('button', { name: 'Plan', exact: true }).first().click(); await p.waitForTimeout(500);
-ok(await p.getByRole('button', { name: /Dexter Reservoir/ }).isVisible(), 'cached stocking list renders offline');
+ok(await p.locator('.spot', { hasText: 'Dexter Reservoir' }).isVisible(), 'cached stocking list renders offline');
 await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/offline-map.png' : undefined });
 
 await p.getByRole('button', { name: 'Journal' }).click();

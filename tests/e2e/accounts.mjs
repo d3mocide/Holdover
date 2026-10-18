@@ -33,7 +33,7 @@ ok(/\/\?invite=[\w-]{20,}$/.test(link), 'invite link created: ' + link.replace(/
 await a.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/acct-admin.png' : undefined });
 // favorite via star, then see it in Settings
 await nav(a, 'Plan'); await a.waitForTimeout(800);
-await a.getByRole('button', { name: /Dexter Reservoir/ }).first().click(); await a.waitForTimeout(1500);
+await a.locator('.spot', { hasText: 'Dexter Reservoir' }).first().click(); await a.waitForTimeout(1500);
 await a.getByRole('button', { name: /Add Dexter Reservoir to favorites/ }).click(); await a.waitForTimeout(800);
 ok(await a.getByRole('button', { name: /Remove Dexter Reservoir from favorites/ }).isVisible(), 'star toggles to favorite');
 await a.getByRole('button', { name: 'Close details' }).click();

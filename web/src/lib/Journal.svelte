@@ -93,6 +93,6 @@
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   .gearline { display: flex; align-items: center; gap: 6px; color: var(--fresh-2); }
   .empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 36px 20px; }
-  .empty .eico { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair), 0 0 28px var(--glow-1); }
+  .empty .eico { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair); }
   .empty p { margin: 0 0 8px; max-width: 360px; } .empty button { position: static; color: var(--on-accent); border: 1px solid var(--accent); background: var(--accent); }
 </style>

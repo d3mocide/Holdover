@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import scheduler
-from app.api import accounts, admin, conditions, fire, journal, planner, reports, stocking
+from app.api import accounts, admin, conditions, fire, journal, planner, reports, schedule, stocking
 from app.config import get_settings
 from app.version import __version__
 
@@ -44,6 +44,7 @@ app.include_router(reports.router, prefix="/api")
 app.include_router(conditions.router, prefix="/api")
 app.include_router(journal.router, prefix="/api")
 app.include_router(fire.router, prefix="/api")
+app.include_router(schedule.router, prefix="/api")
 app.include_router(planner.router, prefix="/api")
 app.include_router(accounts.router, prefix="/api")
 app.include_router(admin.router, prefix="/api/admin")

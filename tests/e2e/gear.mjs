@@ -102,7 +102,7 @@ ok(e1.trips.filter(t => !t.deleted).length === 1, 'editing updated the trip in p
 ok(e1.trips[0].notes === 'edited in the evening' && e1.catches.find(c => !c.deleted).count === 3, 'the server has the new notes and the new count');
 // ---- your history shows on the waterbody sheet
 await nav(p, 'Plan'); await p.waitForTimeout(600);
-await p.getByRole('button', { name: /Dexter Reservoir/ }).first().click(); await p.waitForTimeout(2200);
+await p.locator('.spot', { hasText: 'Dexter Reservoir' }).first().click(); await p.waitForTimeout(2200);
 ok(await p.getByText('Your history here').isVisible(), 'the sheet shows your history at this waterbody');
 ok(await p.getByText('1 trip · 3 fish').isVisible(), 'history: trips and fish');
 ok(await p.getByText('3 rainbow trout', { exact: true }).isVisible(), 'history: catches by species');
@@ -113,7 +113,7 @@ await axe(p, 'Sheet with history');
 await p.getByRole('button', { name: 'Close details' }).click(); await p.waitForTimeout(300);
 // ---- the pack list says what you already own
 await nav(p, 'Plan'); await p.waitForTimeout(400);
-await p.getByRole('button', { name: /Dexter Reservoir/ }).first().click(); await p.waitForTimeout(1800);
+await p.locator('.spot', { hasText: 'Dexter Reservoir' }).first().click(); await p.waitForTimeout(1800);
 await p.getByRole('button', { name: /Plan the day/ }).click(); await p.waitForTimeout(2500);
 ok(await p.getByText(/You have: Panther Martin spinner/).first().isVisible(), 'pack list: shows gear you already own for a template item');
 const claim = (await p.evaluate(() => document.body.innerText)).match(/.{0,50}(missing|you need to buy|you should buy).{0,50}/i);

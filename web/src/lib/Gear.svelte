@@ -146,7 +146,7 @@
   .tag.off { color: var(--text-quiet); border-color: var(--hair); }
   .qty { color: var(--text-quiet); flex: none; }
   .empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 32px 20px; }
-  .eico { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair), 0 0 28px var(--glow-1); }
+  .eico { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair); }
   .empty p { margin: 0 0 8px; max-width: 380px; }
   .stat { display: flex; flex-direction: column; gap: 2px; } .nums { font-size: 13px; color: var(--text-quiet); }
 </style>
