@@ -1,15 +1,17 @@
 # Moving to your laptop: first-run checklist
 
+**Update 2026-10-17 (first laptop run):** the Dockerfile builds and runs; myodfw.com returns 200 to Python from a home network (item 1 below is cleared, but re-check from the server); 75 tests and the offline e2e pass; the Oregon basemap is installed (`docs/basemap.md`). Still open: items 2 to 5, HTTPS/phone testing (waiting on the server move), and the data review.
+
 Everything below was built and tested in a cloud sandbox with fixtures and a few live reads. These are the
 things that could **not** be proven there. Work down the list; each has the command that checks it.
 
 ## 0. Get it running
 
-    git clone https://github.com/d3mocide/Holdover && cd Holdover && git checkout claude/phase-1-foundation
+    git clone https://github.com/d3mocide/Holdover && cd Holdover
     cp .env.example .env            # set HOLDOVER_TOKEN, USER_AGENT (with a contact address), HOME_LAT, HOME_LON
-    docker compose up --build       # the Dockerfile was NOT built in the sandbox (no Docker daemon)
+    docker compose up --build       # built and run on the laptop 2026-10-17; host port is HOLDOVER_PORT (default 8000)
 
-Or without Docker: `pip install -e '.[dev]'`, `pytest` (74 tests), `cd web && npm ci && npm run build`, then
+Or without Docker: `pip install -e '.[dev]'`, `pytest` (75 tests), `cd web && npm ci && npm run build`, then
 `python -m app.cli migrate && python -m app.cli seed && uvicorn app.main:app`.
 
 ## 1. Must check from your own network

@@ -15,3 +15,7 @@ With the compose setup the file lives in the `holdover-data` volume. Install it 
     docker compose cp oregon.pmtiles holdover:/data/tiles/oregon.pmtiles
     docker compose exec -u root holdover chown -R holdover /data/tiles
     docker compose restart holdover   # /tiles is only mounted at startup if the directory exists
+
+The `pmtiles` CLI is a single Go binary: https://github.com/protomaps/go-pmtiles/releases (the extract above transferred about 550 MB and took about 15 seconds on a home connection).
+
+The map draws lakes and reservoirs as closed polygons and rivers from their centerlines. River polygons in OSM are often open-ended, so they only fade in at high zoom (`web/src/lib/MapView.svelte`).

@@ -20,9 +20,9 @@ Record the outcome here **before** first scraping a source. Status as of 2026-10
 - The week column reads `Oct. 12, 2026 - Oct. 16, 2026` on some rows and `Sep. 14, 2026-Sep. 18, 2026` on others. The parser reads only the start date, which is a Monday.
 - Some rows have a blank office (`Willamette /`).
 
-## Known problem: Python HTTP client gets 403
+## Resolved: Python HTTP client got 403 in the build sandbox
 
-From this build environment, `curl` fetched myodfw.com normally while `httpx` (HTTP/1.1 and HTTP/2, any User-Agent) received `403 Forbidden`. The cause is not confirmed (likely client fingerprinting by the site's edge, possibly the build sandbox's proxy). No workaround was attempted. Fixtures were captured with `curl`. **Check from the real deployment network.** If the 403 persists there, `/healthz` will show the source as stale with `HTTP 403`; the options are asking ODFW whether they provide a feed, or a curl-based fetcher, which is the owner's call.
+From this build environment, `curl` fetched myodfw.com normally while `httpx` (HTTP/1.1 and HTTP/2, any User-Agent) received `403 Forbidden`. The cause is not confirmed (likely client fingerprinting by the site's edge, possibly the build sandbox's proxy). No workaround was attempted. Fixtures were captured with `curl`. **Resolved 2026-10-17:** from a home network, httpx fetched all 11 stocking pages normally (500 rows) with an honest `Holdover/0.1 (+repo URL)` User-Agent, so the 403 was the build sandbox. The original note follows. **Still check from the real server when you deploy.** If the 403 persists there, `/healthz` will show the source as stale with `HTTP 403`; the options are asking ODFW whether they provide a feed, or a curl-based fetcher, which is the owner's call.
 
 ## Python HTTP client status by host (2026-10-17)
 
