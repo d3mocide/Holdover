@@ -372,3 +372,16 @@ The owner's prod server logged `LLM unavailable: HTTP 500`. Tested from the lapt
   only); explanations (`run_explain`) and pack intros with this model were not run; behaviour under load or while the model
   is busy with other work.
 
+### 2026-10-18 · this commit · Phase 9 · LLM in the dev stack; explanations and pack intros run for real
+The dev compose file now passes `LLM_BASE_URL`, `LLM_MODEL` and `LLM_API_KEY`. With the owner's server (`gemma4-e4b`):
+the report job extracted and summarised all 5 zones (0 errors, about 125 s) and `run_explain` generated planner
+explanations and pack intros for trout, steelhead and warmwater.
+- Verified: the guard worked on live output: 3 trout explanations were rejected for terms not in the facts ("October",
+  "September") and fall back to the template; the rest were accepted (trout 8 of 11, steelhead 3, warmwater 5; pack intros 10, 3
+  and 3, none rejected). A sample accepted explanation: "The forecast calls for 63F with no rain and a light 2 mph wind.
+  Daylight lasts from 07:33 to 18:21, and the spot is 99 mi straight-line." (the 12/24-hour setting rewrites such times when shown).
+- Not verified: wording quality beyond a handful of samples read by eye, how the 3 rejections vary run to run, and the
+  review flow in the UI with these items (needs a signed-in admin in the dev stack).
+- Dev notes: the Vite dev server serves the map through its `/tiles` proxy (range requests checked); the dev volume has no tiles
+  until `scripts/install-basemap.sh` is run against it (`COMPOSE="docker compose -f docker-compose.dev.yml" SERVICE=api`).
+
