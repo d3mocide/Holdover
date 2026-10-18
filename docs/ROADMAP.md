@@ -179,7 +179,8 @@ its server.
 
 **Gate:** installed on a real phone over HTTPS and used offline; a real LLM tried; a backup restored; and the USGS data source migrated before the legacy API is retired.
 
-- [ ] **Deadline: migrate USGS to the new Water Data API before early 2027.** The legacy `waterservices.usgs.gov` endpoint the app uses is being retired. The replacement was verified to serve all 16 gauges in one request ([data-source-options.md](data-source-options.md))
+- [x] **USGS migrated to the Water Data API** (done 2026-10-18, ahead of the early-2027 retirement of `waterservices.usgs.gov`): all 16 gauges, same values, no key; routine polls use latest values, with gap-fill and a first-run backfill ([data-source-options.md](data-source-options.md))
+- [ ] Delete the legacy USGS fallback (`USGS_API=legacy`) once USGS retires the old endpoint
 - [x] Per-address login throttle that works behind a proxy (`TRUSTED_PROXY_HOPS`; tested with spoofed headers)
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings

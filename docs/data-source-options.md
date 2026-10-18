@@ -25,6 +25,8 @@ publisher states, not legal advice, and per [AGENTS.md](../AGENTS.md) a new sour
 
 ## 1. USGS Water Data API: do this first (deadline)
 
+**Status: done 2026-10-18** (see BUILD_LOG). Kept below as the research record.
+
 **Why it is urgent.** Holdover reads `waterservices.usgs.gov/nwis/iv`. USGS's own notice (January 2026) says
 "WaterServices APIs will be decommissioned early 2027" and that a campaign running November 2026 through February 2027
 "will retire all remaining NWISWeb pages and WaterServices". A government bulletin gives February 22, 2027, which I could

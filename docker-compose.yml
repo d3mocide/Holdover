@@ -7,6 +7,7 @@ services:
     environment:
       USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
       TZ: America/Los_Angeles
+      USGS_API: ${USGS_API:-ogc}   # ogc (default) or legacy; legacy is retired by USGS in early 2027
       TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-0}   # set to 1 behind one reverse proxy so the login throttle sees real client addresses
       COOKIE_SECURE: ${COOKIE_SECURE:-}   # empty: Secure when the request is HTTPS (directly or via X-Forwarded-Proto)
       HOME_LAT: ${HOME_LAT:-}

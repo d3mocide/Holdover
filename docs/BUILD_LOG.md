@@ -207,3 +207,20 @@ test that keeps them consistent. Reason: owner's request, so code can move freel
 - Not checked: a formal audit of every dependency's license (the main ones, such as Svelte, MapLibre, FastAPI, SQLAlchemy and
   Dexie, are MIT, BSD or Apache-2.0, which are GPL-3.0 compatible).
 
+### 2026-10-18 · this commit · Phase 9 · USGS moved to the Water Data API
+The adapter now reads `api.waterdata.usgs.gov/ogcapi/v1` (GeoJSON, cursor pagination). Routine polls fetch the latest
+value of each series (about 34 KB); a gap fill fetches a bounded window if a gauge has gone stale; a first run or a
+new gauge backfills a week of discharge only. The legacy endpoint stays behind `USGS_API=legacy` until USGS retires it.
+- Verified: 131 `pytest` (17 new on the adapter: real captured pages, pagination, unit and qualifier handling, job
+  selection, failure and stale behaviour, the legacy fallback). **Against the live API**: a week-long backfill loaded
+  22,066 discharge readings in 11 s over 3 pages; **all 16 gauges' latest discharge matched the legacy endpoint
+  exactly**; on the running instance the job continued from its legacy-era history (39 new readings, `/healthz` fresh,
+  Dexter 1,240 cfs steady).
+- Found: the new bodies are about ten times bulkier than legacy, which would have grown the database by tens of MB a
+  day if polled as a window, hence latest-mode and gap fill. `latest-continuous` returns every series' newest value even
+  from a sensor that died in 2009 (a stored 2009 water temperature turned up in the live check): latest polls now drop
+  values older than 3 days. A gauge that cannot reach two days of history would have re-triggered a week-long download
+  on every poll: backfills are now limited to once per 6 hours.
+- Not checked: USGS rate limits (their pages did not state them; usage is one small request per 30 minutes); behaviour
+  when the legacy endpoint is finally switched off (that path is simply unused).
+

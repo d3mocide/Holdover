@@ -85,3 +85,16 @@ def anonymous_client():
     c = TestClient(app)
     c.headers["X-Holdover"] = "1"
     return c
+
+
+def usgs_fetch():
+    """A fake USGS Water Data API: two real captured pages (the first carries a real `next` cursor), then an empty one."""
+    pages = [(FIX / "usgs" / "continuous_p1.json").read_bytes(), (FIX / "usgs" / "continuous_p2.json").read_bytes()]
+    empty = b'{"type": "FeatureCollection", "features": [], "numberReturned": 0, "links": []}'
+    calls = []
+
+    def fetch(url):
+        calls.append(url)
+        return 200, pages[len(calls) - 1] if len(calls) <= len(pages) else empty
+    fetch.calls = calls
+    return fetch

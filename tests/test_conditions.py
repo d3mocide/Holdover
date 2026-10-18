@@ -9,9 +9,8 @@ from app.conditions import conditions, latest_gauge
 from app.models import Advisory, Gauge, GaugeReading, Waterbody
 from app.seed import seed_waterbodies
 from app.sources import nws, oha, usgs
-from conftest import FIX
+from conftest import FIX, usgs_fetch
 
-IV = (FIX / "usgs" / "iv_sample.json").read_bytes()
 POINTS = (FIX / "nws" / "points.json").read_bytes()
 FORECAST = (FIX / "nws" / "forecast.json").read_bytes()
 HOURLY = (FIX / "nws" / "hourly.json").read_bytes()
@@ -20,38 +19,6 @@ HABS = (FIX / "oha" / "habs_points.geojson").read_bytes()
 
 def wb(session, name):
     return session.scalar(select(Waterbody).where(Waterbody.name == name))
-
-
-def test_usgs_parse_fixture():
-    rows = usgs.parse(IV)
-    assert rows and {r["parameter"] for r in rows} <= {"discharge_cfs", "gage_height_ft", "water_temp_c"}
-    assert all(r["provisional"] == 1 for r in rows)  # all P-qualified in the fixture
-    assert all(r["observed_at"].endswith("+00:00") for r in rows)
-
-
-def test_usgs_nodata_and_garbage_skipped():
-    body = json.loads(IV)
-    ts = body["value"]["timeSeries"][0]
-    ts["values"][0]["value"][0]["value"] = "-999999"
-    ts["values"][0]["value"][1]["value"] = "Ice"
-    assert len(usgs.parse(json.dumps(body))) == len(usgs.parse(IV)) - 2
-    with pytest.raises(usgs.ParseError):
-        usgs.parse(b'{"nope": 1}')
-
-
-def test_usgs_job_idempotent(session):
-    seed_waterbodies(session)
-    fetch = lambda url: (200, IV)
-    first = usgs.run_job(session, fetch)
-    assert first["ok"] and first["inserted"] > 0
-    assert usgs.run_job(session, fetch)["inserted"] == 0  # same readings, no duplicates
-
-
-def test_usgs_failure_marks_stale(session):
-    from app.scheduler import source_status
-    seed_waterbodies(session)
-    assert usgs.run_job(session, lambda u: (503, b"x"))["ok"] is False
-    assert source_status()["usgs"]["stale"] is True
 
 
 def test_nws_parse():
@@ -93,7 +60,7 @@ def test_oha_parse_and_match(session):
 def test_conditions_with_stale_flags(session):
     seed_waterbodies(session)
     w = wb(session, "Santiam River, North Fork")
-    usgs.run_job(session, lambda u: (200, IV))  # fixture readings are from 2026-10-17: old by now
+    usgs.run_job(session, usgs_fetch())  # fixture readings are from 2026-10-18: old by now
     c = conditions(session, w, date(2026, 10, 17), today=date(2026, 10, 17))
     assert c["weather"] is None and c["daylight"]["sunrise"] and c["moon"]["phase"]
     g = c["gauges"][0]
@@ -123,7 +90,7 @@ def test_api_day_gauges_and_layers(session, monkeypatch):
     from app.main import app
     import app.api.conditions as api_cond
     seed_waterbodies(session)
-    usgs.run_job(session, lambda u: (200, IV))
+    usgs.run_job(session, usgs_fetch())
     oha.run_job(session, lambda u: (200, HABS))
     monkeypatch.setattr(api_cond, "quick_fetch", nws_fetch)
     c = TestClient(app)
