@@ -2,13 +2,14 @@
 
 Generated 2026-10-18 from `app/seed.py`. Coordinates marked Verified were matched to a same-named lake, pond or reservoir in the OpenStreetMap data inside the basemap (`scripts/check_coords.py`); Snapped means the nearest point on the same-named river or creek line. **This is a cross-check against OSM, not a field survey**: OSM label points sit inside the water but not necessarily where you fish.
 
-Fix or place any pin without a code change (token from `.env`):
+Fix or place any pin without a code change. It needs an admin session (there is no token any more), so sign in with a cookie jar first:
 
-    curl -X POST localhost:8010/api/admin/waterbodies/<id>/coords \
-      -H "Authorization: Bearer $HOLDOVER_TOKEN" -H 'content-type: application/json' \
+    curl -c jar -X POST localhost:8010/api/auth/login -H 'X-Holdover: 1' -H 'content-type: application/json' \
+      -d '{"username": "YOU", "password": "..."}'
+    curl -b jar -X POST localhost:8010/api/admin/waterbodies/<id>/coords -H 'X-Holdover: 1' -H 'content-type: application/json' \
       -d '{"lat": 44.0, "lon": -123.0}'      # {"lat": null, "lon": null} removes the pin
 
-`GET /api/waterbodies` lists the ids. The seed only corrects a row that still holds its original hand-entered value, so a pin you set this way is never overwritten.
+`GET /api/waterbodies` lists the ids (no sign-in needed). The seed only corrects a row that still holds its original hand-entered value, so a pin you set this way is never overwritten.
 
 | Status | Waterbody | Kind | Lat | Lon |
 | --- | --- | --- | --- | --- |

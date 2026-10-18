@@ -3,11 +3,14 @@
   import Conditions from './Conditions.svelte';
   import { db } from './db.js';
   import Icon from './Icon.svelte';
+  import { isFavorite, toggleFavorite } from './auth.svelte.js';
   let { id, onclose, onday, onlog } = $props();
   let mine = $state([]);
   let mineCatch = $state([]);
   let wb = $state(null);
   let error = $state('');
+  let favMsg = $state('');
+  const star = async () => { favMsg = ''; try { await toggleFavorite(id); } catch (e) { favMsg = e.message; } };
 
   // Scheduled weeks first (soonest first), then past weeks (newest first).
   const ordered = $derived(
@@ -35,7 +38,11 @@
     <p class="quiet">Loading…</p>
   {:else}
     <h2>{wb.name}</h2>
+    <button class="star" class:on={isFavorite(wb.id)} aria-pressed={isFavorite(wb.id)} onclick={star}
+      aria-label={isFavorite(wb.id) ? `Remove ${wb.name} from favorites` : `Add ${wb.name} to favorites`}>
+      <Icon name={isFavorite(wb.id) ? 'star_fill' : 'star'} size={22} /></button>
     <p class="quiet small">{wb.stocking[0]?.zone_office ?? wb.zone}</p>
+    {#if favMsg}<p role="alert" class="small err">{favMsg}</p>{/if}
 
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
@@ -80,10 +87,12 @@
 
 <style>
   .sheet { position: relative; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; height: 100%; }
-  h2 { font-size: 22px; letter-spacing: -0.01em; padding-right: 48px; }
+  h2 { font-size: 22px; letter-spacing: -0.01em; padding-right: 108px; }
   h3 { margin-top: 10px; }
   .close { position: absolute; top: 8px; right: 8px; padding: 0; }
-  .small { font-size: 13px; margin: 0; }
+  .star { position: absolute; top: 8px; right: 60px; padding: 0; border: 0; background: none; color: var(--text-quiet); }
+  .star.on { color: var(--warn); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--warn) 55%, transparent)); }
+  .small { font-size: 13px; margin: 0; } .err { color: var(--accent); }
   ul { list-style: none; margin: 0; padding: 0; }
   .srow { display: flex; gap: 8px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--hair); }
   .wk { white-space: nowrap; }

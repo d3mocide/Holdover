@@ -5,9 +5,9 @@ services:
     ports: ["${HOLDOVER_PORT:-8000}:8000"]   # put your TLS reverse proxy in front; service workers need HTTPS
     volumes: ["holdover-data:/data"]
     environment:
-      HOLDOVER_TOKEN: ${HOLDOVER_TOKEN:?set HOLDOVER_TOKEN}
       USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
       TZ: America/Los_Angeles
+      COOKIE_SECURE: ${COOKIE_SECURE:-}   # empty: Secure when the request is HTTPS (directly or via X-Forwarded-Proto)
       HOME_LAT: ${HOME_LAT:-}
       HOME_LON: ${HOME_LON:-}
       LLM_BASE_URL: ${LLM_BASE_URL:-}

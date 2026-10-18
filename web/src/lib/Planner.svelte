@@ -1,4 +1,6 @@
 <script>
+  import Icon from './Icon.svelte';
+  import { isFavorite } from './auth.svelte.js';
   import { FRESH_LABEL, weekLabel, hhmm, longDate, dayLabel, FISHERIES, FACTOR_LABEL } from './api.js';
   let { data, report, spots, offset, fishery, onoffset, onfishery, spotsError, selectedId, error, onselect, onreview, canReview } = $props();
   const rep = $derived(report?.report);
@@ -47,7 +49,7 @@
         <button class="spot" onclick={() => onselect(s.waterbody.id)}>
           <span class="mono rank">{s.rank}</span>
           <span class="body">
-            <span class="name">{s.waterbody.name}</span>
+            <span class="name">{s.waterbody.name}{#if isFavorite(s.waterbody.id)} <span class="fav" title="Favorite"><Icon name="star_fill" size={14} /></span>{/if}</span>
             <span class="why small quiet">{s.explanation.text}</span>
           </span>
           <span class="end">
@@ -110,7 +112,7 @@
   .spot { width: 100%; justify-content: flex-start; align-items: flex-start; text-align: left; border: 0; background: none; padding: 8px 12px; gap: 10px; height: auto; }
   .rank { color: var(--text-quiet); min-width: 18px; padding-top: 2px; }
   .body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-  .name { font-weight: 500; }
+  .name { font-weight: 500; } .fav { color: var(--warn); display: inline-flex; vertical-align: -2px; }
   .why { white-space: pre-line; }
   .end { display: flex; align-items: center; gap: 8px; padding-top: 2px; }
   .score { font-size: 24px; font-weight: 600; line-height: 1; color: var(--text-quiet); }

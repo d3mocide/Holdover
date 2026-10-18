@@ -32,4 +32,4 @@ httpx got 200 from waterservices.usgs.gov, api.weather.gov and services.arcgis.c
 
 - Gauge site numbers, names and coordinates in `app/seed.py` were checked against the live USGS service. Which gauge represents which waterbody (`GAUGE_LINKS`) is my judgement: review it.
 - OHA waterbody names are matched to the seed with the same exact-after-generic-words rule as report items (`Detroit Lake` matches `Detroit Reservoir`). Unmatched OHA waters get no marker; they are not guessed.
-- `starred` waterbodies get hourly NWS refreshes. None are starred yet (`POST /api/admin/waterbodies/{id}/star`).
+- Favorited waterbodies (any account's) get hourly NWS refreshes. Favorites are per account: see `docs/accounts.md`.

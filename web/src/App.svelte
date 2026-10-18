@@ -15,7 +15,7 @@
   import { liveQuery } from 'dexie';
   import { db, metaGet, metaSet } from './lib/db.js';
   import { startSync, syncState } from './lib/sync.svelte.js';
-  import { getToken } from './lib/api.js';
+  import { auth, loadAuth, prefs, homeForRequests, setHome } from './lib/auth.svelte.js';
 
   const stored = (k, d) => { try { return localStorage.getItem(k) || d; } catch { return d; } };
   let theme = $state(stored('holdover.theme', 'fir'));
@@ -42,13 +42,18 @@
   let layersOpen = $state(false);
   let legendOpen = $state(false);
   let wbList = $state([]);
+  let picking = $state(false);
+  // An invite link looks like /?invite=CODE. Read it once, then clean the address bar so the code is not bookmarked.
+  const inviteCode = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('invite') : null;
+  let invite = $state(inviteCode);
+  if (inviteCode) { view = 'settings'; try { history.replaceState(null, '', location.pathname); } catch { /* ignore */ } }
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
   let offlineFor = $state(undefined);
   let journalGeo = $state(null);
 
   $effect(() => {
     api.waterbodyList().then(async (l) => { wbList = l; await metaSet('wbList', l); }).catch(async () => { wbList = await metaGet('wbList', []); });
-    startSync();
+    loadAuth().then(startSync); // sync needs to know who is signed in
   });
   $effect(() => {
     const sub = liveQuery(async () => {
@@ -74,7 +79,8 @@
   $effect(() => {
     const o = offset, f = fishery;
     spotsError = '';
-    api.spots(isoDay(o), f).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
+    const home = homeForRequests(); // signed in: the server uses the account's home; signed out: this device's
+    api.spots(isoDay(o), f, home).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
   });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
   $effect(() => { load(); loadReport(); });
@@ -99,9 +105,9 @@
 
   <main class="planner" bind:clientWidth={panelW} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
     {#if view === 'map' || view === 'plan'}
-      <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
+      <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} />
     {:else if view === 'settings'}
-      <Settings {theme} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} />
+      <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} />
     {:else if view === 'journal'}
       <Journal {wbList} onlog={() => (logFor = null)} />
     {:else}
@@ -109,7 +115,7 @@
     {/if}
   </main>
   <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && view === 'map'} class:wide={!!dayFor && view === 'map'}>
-      <MapView inset={wide ? panelW + 112 : 0} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
+      <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
       <div class="layers glass" role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
         {#if layersOpen}
@@ -125,6 +131,9 @@
         {#if legendOpen}<Legend {theme} />
         {/if}
       </div>
+      {#if picking}
+        <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
+      {/if}
       <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline"><Icon name="offline" size={18} /> <span class="olbl">Prepare for offline</span></button>
   </div>
     {#if dayFor && view === 'map'}
@@ -176,6 +185,7 @@
   .sym.diamond { transform: rotate(45deg); }
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
   .sheetwrap.wide { width: var(--wide-w); }
+  .pickbar { position: absolute; left: calc(112px + var(--panel-w, 380px)); top: 72px; z-index: 3; border-radius: 14px; padding: 4px 4px 4px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
   .offline { position: absolute; left: calc(112px + var(--panel-w, 380px)); transition: left 0.25s ease; top: 16px; z-index: 2; color: var(--text); gap: 10px; padding: 0 20px; }
 
   @media (max-width: 1099px) {
@@ -206,6 +216,7 @@
     .lyr.off { display: none; }
     .legend { left: 16px; bottom: calc(42% + 16px); }
     .offline { left: 16px; }
+    .pickbar { left: 16px; }
     .mapwrap { inset: 0 0 var(--nav-h) 0; }
   }
 </style>

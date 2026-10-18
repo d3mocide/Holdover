@@ -2,7 +2,8 @@
   import { liveQuery } from 'dexie';
   import { db, nowIso } from './db.js';
   import { syncState, syncNow, countPending } from './sync.svelte.js';
-  import { getToken, longDate, hhmm } from './api.js';
+  import { longDate, hhmm } from './api.js';
+  import { auth } from './auth.svelte.js';
   import Icon from './Icon.svelte';
 
   let { wbList = [], onlog } = $props();
@@ -25,14 +26,14 @@
   }
 
   async function exportFile(format) {
-    const r = await fetch(`/api/journal/export?format=${format}`, { headers: { Authorization: `Bearer ${getToken()}` } });
-    if (!r.ok) { alert(`Export failed (${r.status}). Needs a connection and the admin token.`); return; }
+    const r = await fetch(`/api/journal/export?format=${format}`, { credentials: 'same-origin', headers: { 'X-Holdover': '1' } });
+    if (!r.ok) { alert(r.status === 401 ? 'Sign in to export your synced journal.' : `Export failed (${r.status}). Export needs a connection.`); return; }
     const a = document.createElement('a');
     a.href = URL.createObjectURL(await r.blob()); a.download = `holdover-journal.${format}`; a.click();
   }
   const cond = (t) => { try { return JSON.parse(t.conditions_json); } catch { return null; } };
   const statusText = $derived(
-    { 'no-token': 'Local only: add the token in Settings to sync', offline: 'Offline', syncing: 'Syncing…', error: `Sync error (${syncState.error}), retrying`, idle: syncState.lastSync ? `Synced ${hhmm(syncState.lastSync)}` : 'Ready' }[syncState.status]
+    { 'signed-out': 'Saved on this device only. Sign in (Settings) to sync across devices.', offline: 'Offline', syncing: 'Syncing…', error: `Sync error (${syncState.error}), retrying`, idle: syncState.lastSync ? `Synced ${hhmm(syncState.lastSync)}` : 'Ready' }[syncState.status]
   );
 </script>
 

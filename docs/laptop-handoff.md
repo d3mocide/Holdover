@@ -8,7 +8,8 @@ things that could **not** be proven there. Work down the list; each has the comm
 ## 0. Get it running
 
     git clone https://github.com/d3mocide/Holdover && cd Holdover
-    cp .env.example .env            # set HOLDOVER_TOKEN, USER_AGENT (with a contact address), HOME_LAT, HOME_LON
+    cp .env.example .env            # set USER_AGENT (with a contact address); HOME_LAT/HOME_LON are only the server default now
+    docker compose exec holdover python -m app.cli create-user YOURNAME   # first user is the admin (docs/accounts.md)
     docker compose up --build       # built and run on the laptop 2026-10-17; host port is HOLDOVER_PORT (default 8000)
 
 Or without Docker: `pip install -e '.[dev]'`, `pytest` (75 tests), `cd web && npm ci && npm run build`, then
@@ -29,7 +30,7 @@ Or without Docker: `pip install -e '.[dev]'`, `pytest` (75 tests), `cd web && np
   Gauge coordinates, by contrast, were verified against live USGS.
 - **Gauge-to-waterbody links** (`GAUGE_LINKS`; Leaburg, Cottage Grove and Estacada tailwater gauges added 2026-10-18) and **fishery hints** (`FISHERY_HINTS`): my judgement. Steelhead
   and warmwater lists are short until you accept report items.
-- **Starred waterbodies**: you didn't give me yours. `POST /api/admin/waterbodies/{id}/star`. NWS also
+- **Favorites**: per account now (star on a waterbody). They get their own NWS forecast, which also
   auto-refreshes one stocked waterbody per ~0.25 degree cell.
 - **Scoring weights and curves** (`app/scoring.py`, `.env` `W_*`): starting points, not validated. Use the
   "Why this score" breakdown to tune them against your own experience.

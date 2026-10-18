@@ -27,9 +27,9 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//, /^\/healthz/, /^\/tiles\//, /^\/fonts\//],
         runtimeCaching: [
           {
-            // /api/day is excluded on purpose: the app keeps its own IndexedDB copy with an explicit as-of time,
+            // /api/auth and /api/me are never cached: they say who is signed in. /api/day is excluded on purpose: the app keeps its own IndexedDB copy with an explicit as-of time,
             // so an offline fetch must fail rather than silently return old data labelled live.
-            urlPattern: ({ url }) => url.pathname.startsWith('/api/') && !/^\/api\/(admin|day|journal|sync)\//.test(url.pathname),
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/') && !/^\/api\/(admin|day|journal|sync|auth|me)\//.test(url.pathname),
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'api-reads' }
           }

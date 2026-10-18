@@ -12,7 +12,7 @@
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, inset = 0 } = $props();
+  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, inset = 0, home = null, pickMode = false, onpick } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -115,6 +115,7 @@
       'gauge-icon': markers.gauge({ ...base, main: c.gauge }),
       'advisory-icon': markers.advisory({ ...base, main: c.accent }),
       'journal-icon': markers.journal({ ...base, main: css('--text') }),
+      'home-icon': markers.home({ ...base, main: c.accent }),
       ...Object.fromEntries([['excellent', c.f1, 4], ['good', c.f2, 3], ['fair', c.warn, 2], ['slow', c.f3, 1], ['unknown', c.f3, 0]]
         .map(([k, col, n]) => [`report-${k}`, markers.report({ ...base, main: col }, n)]))
     };
@@ -134,8 +135,11 @@
     const c = palette();
     map.addSource('stocking', { type: 'geojson', data: data ?? { type: 'FeatureCollection', features: [] } });
     map.addSource('journal', { type: 'geojson', data: journal ?? { type: 'FeatureCollection', features: [] } });
+    map.addSource('home', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addLayer({ id: 'journal-pts', type: 'symbol', source: 'journal', layout: {
       'icon-image': 'journal-icon', 'icon-size': 0.6, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'home-pts', type: 'symbol', source: 'home', layout: {
+      'icon-image': 'home-icon', 'icon-size': 0.62, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
     map.addLayer({ id: 'advisory-ring', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
       'icon-image': 'advisory-icon', 'icon-size': 0.9, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
@@ -153,14 +157,17 @@
     map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
       'circle-radius': ['+', rad, 5], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
     for (const l of ['stocking-pts', 'advisory-ring', 'report-badge']) {
-      map.on('click', l, (e) => onselect?.(e.features[0].properties.id));
+      map.on('click', l, (e) => { if (!pickMode) onselect?.(e.features[0].properties.id); });
     }
+    map.on('click', (e) => { if (pickMode) onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); });
     map.on('click', 'journal-pts', (e) => {
+      if (pickMode) return;
       const p = e.features[0].properties;
       const el = document.createElement('div'); el.textContent = p.label; 
       new maplibregl.Popup({ offset: 8 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
     });
     map.on('click', 'gauge-pts', (e) => {
+      if (pickMode) return;
       const p = e.features[0].properties;
       const el = document.createElement('div');
       const t = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; el.appendChild(d); };
@@ -217,6 +224,11 @@
     map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
     map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
   });
+  $effect(() => {
+    if (!ready) return;
+    map.getSource('home')?.setData({ type: 'FeatureCollection', features: home ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: [home.lon, home.lat] }, properties: {} }] : [] });
+  });
+  $effect(() => { if (ready) map.getCanvas().style.cursor = pickMode ? 'crosshair' : ''; });
   $effect(() => { const l = inset; if (ready) map.setPadding({ left: l, top: 0, right: 0, bottom: 0 }); });
   $effect(() => {
     if (!ready) return;

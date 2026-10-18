@@ -1,5 +1,6 @@
 // Airplane-mode journal flow. See tests/e2e/README.md. Needs: playwright-core, a running server with a
-// seeded DB, the toy tiles (scripts/make_test_pmtiles.py), and HOLDOVER_TOKEN=testtoken.
+// seeded DB, the toy tiles (scripts/make_test_pmtiles.py), and an account: create it first with
+//   echo e2e-long-password | python -m app.cli create-user e2e --password-stdin
 import { chromium } from 'playwright-core';
 import { execSync } from 'child_process';
 const sql = (q) => execSync(`python3 -c "import sqlite3;print(sqlite3.connect('${process.env.E2E_DB}').execute(\\"${q}\\").fetchall())"`).toString().trim();
@@ -10,7 +11,10 @@ const errs = []; p.on('pageerror', e => errs.push('pageerror ' + e.message));
 const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) process.exitCode = 1; };
 
 await p.goto(process.env.BASE_URL ?? 'http://localhost:8000/');
-await p.evaluate(() => localStorage.setItem('holdover.token', 'testtoken'));
+// Sign in the way the app does: the session is an HttpOnly cookie, so there is nothing to put in localStorage.
+await p.evaluate(() => fetch('/api/auth/login', { method: 'POST', credentials: 'same-origin',
+  headers: { 'Content-Type': 'application/json', 'X-Holdover': '1' }, body: JSON.stringify({ username: 'e2e', password: 'e2e-long-password' }) })
+  .then((r) => { if (!r.ok) throw new Error('login failed: ' + r.status); }));
 await p.evaluate(async () => { await navigator.serviceWorker.ready; });
 await p.reload(); await p.waitForTimeout(3000);
 ok(await p.evaluate(() => !!navigator.serviceWorker.controller), 'service worker controls the page');

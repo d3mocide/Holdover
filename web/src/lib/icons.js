@@ -27,6 +27,7 @@ export const icons = {
   moon: '<path d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.4 6.4 0 0 0 10.1 10.1z"/><g class="a"><path d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.4 6.4 0 0 0 10.1 10.1z"/></g>',
   forecast: '<path d="M7.2 18.5a4 4 0 0 1-.6-7.9 5.6 5.6 0 0 1 10.8 1.3 3.3 3.3 0 0 1-.4 6.6z"/><g class="a"><path d="M7.2 18.5a4 4 0 0 1-.6-7.9 5.6 5.6 0 0 1 10.8 1.3 3.3 3.3 0 0 1-.4 6.6z"/></g>',
   advisory: '<path d="M12 3.8 21.2 19.5H2.8z"/><path d="M12 10v4.2"/><circle cx="12" cy="16.9" r=".9" fill="currentColor" stroke="none"/><g class="a"><path d="M12 3.8 21.2 19.5H2.8z"/></g>',
+  star_fill: '<path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z" fill="currentColor"/>',
   star: '<path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
   trend_up: '<path d="M5 15l5-5 3.5 3.5L19 8M14.5 8H19v4.5"/>',
   trend_down: '<path d="M5 9l5 5 3.5-3.5L19 16M14.5 16H19v-4.5"/>',
@@ -47,5 +48,6 @@ export const markers = {
   advisory: (c) => `<circle cx="20" cy="20" r="14" fill="${c.accent}" opacity=".15"/><circle cx="20" cy="20" r="12" fill="none" stroke="${c.accent}" stroke-width="3"/><path d="M20 13.5v8" stroke="${c.accent}" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="26.2" r="1.8" fill="${c.accent}"/>`,
   report: (c, pips) => `<rect x="4" y="4" width="32" height="32" rx="10" fill="${c.bg}" stroke="${c.main}" stroke-width="2"/><g transform="translate(8.5 6.5) scale(.96)" fill="none" stroke="${c.main}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${FISH}"/></g>` +
     [0, 1, 2, 3].map((i) => `<circle cx="${12.5 + i * 5}" cy="29.5" r="1.7" fill="${i < pips ? c.main : c.ring}"/>`).join(''),
+  home: (c) => `<path d="M20 36s-10-8.4-10-16.4a10 10 0 1 1 20 0C30 27.6 20 36 20 36z" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/><path d="M14.5 21v-5.2l5.5-4.3 5.5 4.3V21z" fill="${c.bg}"/>`,
   journal: (c) => `<path d="M20 36s-10-8.4-10-16.4a10 10 0 1 1 20 0C30 27.6 20 36 20 36z" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/><circle cx="20" cy="19.5" r="4" fill="${c.bg}"/>`
 };
