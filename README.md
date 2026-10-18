@@ -22,8 +22,20 @@ Status: phases 1 to 5 built (stocking map, report and LLM pipeline, conditions, 
     python -m app.cli ingest-fixtures tests/fixtures/odfw_stocking   # offline sample data
     RUN_SCHEDULER=false DATA_DIR=./data uvicorn app.main:app --reload
     cd web && npm install && npm run dev                              # proxies /api to :8000
-    pytest                                                            # 100+ tests
+    pytest                                                            # backend tests
+    cd web && npm test                                                # frontend unit tests
     # airplane-mode E2E: tests/e2e/README.md
+
+## Documentation
+
+| Read | For |
+| --- | --- |
+| [AGENTS.md](AGENTS.md) (and [CLAUDE.md](CLAUDE.md), which imports it) | Rules for anyone working on the code, human or agent |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Phases, their status and gates, and why plans changed |
+| [docs/BUILD_LOG.md](docs/BUILD_LOG.md) | What was done and how it was verified |
+| [docs/BRAND.md](docs/BRAND.md) | Look, voice, colour tokens, icons, map language |
+| [docs/accounts.md](docs/accounts.md) | Optional accounts and the privacy model |
+| [docs/reference/original-handoff.md](docs/reference/original-handoff.md) | The original brief (historical) |
 
 ## Notes
 

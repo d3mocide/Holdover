@@ -1,5 +1,8 @@
 # Moving to your laptop: first-run checklist
 
+> Partly superseded: the open items below are tracked in [ROADMAP.md](ROADMAP.md) (Phase 9) and what was done in
+> [BUILD_LOG.md](BUILD_LOG.md). Kept for the per-item commands.
+
 **Update 2026-10-17 (first laptop run):** the Dockerfile builds and runs; myodfw.com returns 200 to Python from a home network (item 1 below is cleared, but re-check from the server); 75 tests and the offline e2e pass; the Oregon basemap is installed (`docs/basemap.md`). Still open: items 2 to 5, HTTPS/phone testing (waiting on the server move), and the data review.
 
 Everything below was built and tested in a cloud sandbox with fixtures and a few live reads. These are the
