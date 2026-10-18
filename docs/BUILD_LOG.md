@@ -349,3 +349,26 @@ only web requests.
 - Not verified: **the workflow has still never run** (including the tag logic and the `latest` expression), arm64, and the
   first publish needs a push. Git author emails in history include a personal address (`info@d3mo.us`); left as is.
 
+### 2026-10-18 · this commit · Phase 9 · First real LLM run (owner's local server) and what it exposed
+The owner's prod server logged `LLM unavailable: HTTP 500`. Tested from the laptop against their server
+(`192.168.10.90:8080`, an OpenAI-compatible server listing `gemma4-e4b`, `mix-gemma-e4b`, `mix-ornith9b` and `ornith-1.5-9b-uncensored`).
+- **Cause of the 500:** the model was set as `openai/gemma4-e4b` (a LiteLLM-style provider prefix); the server only knows
+  `gemma4-e4b`. The variable `LLM_API_BASE` is also not one the app reads (`LLM_BASE_URL`), and compose passes only a fixed
+  list of variables, so an unknown name is dropped silently. Both base URL forms (`http://host:8080` and `.../v1`) work.
+- **Two drifts from a server that does not enforce the JSON schema**, found only by running the real pipeline on the saved
+  ODFW report: the model returned a bare list instead of `{"items": [...]}` (all 5 zones rejected), then `species` as a string
+  instead of a list. Fixed narrowly (wrap a bare list for one-field schemas; wrap a lone species string) while keeping strict
+  validation of everything else and the grounding checks unchanged; each has a test, including that an invalid rating is
+  still rejected after wrapping.
+- **Result with the fixes:** `gemma4-e4b` extracted and summarised all 5 zones, 0 errors, about 2 minutes for the lot (a
+  scheduled job, so latency does not matter). Items land as `review`, per the design. Example: "Coho salmon are moving into
+  the lower parts of the North Santiam" tied to the verbatim source sentence. A Willamette main-stem walleye item matched no
+  waterbody (the seed has none), which is correct behaviour.
+- **Startup log** now says what is wrong with the LLM settings (not configured, not answering, or "the server does not list
+  model X; it has A, B, C").
+- Also from the prod log, not a bug: the stocking job's `pages: 12, rows_seen: 0` means every page was unchanged since the
+  last fetch (hash match), so nothing was parsed; catch-up skipped stocking and reports because that volume already had fresh data.
+- Verified: 172 `pytest` (3 new). Not verified: summary and extraction quality beyond one report (reviewed by eye on this one
+  only); explanations (`run_explain`) and pack intros with this model were not run; behaviour under load or while the model
+  is busy with other work.
+

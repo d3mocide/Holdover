@@ -36,6 +36,25 @@ class LLMClient:
         except httpx.HTTPError:
             return False
 
+    def models(self) -> list[str] | None:
+        """Model ids the server lists (OpenAI-style GET /models), or None if it cannot be asked."""
+        try:
+            r = self._http.get(f"{self.base_url}/models", headers=self._headers(), timeout=5)
+            return [m["id"] for m in r.json()["data"]] if r.status_code == 200 else None
+        except (httpx.HTTPError, ValueError, KeyError, TypeError):
+            return None
+
+    def status_line(self) -> str:
+        """One sentence for the startup log that says what is wrong, because a bad setting otherwise shows up only as 500s later."""
+        if not self.configured:
+            return "not configured (set LLM_BASE_URL and LLM_MODEL): reports use plain templates, which is fine"
+        ids = self.models()
+        if ids is None:
+            return f"{self.base_url} did not answer GET /models: check LLM_BASE_URL (OpenAI-compatible, usually ending in /v1)"
+        if self.model not in ids:
+            return f"{self.base_url} is up but does not list model '{self.model}'. It has: {', '.join(ids) or 'none'}. Use one of those exactly, with no provider prefix"
+        return f"{self.base_url} model '{self.model}' is available"
+
     def chat_json(self, system: str, user: str, schema: type[BaseModel]) -> BaseModel:
         """Returns a validated model instance. Raises LLMUnavailable if the host can't be reached,
         ValueError if the reply isn't valid for the schema."""
@@ -57,7 +76,7 @@ class LLMClient:
             raise ValueError(f"LLM HTTP {r.status_code}: {r.text[:200]}")
         try:
             content = r.json()["choices"][0]["message"]["content"]
-            return schema.model_validate(json.loads(_strip_fence(content)))
+            return schema.model_validate(_fit(json.loads(_strip_fence(content)), schema))
         except Exception as exc:  # malformed JSON, wrong shape, missing keys
             raise ValueError(f"invalid LLM output: {exc}") from exc
 
@@ -68,3 +87,12 @@ def _strip_fence(s: str) -> str:
         s = s.split("\n", 1)[1] if "\n" in s else s
         s = s.rsplit("```", 1)[0]
     return s
+
+
+def _fit(data, schema: type[BaseModel]):
+    """Some local servers do not enforce the JSON schema and answer with the bare list a schema wraps in an object
+    (`[...]` instead of `{"items": [...]}`). Wrap that one case; everything is still validated strictly afterwards."""
+    fields = schema.model_fields
+    if isinstance(data, list) and len(fields) == 1:
+        return {next(iter(fields)): data}
+    return data

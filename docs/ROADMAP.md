@@ -190,7 +190,7 @@ its server.
 - [x] Read the published terms for ODFW, OHA, NWS, USGS and Protomaps/OSM and record them (`docs/sources.md`); found and fixed missing OpenStreetMap attribution and added data credits
 - [ ] **Owner:** decide whether to email ODFW (and OHA) about using their public data; ODF terms still unread (feed not built)
 - [ ] Watch the scheduler for a day (timings, `/healthz`)
-- [ ] Choose a local model; run extraction and explanations on saved reports and review the output
+- [ ] Choose a local model; run extraction and explanations on saved reports and review the output. **Partly done 2026-10-18:** `gemma4-e4b` on the owner's server extracted and summarised the saved report (see the build log); explanations and pack intros not yet run, quality reviewed on one report only
 - [x] Restore a backup into a fresh container (drill done 2026-10-18; see [operations.md](operations.md)). Still to do: copy backups and photos off the machine
 - [ ] Data review: 7 unpinned waterbodies, 4 likely and 12 unverified pins, fishery hints, gauge links
 - [x] Schema runs on Postgres 16: 115 tests plus the browser tests pass on it (SQLite-to-Postgres data copy not built)

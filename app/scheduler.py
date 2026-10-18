@@ -130,6 +130,11 @@ CATCH_UP = [(odfw_stocking.SOURCE, "run_stocking"), (oha.SOURCE, "run_oha"), (us
 def catch_up() -> list[str]:
     """Run, one after another, every source that has no recent success. Scheduled jobs only fire at their next interval
     or cron time, so without this a new install (or one that was off for a day) shows no data until then."""
+    try:
+        from app.llm.client import LLMClient
+        log.info("LLM: %s", LLMClient().status_line())
+    except Exception:
+        log.exception("LLM status check failed")
     status = source_status()
     ran = []
     for source, fn in CATCH_UP:

@@ -164,3 +164,36 @@ def test_review_queue_accept_reject_and_map_effect(session):
     sheet = c.get(f"/api/waterbodies/{wb}").json()
     assert [i["source_sentence"] for i in sheet["report_items"]] == ["s1"]
     assert c.get("/api/reports?zone=willamette").json()["report"]["items"][0]["rating"] == "good"
+
+
+def test_a_bare_list_from_a_server_that_ignores_the_schema_is_wrapped_and_still_validated():
+    item = {"waterbody_raw": "Detroit Lake", "species": ["rainbow trout"], "rating": "good", "note": "", "source_sentence": "Fishing was good."}
+    out = llm_with(lambda r: reply([item])).chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).ExtractionResult)
+    assert out.items[0].waterbody_raw == "Detroit Lake"
+    bad = dict(item, rating="amazing")  # an invalid value is still rejected after wrapping
+    with pytest.raises(ValueError):
+        llm_with(lambda r: reply([bad])).chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).ExtractionResult)
+
+
+def test_a_single_species_string_is_accepted_as_a_list():
+    from app.llm.schemas import ExtractedItem
+    base = {"waterbody_raw": "Detroit Lake", "rating": "good", "source_sentence": "Fishing was good."}
+    assert ExtractedItem(**base, species="coho").species == ["coho"]
+    assert ExtractedItem(**base, species=["coho", "steelhead"]).species == ["coho", "steelhead"]
+    with pytest.raises(ValueError):
+        ExtractedItem(**base, species=5)
+
+
+def test_status_line_says_what_is_wrong():
+    def server(models):
+        return llm_with(lambda r: httpx.Response(200, json={"data": [{"id": m} for m in models]}) if r.url.path.endswith("/models") else httpx.Response(404))
+    ok = server(["gemma4-e4b"])
+    ok.model = "gemma4-e4b"
+    assert "is available" in ok.status_line()
+    wrong = server(["gemma4-e4b", "other"])
+    wrong.model = "openai/gemma4-e4b"
+    line = wrong.status_line()
+    assert "does not list model 'openai/gemma4-e4b'" in line and "gemma4-e4b, other" in line and "no provider prefix" in line
+    assert "not configured" in LLMClient("", "").status_line()
+    down = LLMClient("http://llm.test/v1", "m", transport=httpx.MockTransport(lambda r: httpx.Response(500)))
+    assert "did not answer GET /models" in down.status_line()
