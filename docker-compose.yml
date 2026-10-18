@@ -2,8 +2,8 @@ services:
   holdover:
     build: .
     restart: unless-stopped
-    ports: ["8000:8000"]   # put your TLS reverse proxy in front; service workers need HTTPS
-    volumes: ["./data:/data"]
+    ports: ["${HOLDOVER_PORT:-8000}:8000"]   # put your TLS reverse proxy in front; service workers need HTTPS
+    volumes: ["holdover-data:/data"]
     environment:
       HOLDOVER_TOKEN: ${HOLDOVER_TOKEN:?set HOLDOVER_TOKEN}
       USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
@@ -13,3 +13,6 @@ services:
       LLM_BASE_URL: ${LLM_BASE_URL:-}
       LLM_MODEL: ${LLM_MODEL:-}
       LLM_API_KEY: ${LLM_API_KEY:-}
+
+volumes:
+  holdover-data:

@@ -57,7 +57,7 @@ def _int(text: str) -> int:
     return int(t) if t else 0
 
 
-def parse(body: bytes | str) -> list[StockingRow]:
+def parse(body: bytes | str, allow_missing_table: bool = False) -> list[StockingRow]:
     html = body.decode("utf-8", "replace") if isinstance(body, bytes) else body
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", class_="views-table")
@@ -65,6 +65,8 @@ def parse(body: bytes | str) -> list[StockingRow]:
         # An empty result set renders no table; a changed layout must not look like "no stocking".
         if soup.find(class_=re.compile("view-empty|views-view")):
             return []
+        if allow_missing_table:
+            return []  # past the last page ODFW renders no table and no empty-state marker
         raise ParseError("stocking table not found")
     headers = [th.get_text(" ", strip=True) for th in table.find_all("th")]
     expected = ["Week of", "Waterbody", "Zone/Office", "Legals", "Trophy", "Brood", "Fingerling", "Total"]
@@ -102,7 +104,7 @@ def page_url(page: int, today: date, zone: int | None = None) -> str:
     return f"{BASE}?{urlencode(q)}"
 
 
-def ingest_page(session: Session, url: str, status: int | None, body: bytes) -> tuple[int, int]:
+def ingest_page(session: Session, url: str, status: int | None, body: bytes, page: int = 0) -> tuple[int, int]:
     """Store raw, parse, snapshot. Returns (rows_in_page, rows_inserted). Raises nothing:
     parse failures are recorded on the raw_fetch row so the source shows as stale."""
     raw, unchanged = store_fetch(session, SOURCE, url, status, body)
@@ -116,7 +118,7 @@ def ingest_page(session: Session, url: str, status: int | None, body: bytes) -> 
         session.commit()
         return -1, 0  # -1: identical to last good fetch, parse skipped
     try:
-        rows = parse(body)
+        rows = parse(body, allow_missing_table=page > 0)
     except ParseError as exc:
         raw.parse_ok = 0
         raw.error = str(exc)
@@ -142,7 +144,7 @@ def run_job(session: Session, fetch: Fetcher = http_fetch, today: date | None = 
     for page in range(MAX_PAGES):
         url = page_url(page, today)
         status, body = fetch(url)
-        n, inserted = ingest_page(session, url, status, body)
+        n, inserted = ingest_page(session, url, status, body, page)
         out["pages"] += 1
         out["rows_inserted"] += inserted
         if status != 200 or session.scalar(select(RawFetch.parse_ok).order_by(RawFetch.id.desc()).limit(1)) != 1:

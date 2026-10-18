@@ -28,6 +28,11 @@ def test_layout_change_is_an_error_not_empty():
         parse(b"<html><body><p>redesigned</p></body></html>")
 
 
+def test_page_past_the_end_has_no_table():
+    html = b"<html><body><p>nothing here</p></body></html>"
+    assert parse(html, allow_missing_table=True) == []
+
+
 def test_unexpected_columns():
     html = "<table class='views-table'><tr><th>Foo</th></tr></table>"
     with pytest.raises(ParseError):

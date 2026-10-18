@@ -8,3 +8,33 @@ web/dist/
 *.db
 *.db-wal
 *.db-shm
+
+# secrets / local config
+.env
+.env.*
+!.env.example
+
+# python build / tooling
+*.egg-info/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# web
+web/.svelte-kit/
+web/.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# e2e artifacts
+test-results/
+playwright-report/
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+*.log
