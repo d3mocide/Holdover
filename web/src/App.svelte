@@ -23,6 +23,10 @@
   const stored = (k, d) => { try { return localStorage.getItem(k) || d; } catch { return d; } };
   let theme = $state(stored('holdover.theme', 'fir'));
   let view = $state('map');
+  // Hide the side panel (or the bottom panel on a phone) to see the whole map. Remembered on this device.
+  let collapsed = $state(stored('holdover.panelHidden', '') === '1');
+  const setCollapsed = (v) => { collapsed = v; try { localStorage.setItem('holdover.panelHidden', v ? '1' : ''); } catch { /* not remembered */ } };
+  const go = (k) => { view = k; if (collapsed) setCollapsed(false); };  // choosing a tab means you want its content
   // The side panel sizes to its content. Map and Plan show the same list, so they share a width and switching between them does not jump.
   const PANEL = { map: 'min(520px, 44vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
   let panelW = $state(520);
@@ -98,21 +102,22 @@
   const select = (id) => { selectedId = id; dayFor = null; if (view !== 'map') view = 'map'; };
 </script>
 
-<div class="shell" style:--panel-w={PANEL[view] ?? PANEL.map}>
+<div class="shell" class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (PANEL[view] ?? PANEL.map)}>
   <nav class="rail" aria-label="Main">
     <span class="logo"><Logo /></span>
     {#each tabs as [k, label, icon]}
-      <button class="navbtn" aria-current={view === k ? 'page' : undefined} onclick={() => (view = k)} aria-label={label}>
+      <button class="navbtn" aria-current={view === k ? 'page' : undefined} onclick={() => go(k)} aria-label={label}>
         <Icon name={icon} /><span class="lbl">{label}</span>
       </button>
     {/each}
     <span class="spacer"></span>
-    <button class="navbtn" aria-current={view === 'settings' ? 'page' : undefined} onclick={() => (view = 'settings')} aria-label="Settings">
+    <button class="navbtn" aria-current={view === 'settings' ? 'page' : undefined} onclick={() => go('settings')} aria-label="Settings">
       <Icon name="settings" /><span class="lbl">Settings</span>
     </button>
   </nav>
 
-  <main class="planner" bind:clientWidth={panelW} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
+  <button class="ptoggle" onclick={() => setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={collapsed ? 'Show panel' : 'Hide panel'} title={collapsed ? 'Show panel' : 'Hide panel'}><Icon name="trend_steady" size={18} /></button>
+  <main class="planner" bind:clientWidth={panelW} class:gone={collapsed} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
     {#if view === 'map' || view === 'plan'}
       <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} />
     {:else if view === 'settings'}
@@ -172,6 +177,13 @@
 <style>
   .shell { --sheet-w: min(420px, calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(600px, calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
   .shell > :global(*) { grid-row: 1; }
+  .planner.gone { display: none; }
+  /* The toggle straddles the panel's right edge (desktop) or its top edge (phone). The arrow is the trend_steady icon, rotated. */
+  .ptoggle { position: absolute; z-index: 4; top: 50%; left: calc(96px + var(--panel-w, 380px) - 22px); width: 44px; height: 44px; margin-top: -22px; padding: 0; border-radius: 999px;
+    background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); color: var(--text);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: left 0.25s ease; }
+  .ptoggle :global(svg) { transform: rotate(180deg); transition: transform 0.2s ease; }
+  .shell.collapsed .ptoggle { left: 92px; } .shell.collapsed .ptoggle :global(svg) { transform: none; }
   .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .planner, .sheetwrap, .layers, .legend { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
@@ -223,6 +235,14 @@
     .navbtn { flex: 1; width: auto; height: 100%; }
     .shell > :global(*) { grid-column: 1; grid-row: 1; }
     .shell > .rail { grid-row: 2; }
+    .ptoggle { top: auto; left: 50%; margin: 0 0 0 -22px; transition: none; bottom: calc(var(--nav-h) + (100% - var(--nav-h)) * 0.42 - 22px); }
+    .shell.tall .ptoggle { bottom: calc(var(--nav-h) + (100% - var(--nav-h)) * 0.68 - 22px); }
+    .shell.full .ptoggle { bottom: auto; top: 6px; }
+    /* Collapsed: bottom right, above the map's attribution (a licence requirement, never covered). */
+    .shell.collapsed .ptoggle, .shell.collapsed.tall .ptoggle, .shell.collapsed.full .ptoggle { top: auto; left: auto; right: 16px; margin: 0; bottom: calc(var(--nav-h) + 52px); }
+    .ptoggle :global(svg) { transform: rotate(90deg); } .shell.collapsed .ptoggle :global(svg) { transform: rotate(-90deg); }
+    .shell.collapsed .mapwrap.hide { display: block; }  /* Plan hides the map on a phone: hiding the panel brings it back */
+    .shell.collapsed .mapwrap .legend, .shell.collapsed.tall .mapwrap .legend { bottom: 16px; }
     .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
     .planner.full { height: 100%; border-radius: 0; }
     .planner.tall { height: 68%; }
