@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from app.llm.client import LLMClient, LLMUnavailable
 from app.llm.extract import extract_report, match_waterbody
 from app.llm.jobs import process_pending
-from app.llm.summarize import summarize_report, ungrounded_terms
+from app.llm.grounding import ungrounded_terms
 from app.models import Generation, Report, ReportItem
 from app.seed import seed_waterbodies
 from app.sources.odfw_report import ParseError, ingest, parse, report_text
@@ -100,9 +100,6 @@ def test_llm_down_leaves_everything_pending_then_recovers(session):
     assert session.scalar(select(func.count()).select_from(Generation)) == 0
 
     def ok(req):
-        body = json.loads(req.content)
-        if "short digest" in body["messages"][0]["content"]:
-            return reply({"digest": "Reports mention North Santiam."})
         return reply({"items": []})
 
     out = process_pending(session, llm_with(ok))
@@ -114,24 +111,14 @@ def test_unconfigured_llm_is_not_an_error(session):
     out = process_pending(session, LLMClient("", ""))
     assert out["llm"] == "not_configured"
     with pytest.raises(LLMUnavailable):
-        LLMClient("", "").chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).DigestResult)
+        LLMClient("", "").chat_json("s", "u", __import__("app.llm.schemas", fromlist=["x"]).TextResult)
 
 
-def test_digest_guard():
+def test_grounding_guard():
     src = "- North Santiam (coho; rating good): Coho moving in. [Coho salmon are moving into the lower North Santiam.]"
     assert ungrounded_terms("Coho are moving into the North Santiam.", src) == []
     assert "40" in ungrounded_terms("About 40 coho were caught.", src)
     assert "Detroit" in ungrounded_terms("Fishing is also good at Detroit.", src)
-
-
-def test_ungrounded_digest_is_discarded(session):
-    r = willamette(session)
-    session.add(ReportItem(report_id=r.id, waterbody_raw="North Santiam", species="coho", rating="good",
-                           note="Coho moving in.", source_sentence="Coho salmon are moving.", status="review"))
-    session.commit()
-    with pytest.raises(ValueError):
-        summarize_report(session, r, llm_with(lambda req: reply({"digest": "Limit is 5 coho at Detroit."})))
-    assert r.summary_text is None
 
 
 def test_api_serves_verbatim_bullets_without_llm(session):
@@ -139,7 +126,7 @@ def test_api_serves_verbatim_bullets_without_llm(session):
     r = willamette(session)
     c = TestClient(app)
     body = c.get("/api/reports?zone=willamette").json()["report"]
-    assert body["digest"] is None and body["items"] == []
+    assert "digest" not in body and body["items"] == []
     assert body["bullets"][0].startswith("Coho salmon are moving into the lower parts of the North Santiam")
     assert body["source_url"] == "https://myodfw.com/recreation-report" and body["issued_on"] == "2026-10-16"
 
@@ -200,13 +187,13 @@ def test_status_line_says_what_is_wrong():
 
 
 def test_answer_in_a_reasoning_field_is_read_when_content_is_empty():
-    from app.llm.schemas import DigestResult
+    from app.llm.schemas import TextResult
     for field in ("reasoning", "reasoning_content"):
-        body = {"choices": [{"message": {"role": "assistant", "content": "", field: json.dumps({"digest": "Coho are moving up the North Santiam."})}}]}
-        out = llm_with(lambda r, b=body: httpx.Response(200, json=b)).chat_json("s", "u", DigestResult)
-        assert out.digest.startswith("Coho are moving")
-    plain = {"choices": [{"message": {"content": json.dumps({"digest": "From content."}), "reasoning": "thinking..."}}]}
-    assert llm_with(lambda r: httpx.Response(200, json=plain)).chat_json("s", "u", DigestResult).digest == "From content."  # content wins
+        body = {"choices": [{"message": {"role": "assistant", "content": "", field: json.dumps({"text": "Coho are moving up the North Santiam."})}}]}
+        out = llm_with(lambda r, b=body: httpx.Response(200, json=b)).chat_json("s", "u", TextResult)
+        assert out.text.startswith("Coho are moving")
+    plain = {"choices": [{"message": {"content": json.dumps({"text": "From content."}), "reasoning": "thinking..."}}]}
+    assert llm_with(lambda r: httpx.Response(200, json=plain)).chat_json("s", "u", TextResult).text == "From content."  # content wins
 
 
 def test_an_unknown_rating_word_becomes_unknown_instead_of_rejecting_the_report():
@@ -226,3 +213,24 @@ def test_the_request_timeout_comes_from_settings_unless_given(monkeypatch):
         assert LLMClient("http://x/v1", "m", timeout=5)._http.timeout.read == 5
     finally:
         get_settings.cache_clear()
+
+
+def test_all_reports_serves_every_zone_verbatim_with_no_llm(session):
+    from app.main import app
+    willamette(session)
+    d = TestClient(app).get("/api/reports/all").json()
+    assert d["issued_on"] == "2026-10-16" and d["available"] == ["2026-10-16"]
+    keys = [z["zone"] for z in d["zones"]]
+    assert keys[0] == "willamette" and set(keys) == {"willamette", "nw", "central", "ne", "se"}
+    assert all(z["bullets"] and z["label"] for z in d["zones"])
+    assert d["zones"][0]["bullets"][0].startswith("Coho salmon are moving into the lower parts of the North Santiam")
+    assert d["source_url"] == "https://myodfw.com/recreation-report" and d["fetched_at"]
+
+
+def test_all_reports_unknown_date_and_empty_database_are_empty_not_errors(session):
+    from app.main import app
+    c = TestClient(app)
+    assert c.get("/api/reports/all").json() == {"issued_on": None, "available": [], "source_url": "https://myodfw.com/recreation-report", "fetched_at": None, "zones": []}
+    willamette(session)
+    d = c.get("/api/reports/all", params={"issued_on": "2020-01-01"}).json()
+    assert d["zones"] == [] and d["available"] == ["2026-10-16"]

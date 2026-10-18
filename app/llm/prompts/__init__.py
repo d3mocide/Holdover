@@ -1,5 +1,4 @@
 EXTRACT_VERSION = "extract-v2"
-DIGEST_VERSION = "digest-v1"
 
 EXTRACT_SYSTEM = """You extract fishing report items from Oregon Department of Fish and Wildlife report text.
 Return JSON only, matching the schema. Rules:
@@ -15,10 +14,6 @@ Return exactly this shape (an object with an "items" list, never a bare list):
 {"items": [{"waterbody_raw": "Example River", "species": ["coho salmon"], "rating": "good",
             "note": "Coho are being caught near the bridge.", "source_sentence": "Coho are being caught near the bridge."}]}
 If the text has no item that qualifies, return {"items": []}."""
-
-DIGEST_SYSTEM = """You write a short digest (about 120 words, plain sentences) of a fishing zone report.
-Use ONLY the items provided. Do not add facts, numbers, species, places or advice that are not in the items.
-Do not state regulations. Return JSON: {"digest": "..."}"""
 
 EXPLAIN_VERSION = "explain-v1"
 EXPLAIN_SYSTEM = """You write a two-sentence "why this spot, what to expect" note for an angler.

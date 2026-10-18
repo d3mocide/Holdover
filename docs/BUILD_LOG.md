@@ -435,3 +435,27 @@ Owner feedback after using the dev stack. The Map tab and the Plan tab had becom
   handled; prompts re-run), then a dedicated Reports page (owner approved reposting ODFW's wording), then "what's biting where" from our
   own report data.
 
+### 2026-10-18 · this commit · Phase 2 · Reports tab; AI digest removed; first real look at the LLM
+Read the owner's b50 traces (an LLM request log, `GET /api/traces`, bodies base64) to find why the AI "seemed broken".
+- **Cause 1 (the 9B model):** `ornith-1.5-9b-uncensored` is a reasoning model; the server returns the JSON answer in `message.reasoning`
+  and leaves `content` empty. The client read only `content`, so every reply looked empty. It now falls back to `reasoning_content` or
+  `reasoning` (tested; `content` wins when present).
+- **Cause 2 (prompts and tolerance):** the extraction prompt never showed the JSON shape (a model answered with a bare list); it now states
+  the exact object and an example, and the version is `extract-v2` so reports are re-extracted. An unknown rating word now becomes
+  `unknown` instead of rejecting a whole report; a lone species string is accepted as a list; a bare list is wrapped. Everything else
+  is still validated strictly and every source sentence is still checked against the real text. `LLM_TIMEOUT` (default 180 s) is configurable.
+- **Measured on identical copies of the data** (explanations and pack intros, 19 and 18 items): `gemma4-e4b` accepts 17 of 19
+  explanations (the guard rejected "October" and "September" it invented), 33 s for the lot; the 9B accepts 19 of 19 with better prose, but
+  takes 300 s, and report extraction exceeded 400 s per report (it thinks at length). So: gemma for extraction, either for explanations.
+  Not yet done: a per-job model setting, and re-running the 9B extraction with a longer timeout.
+- **The AI digest is gone**, per the owner ("not really needed"). `summarize.py`, the digest prompt and schema and the Plan card's
+  summary are removed; the grounding guard moved to `app/llm/grounding.py` because the explanations still use it. The LLM now only
+  extracts items (for ratings on the map) and rewords the plan and pack text.
+- **New Reports tab** (`ReportsView.svelte`, `GET /api/reports/all`): every zone of the weekly ODFW report in ODFW's own wording (re-derived from the
+  stored page, so it works with the LLM off), an issue picker when several weeks are stored, a link to the original and the source credit.
+  The owner approved reposting (a private, household app); the page still states no regulations. Plan's old report card is now a
+  one-line link to it. Nav is seven tabs (a new `reports` icon; the icon atlas image was not regenerated).
+- Verified: 180 `pytest`, 47 frontend tests; Reports page axe zero on all three themes at desktop and phone; browser suites offline 12/12, accounts
+  37/37, gear 46/46 (the nav-width check now expects seven tabs). Not verified: the Reports page with several stored issues (only one exists
+  here), the icon atlas, a real phone.
+

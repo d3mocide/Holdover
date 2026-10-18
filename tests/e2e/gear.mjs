@@ -155,7 +155,7 @@ await ph.goto(BASE); await ph.waitForTimeout(2500); await login(ph, 'boss', 'cor
 await nav(ph, 'Gear'); await ph.waitForTimeout(1500);
 await ph.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/gear-phone.png' : undefined });
 const navW = await ph.evaluate(() => [...document.querySelectorAll('.navbtn')].map(e => Math.round(e.getBoundingClientRect().width)));
-ok(navW.length === 6 && navW.every(w => w >= 44), `phone nav fits six tabs with 44px+ targets (${navW.join(',')})`);
+ok(navW.length === 7 && navW.every(w => w >= 44), `phone nav fits seven tabs with 44px+ targets (${navW.join(',')})`);
 await axe(ph, 'Gear on phone');
 await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/gear-desk.png' : undefined });
 console.log(fails ? `\n${fails} FAILED` : '\nall passed'); await b.close(); process.exit(fails ? 1 : 0);

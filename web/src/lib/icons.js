@@ -9,6 +9,7 @@ export const icons = {
   map: '<path d="M9 4.5 3.5 6.5v13L9 17.5l6 2 5.5-2v-13L15 6.5z"/><path d="M9 4.5v13M15 6.5v13"/><g class="a"><path d="M9 4.5v13l6 2v-13z"/></g>',
   plan: '<path d="M4.5 6.5h15v13h-15zM4.5 10.5h15M8.5 4v3.5M15.5 4v3.5M9 15.2l2.1 2.1 4-4.3"/><g class="a"><path d="M4.5 6.5h15v4h-15z"/></g>',
   journal: '<path d="M7 3.5h10.5a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H7z"/><path d="M7 3.5v17M10.5 8.5h5M10.5 12h5"/><g class="a"><path d="M14.5 3.5v6l1.75-1.4 1.75 1.4v-6z"/></g>',
+  reports: '<path d="M6 3.5h8.5L19 8v12.5H6z"/><path d="M14.5 3.5V8H19M9.5 12.5h6M9.5 16h6"/><g class="a"><path d="M14.5 3.5V8H19z"/></g>',
   gauge: '<path d="M12 3 21 12 12 21 3 12z"/><path d="M12 8c1.9 2.5 3 3.9 3 5.4a3 3 0 0 1-6 0C9 11.9 10.1 10.5 12 8z"/><g class="a"><path d="M12 8c1.9 2.5 3 3.9 3 5.4a3 3 0 0 1-6 0C9 11.9 10.1 10.5 12 8z"/></g>',
   settings: '<path d="M4 8h8.5M17.5 8H20M4 16h2.5M11.5 16H20"/><circle cx="15" cy="8" r="2.5"/><circle cx="9" cy="16" r="2.5"/><g class="a"><circle cx="15" cy="8" r="2.5"/><circle cx="9" cy="16" r="2.5"/></g>',
   layers: '<path d="M12 3.5 3.5 8.2 12 13l8.5-4.8z"/><path d="M3.5 12.2 12 17l8.5-4.8M3.5 16.2 12 21l8.5-4.8"/><g class="a"><path d="M12 3.5 3.5 8.2 12 13l8.5-4.8z"/></g>',

@@ -9,7 +9,7 @@
   import { weekLabelYear } from './stockingGroups.js';
   // Plan: look ahead. "Next 7 days" ranks spots day by day; "Further out" browses ODFW's published stocking schedule
   // (about a year ahead) by month. The Map tab is for "where today?"; this is for "when and where next?".
-  let { data, report, fishery, onfishery, offset, onoffset, selectedId, onselect, onreview, canReview, error } = $props();
+  let { data, report, fishery, onfishery, offset, onoffset, selectedId, onselect, onreview, canReview, onreports, error } = $props();
   let mode = $state('week');
 
   // ---- next 7 days: one ranking per day, fetched together
@@ -63,7 +63,7 @@
     <div class="chips first" role="group" aria-label="Fishery">
       {#each FISHERIES as [k, label]}<button class="chip" aria-pressed={fishery === k} onclick={() => onfishery(k)}>{label}</button>{/each}
     </div>
-    <ReportCard {report} {canReview} {onreview} />
+    <ReportCard {report} {canReview} {onreview} onopen={onreports} />
     {#if outlookError}<p class="notice" role="alert">Couldn't rank spots ({outlookError}).</p>{/if}
     <ul class="days">
       {#each [0, 1, 2, 3, 4, 5, 6] as o (o)}

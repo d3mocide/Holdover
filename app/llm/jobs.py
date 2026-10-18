@@ -5,31 +5,28 @@ from sqlalchemy.orm import Session
 
 from app.llm.client import LLMClient, LLMUnavailable
 from app.llm.extract import extract_report, extracted
-from app.llm.summarize import summarize_report
 from app.models import Report
 
 log = logging.getLogger("holdover.llm")
 
 
 def process_pending(session: Session, llm: LLMClient | None = None) -> dict:
-    """Extract and summarise every report that hasn't been done yet, Willamette first. If the LLM
+    """Extract items from every report that hasn't been done yet, Willamette first. If the LLM
     host is down nothing is lost: reports stay pending and the next run retries."""
     llm = llm or LLMClient()
-    out = {"extracted": 0, "digests": 0, "pending": 0, "llm": "ok", "errors": 0}
+    out = {"extracted": 0, "pending": 0, "llm": "ok", "errors": 0}
     if not llm.configured:
         out["llm"] = "not_configured"
     reports = session.scalars(select(Report).order_by(
         case((Report.zone == "willamette", 0), else_=1), Report.issued_on.desc(), Report.id.desc())).all()
     for r in reports:
         if out["llm"] != "ok":
-            out["pending"] += not extracted(session, r.id) or not r.summary_text
+            out["pending"] += not extracted(session, r.id)
             continue
         try:
             if not extracted(session, r.id):
                 extract_report(session, r, llm)
                 out["extracted"] += 1
-            if not r.summary_text and summarize_report(session, r, llm):
-                out["digests"] += 1
         except LLMUnavailable as exc:
             log.warning("LLM unavailable: %s", exc)
             out["llm"] = "unreachable"

@@ -10,7 +10,7 @@ from app.http import now_iso
 from app.llm.client import LLMClient, LLMUnavailable
 from app.llm.prompts import EXPLAIN_SYSTEM, EXPLAIN_VERSION, PACK_SYSTEM, PACK_VERSION
 from app.llm.schemas import TextResult
-from app.llm.summarize import ungrounded_terms
+from app.llm.grounding import ungrounded_terms
 from app.models import Generation
 
 log = logging.getLogger("holdover.llm")

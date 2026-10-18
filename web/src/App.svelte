@@ -5,6 +5,7 @@
   import MapView from './lib/MapView.svelte';
   import PlanView from './lib/PlanView.svelte';
   import MapCard from './lib/MapCard.svelte';
+  import ReportsView from './lib/ReportsView.svelte';
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
   import Gauges from './lib/Gauges.svelte';
@@ -29,7 +30,7 @@
   const setCollapsed = (v) => { collapsed = v; try { localStorage.setItem('holdover.panelHidden', v ? '1' : ''); } catch { /* not remembered */ } };
   const go = (k) => { view = k; if (collapsed) setCollapsed(false); };  // choosing a tab means you want its content
   // The side panel sizes to its content. The Map tab is the map alone (no panel); the spot list lives in Plan.
-  const PANEL = { map: '0px', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
+  const PANEL = { map: '0px', plan: 'min(520px, 44vw)', reports: 'min(560px, 46vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
   let panelW = $state(520);
   let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
   $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
@@ -99,7 +100,7 @@
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
   $effect(() => { load(); loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
-  const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
+  const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['reports', 'Reports', 'reports'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
   // Where a waterbody's sheet can open: over the map, which is visible on the Map tab and, on a wide screen, beside the Plan list.
   const drawerOpen = $derived(gearEdit !== undefined || setupEdit !== undefined || editTrip !== undefined || logFor !== undefined);
   $effect(() => { if (drawerOpen) legendOpen = false; });
@@ -127,7 +128,9 @@
   <button class="ptoggle" onclick={() => setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={collapsed ? 'Show panel' : 'Hide panel'} title={collapsed ? 'Show panel' : 'Hide panel'}><Icon name="trend_steady" size={18} /></button>
   <main class="planner" bind:clientWidth={panelW} class:gone={collapsed} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
     {#if view === 'plan'}
-      <PlanView {data} {report} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} />
+      <PlanView {data} {report} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} onreports={() => go('reports')} />
+    {:else if view === 'reports'}
+      <ReportsView />
     {:else if view === 'settings'}
       <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); loadMapSpots(); }} />
     {:else if view === 'journal'}

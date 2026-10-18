@@ -21,6 +21,7 @@ async function req(path, opts = {}) {
 export const api = {
   map: () => req('/api/map?zone=willamette&layers=stocking,gauges,advisories,reports'),
   fireMap: () => req('/api/fire/map'),
+  reportsAll: (issuedOn = null) => req(`/api/reports/all${issuedOn ? `?issued_on=${issuedOn}` : ''}`),
   schedule: (start = null, end = null) => req(`/api/schedule${start ? `?start=${start}&end=${end}` : ''}`),
   waterbodyList: () => req('/api/waterbodies'),
   gauges: () => req('/api/gauges'),
