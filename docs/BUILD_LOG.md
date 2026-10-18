@@ -183,3 +183,19 @@ tag and name hints; retired, lost and deleted gear ignored; it never claims anyt
   checks rendered text.
 - Not checked: matching quality for gear named unusually (hints are English words; unmatched gear just shows nothing).
 
+### 2026-10-18 · this commit · Phases 9, 11, 12 · Data source research
+Searched for APIs behind every unbuilt data item and probed each endpoint directly; wrote
+[data-source-options.md](data-source-options.md) and re-planned Phase 11.
+- Verified (live requests): **USGS's new Water Data API** serves all 16 gauges in one request with the same values as
+  the legacy endpoint; **Army Corps** reservoir elevations for 10 Willamette projects via an undocumented JSON service;
+  **NIFC** current wildfire perimeters (16 for Oregon); ODF regulated-use polygons (72, codes only); ODFW fish districts
+  (18, on ArcGIS Online); OWRD's station list (662 active); NOAA tides.
+- Found: **USGS is retiring the legacy `waterservices` endpoint the app depends on, in early 2027** (their own notice).
+  The handoff's ODFW district URL now returns 503, but the layer is live elsewhere. The district polygons are not the
+  stocking zones. OWRD has no documented readings API and its station pages redirect to USGS. The Corps' server sends an
+  incomplete certificate chain.
+- Corrected before publishing: I first labelled the Corps' `CGR` as Cottage Grove; its own metadata says Cougar Dam
+  (Cottage Grove is `COT`). Labels in the doc now come from the service's metadata.
+- Not checked: the Corps' and NIFC's terms (to read before building), ODF's code meanings, how long a history the Corps
+  service returns, USGS rate limits (their pages did not state them).
+

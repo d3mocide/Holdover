@@ -177,8 +177,9 @@ full size (no resizing yet); gear is not shown on the waterbody sheet.
 **Status:** Planned. **Goal:** the things the sandbox and the laptop could not prove. Best done when the app moves to
 its server.
 
-**Gate:** installed on a real phone over HTTPS and used offline; a real LLM tried; a backup restored.
+**Gate:** installed on a real phone over HTTPS and used offline; a real LLM tried; a backup restored; and the USGS data source migrated before the legacy API is retired.
 
+- [ ] **Deadline: migrate USGS to the new Water Data API before early 2027.** The legacy `waterservices.usgs.gov` endpoint the app uses is being retired. The replacement was verified to serve all 16 gauges in one request ([data-source-options.md](data-source-options.md))
 - [x] Per-address login throttle that works behind a proxy (`TRUSTED_PROXY_HOPS`; tested with spoofed headers)
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
@@ -202,16 +203,21 @@ its server.
 
 ## Phase 11: More sources and statewide coverage
 
-**Status:** Planned.
+**Status:** Planned. APIs researched and probed on 2026-10-18: see [data-source-options.md](data-source-options.md) for
+endpoints, what was verified, terms, effort and the recommended order. Each source needs the owner's go-ahead, its
+terms read and recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit.
 
-- [ ] ODF wildfire and fire-restriction feed (no source inspected yet)
-- [ ] OWRD gauges (access method unverified)
-- [ ] Zone polygons from the ODFW fish-district ArcGIS layer
-- [ ] Statewide coverage (more zones, bigger seed) and, if SQLite stops being enough, PostGIS
+- [ ] **Reservoir levels** from the Army Corps (10 Willamette reservoirs, JSON, undocumented service with a certificate
+      quirk): elevation, change, and comparison with the same date in past years. Highest user value
+- [ ] **Wildfire perimeters** from NIFC WFIGS (ArcGIS REST, 16 Oregon perimeters today): "active fire near here", never a closure claim
+- [ ] ODF fire regulated-use zones: blocked until ODF explains the area codes; ODF-protected lands only
+- [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
+- [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value
+- [ ] Statewide coverage (more zones: the schedule already supports a zone parameter; needs seed, pins and gauges per zone) and, if SQLite stops being enough, PostGIS
 
 ## Phase 12: Coast and marine
 
-**Status:** Planned. Tides, coastal and marine layers. Out of v1 scope by decision.
+**Status:** Planned. Tides, coastal and marine layers. Out of v1 scope by decision. NOAA CO-OPS has a documented, free tides API (verified with South Beach); see [data-source-options.md](data-source-options.md).
 
 ## Phase 13: Light theme
 
