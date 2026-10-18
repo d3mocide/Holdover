@@ -21,7 +21,7 @@
 
   function palette() {
     return {
-      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
+      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), shore: css('--shore'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
       f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), accent: css('--accent'), bg: css('--bg')
     };
   }
@@ -38,8 +38,11 @@
         { id: 'natural', type: 'fill', source: 'oregon', 'source-layer': 'natural',
           filter: ['in', ['get', 'kind'], ['literal', ['forest', 'wood']]], paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
         { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', paint: { 'fill-color': c.water } },
+        { id: 'water-edge', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'Polygon'],
+          layout: { 'line-join': 'round' },
+          paint: { 'line-color': c.shore, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.6, 12, 1.4], 'line-opacity': 0.55, 'line-blur': 0.6 } },
         { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'LineString'],
-          paint: { 'line-color': c.river, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.5, 10, 1, 13, 2], 'line-opacity': 0.85 } },
+          paint: { 'line-color': c.river, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 10, 0.8, 13, 1.8], 'line-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.25, 12, 0.6] } },
         { id: 'roads-minor', type: 'line', source: 'oregon', 'source-layer': 'roads', minzoom: 10,
           filter: ['!', ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]]],
           paint: { 'line-color': c.minor, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 14, 1.2] } },
@@ -187,6 +190,7 @@
         map.setPaintProperty('natural', 'fill-color', c.forest);
         map.setPaintProperty('water', 'fill-color', c.water);
         map.setPaintProperty('waterway', 'line-color', c.river);
+        map.setPaintProperty('water-edge', 'line-color', c.shore);
         map.setPaintProperty('roads', 'line-color', c.line);
         map.setPaintProperty('roads-minor', 'line-color', c.minor);
       }

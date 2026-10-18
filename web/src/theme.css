@@ -8,14 +8,14 @@
   --glass-blur-dense: blur(28px) saturate(1.4);
   --hair: rgba(255, 255, 255, 0.07);
   --warn: #e9b44c;
-  --road: var(--line); --road-minor: var(--line); --forest: var(--land); --gauge: #6cb4ee; --glow-1: transparent; --glow-2: transparent;
+  --shore: var(--river); --road: var(--line); --road-minor: var(--line); --forest: var(--land); --gauge: #6cb4ee; --glow-1: transparent; --glow-2: transparent;
 }
 :root[data-theme='fir'] {
   --bg: #0b1613; --surface: #16261f; --line: #2a4036;
   --primary: #2f6b52; --accent: #f08a5d;
   --text: #e8f0ec; --text-quiet: #9db3a9;
   --fresh-1: #c4f16a; --fresh-2: #35d0b0; --fresh-3: #6b86a8;
-  --land: #0e1c17; --forest: #112a1f; --water: #0e2b3b; --river: #2f84a6; --road: #2f463c; --road-minor: #22352d;
+  --land: #0e1c17; --forest: #112a1f; --water: #0e2b3b; --river: #2f84a6; --shore: #2a6f8f; --road: #2f463c; --road-minor: #22352d;
   --gauge: #6cb4ee; --glow-1: rgba(53, 208, 176, 0.16); --glow-2: rgba(240, 138, 93, 0.10);
   --on-accent: var(--bg); --on-primary: var(--text);
 }
