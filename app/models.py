@@ -150,6 +150,8 @@ class Trip(Base):
     notes: Mapped[str | None] = mapped_column(Text)
     conditions_json: Mapped[str | None] = mapped_column(Text)
     conditions_source: Mapped[str | None] = mapped_column(Text)
+    setup_uuid: Mapped[str | None] = mapped_column(Text)  # the named setup used, if any
+    gear_json: Mapped[str | None] = mapped_column(Text)  # JSON list of gear_item uuids used on the trip
     updated_at: Mapped[str] = mapped_column(Text)
     deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))  # NULL = pre-accounts row, adopted by the first admin
@@ -165,6 +167,7 @@ class Catch(Base):
     method: Mapped[str | None] = mapped_column(Text)
     kept: Mapped[int | None] = mapped_column(Integer)
     photo_path: Mapped[str | None] = mapped_column(Text)
+    gear_uuid: Mapped[str | None] = mapped_column(Text)  # the lure/fly this catch was caught on, if recorded
     updated_at: Mapped[str] = mapped_column(Text)
     deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
@@ -221,3 +224,35 @@ class Favorite(Base):
     __table_args__ = (PrimaryKeyConstraint("user_id", "waterbody_id"),)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
     waterbody_id: Mapped[int] = mapped_column(ForeignKey("waterbody.id", ondelete="CASCADE"))
+
+
+class GearItem(Base):
+    """One thing in a person's tackle: a rod, a lure, a pair of waders. Private to its owner; syncs like a trip."""
+    __tablename__ = "gear_item"
+    uuid: Mapped[str] = mapped_column(Text, primary_key=True)
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
+    kind: Mapped[str] = mapped_column(Text)  # rod|reel|line|lure|fly|terminal|net|wearable|electronics|other
+    name: Mapped[str] = mapped_column(Text)
+    brand: Mapped[str | None] = mapped_column(Text)
+    model: Mapped[str | None] = mapped_column(Text)
+    size: Mapped[str | None] = mapped_column(Text)  # free text: '6wt 9ft', '1/8 oz', '#12'
+    color: Mapped[str | None] = mapped_column(Text)
+    quantity: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    fisheries_json: Mapped[str | None] = mapped_column(Text)  # JSON list of trout|steelhead|warmwater
+    status: Mapped[str] = mapped_column(Text, default="active", server_default="active")  # active|retired|lost
+    notes: Mapped[str | None] = mapped_column(Text)
+    photo_path: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[str] = mapped_column(Text)
+    deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+
+class GearSetup(Base):
+    """A named combination ('6wt dry fly': rod + reel + line + leader) so a trip records one choice, not five."""
+    __tablename__ = "gear_setup"
+    uuid: Mapped[str] = mapped_column(Text, primary_key=True)
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
+    name: Mapped[str] = mapped_column(Text)
+    notes: Mapped[str | None] = mapped_column(Text)
+    item_uuids_json: Mapped[str] = mapped_column(Text, default="[]", server_default="[]")
+    updated_at: Mapped[str] = mapped_column(Text)
+    deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

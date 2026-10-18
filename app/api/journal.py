@@ -17,10 +17,30 @@ from sqlalchemy.orm import Session
 from app.api.auth import csrf_guard, require_user
 from app.config import get_settings
 from app.db import get_session
-from app.models import Catch, Pin, Trip, User
+from app.models import Catch, GearItem, GearSetup, Pin, Trip, User
 
 router = APIRouter(dependencies=[Depends(csrf_guard), Depends(require_user)])
 _UUID = re.compile(r"^[0-9a-fA-F-]{8,64}$")
+GEAR_KINDS = {"rod", "reel", "line", "lure", "fly", "terminal", "net", "wearable", "electronics", "other"}
+GEAR_STATUS = {"active", "retired", "lost"}
+FISHERIES = {"trout", "steelhead", "warmwater"}
+
+
+def _json_list(v: str | None, allowed=None, uuids: bool = False) -> str | None:
+    """Accepts None or a JSON list of strings; optionally every entry must be in `allowed` or look like a uuid."""
+    if v is None:
+        return None
+    try:
+        items = json.loads(v)
+    except ValueError:
+        raise ValueError("must be a JSON list")
+    if not isinstance(items, list) or len(items) > 200 or not all(isinstance(i, str) for i in items):
+        raise ValueError("must be a JSON list of strings")
+    if allowed is not None and not set(items) <= allowed:
+        raise ValueError("unknown value")
+    if uuids and not all(_UUID.match(i) for i in items):
+        raise ValueError("bad uuid in list")
+    return v
 
 
 class _Row(BaseModel):
@@ -51,6 +71,20 @@ class TripIn(_Row):
     notes: str | None = None
     conditions_json: str | None = None
     conditions_source: str | None = None  # live|cached
+    setup_uuid: str | None = None
+    gear_json: str | None = None  # JSON list of gear_item uuids
+
+    @field_validator("setup_uuid")
+    @classmethod
+    def _setup(cls, v):
+        if v is not None and not _UUID.match(v):
+            raise ValueError("bad uuid")
+        return v
+
+    @field_validator("gear_json")
+    @classmethod
+    def _gear(cls, v):
+        return _json_list(v, uuids=True)
 
 
 class CatchIn(_Row):
@@ -61,6 +95,14 @@ class CatchIn(_Row):
     method: str | None = None
     kept: int | None = None
     photo_path: str | None = None
+    gear_uuid: str | None = None
+
+    @field_validator("gear_uuid")
+    @classmethod
+    def _g(cls, v):
+        if v is not None and not _UUID.match(v):
+            raise ValueError("bad uuid")
+        return v
 
 
 class PinIn(_Row):
@@ -70,7 +112,53 @@ class PinIn(_Row):
     notes: str | None = None
 
 
+class GearItemIn(_Row):
+    kind: str
+    name: str = Field(min_length=1, max_length=120)
+    brand: str | None = Field(default=None, max_length=80)
+    model: str | None = Field(default=None, max_length=80)
+    size: str | None = Field(default=None, max_length=60)
+    color: str | None = Field(default=None, max_length=60)
+    quantity: int = Field(default=1, ge=0, le=9999)
+    fisheries_json: str | None = None
+    status: str = "active"
+    notes: str | None = Field(default=None, max_length=2000)
+    photo_path: str | None = None
+
+    @field_validator("kind")
+    @classmethod
+    def _kind(cls, v):
+        if v not in GEAR_KINDS:
+            raise ValueError("unknown kind")
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def _status(cls, v):
+        if v not in GEAR_STATUS:
+            raise ValueError("unknown status")
+        return v
+
+    @field_validator("fisheries_json")
+    @classmethod
+    def _fish(cls, v):
+        return _json_list(v, allowed=FISHERIES)
+
+
+class SetupIn(_Row):
+    name: str = Field(min_length=1, max_length=120)
+    notes: str | None = Field(default=None, max_length=2000)
+    item_uuids_json: str = "[]"
+
+    @field_validator("item_uuids_json")
+    @classmethod
+    def _items(cls, v):
+        return _json_list(v, uuids=True)
+
+
 class Push(BaseModel):
+    gear: list[GearItemIn] = []
+    setups: list[SetupIn] = []
     trips: list[TripIn] = []
     catches: list[CatchIn] = []
     pins: list[PinIn] = []
@@ -98,22 +186,46 @@ def _norm(ts: str) -> datetime:
     return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
 
 
+def _foreign_gear(session: Session, user: User, trip: TripIn | None = None, catch: CatchIn | None = None) -> bool:
+    """True if a row points at someone else's gear. A reference to gear that does not exist yet is allowed: it is
+    only a pointer within the owner's own data, and the gear usually arrives in the same push."""
+    refs: list[tuple[type, str]] = []
+    if trip is not None:
+        if trip.setup_uuid:
+            refs.append((GearSetup, trip.setup_uuid))
+        refs += [(GearItem, u) for u in json.loads(trip.gear_json or "[]")]
+    if catch is not None and catch.gear_uuid:
+        refs.append((GearItem, catch.gear_uuid))
+    return any((row := session.get(model, u)) is not None and row.owner_id != user.id for model, u in refs)
+
+
 @router.post("/sync/push")
 def push(body: Push, user: User = Depends(require_user), session: Session = Depends(get_session)):
     result = {"applied": 0, "stale": 0, "rejected": []}
-    for group, model in ((body.trips, Trip), (body.pins, Pin), (body.catches, Catch)):  # trips before catches
+    groups = ((body.gear, GearItem), (body.setups, GearSetup), (body.trips, Trip), (body.pins, Pin), (body.catches, Catch))
+    for group, model in groups:  # gear first, trips before catches
         for row in group:
+            reason = None
             if model is Catch:
                 trip = session.get(Trip, row.trip_uuid)
                 if trip is None:
-                    result["rejected"].append({"uuid": row.uuid, "reason": "unknown trip_uuid"})
-                    continue
-                if trip.owner_id != user.id:
-                    result["rejected"].append({"uuid": row.uuid, "reason": "trip belongs to another account"})
-                    continue
-                if row.photo_path and not row.photo_path.startswith(f"{user.id}-"):
-                    result["rejected"].append({"uuid": row.uuid, "reason": "photo belongs to another account"})
-                    continue
+                    reason = "unknown trip_uuid"
+                elif trip.owner_id != user.id:
+                    reason = "trip belongs to another account"
+                elif row.photo_path and not row.photo_path.startswith(f"{user.id}-"):
+                    reason = "photo belongs to another account"
+                elif _foreign_gear(session, user, catch=row):
+                    reason = "gear belongs to another account"
+            elif model is Trip and _foreign_gear(session, user, trip=row):
+                reason = "gear belongs to another account"
+            elif model is GearItem and row.photo_path and not row.photo_path.startswith(f"{user.id}-"):
+                reason = "photo belongs to another account"
+            elif model is GearSetup and any((g := session.get(GearItem, u)) is not None and g.owner_id != user.id
+                                            for u in json.loads(row.item_uuids_json)):
+                reason = "gear belongs to another account"
+            if reason:
+                result["rejected"].append({"uuid": row.uuid, "reason": reason})
+                continue
             outcome = _upsert(session, model, row, user)
             if outcome == "foreign":
                 result["rejected"].append({"uuid": row.uuid, "reason": "belongs to another account"})
@@ -128,7 +240,7 @@ def push(body: Push, user: User = Depends(require_user), session: Session = Depe
 def _dump(session: Session, user: User, since: str | None):
     """Only the signed-in user's own rows. owner_id is server-side bookkeeping and is never sent."""
     out = {}
-    for key, model in (("trips", Trip), ("catches", Catch), ("pins", Pin)):
+    for key, model in (("trips", Trip), ("catches", Catch), ("pins", Pin), ("gear", GearItem), ("setups", GearSetup)):
         q = select(model).where(model.owner_id == user.id)
         rows = [r for r in session.scalars(q)
                 if since is None or _norm(r.updated_at) > _norm(since)]
@@ -158,7 +270,9 @@ def export(format: str = "json", user: User = Depends(require_user), session: Se
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["trip_uuid", "started_at", "ended_at", "waterbody_id", "lat", "lon", "species", "count",
-                "length_in", "method", "kept", "trip_notes", "conditions_source"])
+                "length_in", "method", "kept", "trip_notes", "conditions_source", "setup", "caught_on"])
+    item_name = {g["uuid"]: g["name"] for g in d["gear"]}
+    setup_name = {g["uuid"]: g["name"] for g in d["setups"]}
     catches: dict[str, list] = {}
     for c in d["catches"]:
         if not c["deleted"]:
@@ -167,10 +281,10 @@ def export(format: str = "json", user: User = Depends(require_user), session: Se
         if t["deleted"]:
             continue
         base = [t["uuid"], t["started_at"], t["ended_at"], t["waterbody_id"], t["lat"], t["lon"]]
-        tail = [t["notes"], t["conditions_source"]]
+        tail = [t["notes"], t["conditions_source"], setup_name.get(t["setup_uuid"])]
         for c in catches.get(t["uuid"]) or [None]:
             mid = [c["species"], c["count"], c["length_in"], c["method"], c["kept"]] if c else [None] * 5
-            w.writerow(base + mid + tail)
+            w.writerow(base + mid + tail + [item_name.get(c["gear_uuid"]) if c else None])
     return PlainTextResponse(buf.getvalue(), media_type="text/csv",
                              headers={"Content-Disposition": 'attachment; filename="holdover-journal.csv"'})
 
