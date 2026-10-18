@@ -7,6 +7,7 @@
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
   import Gauges from './lib/Gauges.svelte';
+  import Legend from './lib/Legend.svelte';
   import DayView from './lib/DayView.svelte';
   import Journal from './lib/Journal.svelte';
   import LogTrip from './lib/LogTrip.svelte';
@@ -108,15 +109,8 @@
         {/if}
       </div>
       <div class="legend glass" aria-label="Map legend">
-        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}>Legend</button>
-        {#if legendOpen}
-          <span><i class="dot this_week"></i> This week</span>
-          <span><i class="dot recent"></i> Last 2 weeks</span>
-          <span><i class="dot older"></i> Older</span>
-          <span><i class="dot upcoming"></i> Scheduled</span>
-          <span><i class="sym diamond"></i> Gauge (provisional)</span>
-          <span><i class="sym ring"></i> Algae advisory/precaution</span>
-          <span class="quiet sm">Bigger pin, more fish</span>
+        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> Legend</button>
+        {#if legendOpen}<Legend {theme} />
         {/if}
       </div>
       <button class="offline" onclick={() => (offlineFor = selectedId)}><Icon name="offline" size={18} /> Prepare for offline</button>
@@ -144,8 +138,8 @@
   .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; gap: 12px; padding: 12px; }
   .shell > :global(*) { grid-row: 1; }
   .shell > :global(.page) { grid-column: 2 / -1; }
-  .rail, .layers, .legend, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
-  .planner, .sheetwrap { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .planner, .sheetwrap, .layers, .legend { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
   .logo { margin-bottom: 12px; }
   .navbtn { flex-direction: column; border: 0; background: none; width: 56px; height: 56px; gap: 2px; border-radius: 12px; color: var(--text-quiet); padding: 0; }
@@ -167,7 +161,7 @@
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: 456px; bottom: 12px; border-radius: 14px; display: flex; gap: 6px 14px; padding: 4px 8px; font-size: 12px; z-index: 2; flex-wrap: wrap; align-items: center; max-width: calc(100% - 24px); }
+  .legend { position: absolute; left: 456px; bottom: 12px; border-radius: 14px; display: flex; padding: 4px; z-index: 2; flex-direction: column; align-items: flex-start; }
   .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .overlay { position: absolute; inset: 0; z-index: 15; background: var(--bg); }
