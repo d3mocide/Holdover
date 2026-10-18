@@ -37,10 +37,17 @@
 </script>
 
 <div class="page">
-  <header><h1>Journal</h1><button class="primary" onclick={() => onlog()}>Log a trip</button></header>
+  <header><h1>Journal</h1>{#if trips.length}<button class="primary" onclick={() => onlog()}><Icon name="log" size={18} /> Log a trip</button>{/if}</header>
   <p class="quiet small" role="status">{statusText}{syncState.pending ? ` · ${syncState.pending} waiting to sync` : ''}</p>
 
-  {#if !trips.length}<p class="quiet">No trips yet. Trips are saved on this device first, so logging works with no signal.</p>{/if}
+  {#if !trips.length}
+    <div class="empty card">
+      <span class="eico"><Icon name="fish" size={34} /></span>
+      <strong>No trips yet</strong>
+      <p class="quiet">Trips are saved on this device first, so logging works with no signal.</p>
+      <button class="primary" onclick={() => onlog()}><Icon name="log" size={18} /> Log your first trip</button>
+    </div>
+  {/if}
   <ul>
     {#each trips as t (t.uuid)}
       <li class="card">
@@ -67,10 +74,13 @@
 </div>
 
 <style>
-  .page { padding: 16px; max-width: 720px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-  header { display: flex; justify-content: space-between; align-items: center; } h1 { font-size: 22px; }
-  ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; margin: 0; }
+  .page { padding: 20px 16px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  header { display: flex; justify-content: space-between; align-items: center; min-height: 44px; } h1 { font-size: 24px; letter-spacing: -0.01em; }
+  ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; margin: 0; }
   .card { position: relative; } .card button { position: absolute; right: 6px; bottom: 6px; border: 0; background: none; color: var(--text-quiet); }
   .top { display: flex; justify-content: space-between; gap: 8px; } .small { font-size: 13px; margin: 2px 0; }
-  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 36px 20px; }
+  .empty .eico { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair), 0 0 28px var(--glow-1); }
+  .empty p { margin: 0 0 8px; max-width: 360px; } .empty button { position: static; color: var(--on-accent); border: 1px solid var(--accent); background: var(--accent); }
 </style>

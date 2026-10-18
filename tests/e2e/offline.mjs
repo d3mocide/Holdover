@@ -34,7 +34,7 @@ ok(await p.getByRole('button', { name: /Dexter Reservoir/ }).isVisible(), 'cache
 await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/offline-map.png' : undefined });
 
 await p.getByRole('button', { name: 'Journal' }).click();
-await p.getByRole('button', { name: 'Log a trip' }).first().click();
+await p.getByRole('button', { name: /Log (a|your first) trip/ }).first().click();
 await p.getByLabel('Where').selectOption({ label: 'Dexter Reservoir' });
 ok(await p.getByText('Saved on this phone, syncs when you have signal').isVisible(), 'offline banner shown');
 await p.getByLabel('Species 1').fill('rainbow trout');

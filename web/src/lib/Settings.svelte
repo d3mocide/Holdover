@@ -60,9 +60,12 @@
     <h2>Source status</h2>
     {#if health}
       {#each Object.entries(health.sources) as [name, s]}
-        <p class="row"><span>{name}</span>
-          <span class="mono">{s.stale ? 'STALE' : 'ok'}{s.last_success ? ` · ${new Date(s.last_success).toLocaleString()}` : ' · never'}</span></p>
-        {#if s.last_error}<p class="quiet small">Last error: {s.last_error}</p>{/if}
+        <div class="src">
+          <i class="stat-dot" class:ok={!s.stale} class:bad={s.stale}></i>
+          <span class="nm">{name}</span>
+          <span class="when quiet">{s.last_success ? new Date(s.last_success).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'never run'}{s.stale && s.last_success ? ' · stale' : ''}</span>
+        </div>
+        {#if s.last_error}<p class="quiet small err">Last error: {s.last_error}</p>{/if}
       {/each}
     {:else}<p class="quiet">Server unreachable.</p>{/if}
   </section>
@@ -114,12 +117,14 @@
 </div>
 
 <style>
-  .settings { padding: 16px; display: flex; flex-direction: column; gap: 16px; max-width: 640px; overflow-y: auto; height: 100%; }
+  .settings { padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; height: 100%; }
   fieldset { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); padding: 8px 16px 12px; }
   legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
   .opt { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--text); margin: 0; }
   
   h1 { font-size: 24px; letter-spacing: -0.01em; } h2 { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); margin-bottom: 8px; } h3 { font-size: 14px; margin: 12px 0 4px; }
+  .src { display: grid; grid-template-columns: 9px 1fr auto; gap: 12px; align-items: center; min-height: 36px; border-bottom: 1px solid var(--hair); }
+  .src:last-of-type { border-bottom: 0; } .nm { font-size: 14px; } .when { font-size: 13px; font-variant-numeric: tabular-nums; } .err { padding-left: 21px; }
   .row { display: flex; justify-content: space-between; gap: 12px; margin: 4px 0; flex-wrap: wrap; }
   .gap { justify-content: flex-start; } .top { margin-top: 12px; }
   .small { font-size: 13px; margin: 0; }

@@ -12,7 +12,7 @@
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true } = $props();
+  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, inset = 0 } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -162,7 +162,7 @@
       hasBasemap = withTiles;
       map = new maplibregl.Map({
         container: el, style: baseStyle(withTiles), center: [-122.9, 44.6], zoom: 7.4,
-        attributionControl: { compact: true }, padding: { left: window.innerWidth >= 900 ? 492 : 0 }, maxBounds: [[-125.5, 41.5], [-116, 47]]
+        attributionControl: { compact: true }, padding: { left: inset }, maxBounds: [[-125.5, 41.5], [-116, 47]]
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       map.on('load', async () => { await addLayers(); ready = true; });
@@ -194,6 +194,7 @@
     map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
     map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
   });
+  $effect(() => { const l = inset; if (ready) map.setPadding({ left: l, top: 0, right: 0, bottom: 0 }); });
   $effect(() => {
     if (!ready) return;
     map.setFilter('stocking-sel', selFilter(selectedId ?? -1));

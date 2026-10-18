@@ -153,15 +153,21 @@
 </section>
 
 <style>
-  .log { padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 12px; max-width: 640px; overflow-y: auto; height: 100%; }
-  header { display: flex; gap: 12px; align-items: center; } h1 { font-size: 20px; flex: 1; }
-  .banner { margin: 0; border: 1px solid var(--accent); border-radius: 8px; padding: 8px 12px; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .log { padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto; overflow-y: auto; height: 100%; }
+  header { display: flex; gap: 12px; align-items: center; } h1 { font-size: 24px; letter-spacing: -0.01em; flex: 1; }
+  .badge { font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; border: 1px solid var(--hair); border-radius: 999px; padding: 3px 10px; }
+  .banner { margin: 0; border: 1px solid var(--accent); border-radius: 12px; padding: 10px 14px; background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .f { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .f label { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; margin: 0; }
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .row, .srow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .srow input { flex: 1; min-width: 120px; } .count { min-width: 28px; text-align: center; font-size: 18px; }
-  fieldset { border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .srow input { flex: 1; min-width: 120px; }
+  .srow button { border-radius: 50%; width: 44px; padding: 0; font-size: 20px; }
+  .count { min-width: 32px; text-align: center; font-size: 20px; font-weight: 600; color: var(--fresh-1); }
+  fieldset { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); display: flex; flex-direction: column; gap: 12px; padding: 8px 14px 14px; }
+  legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
   .small { font-size: 13px; margin: 0; } .err { color: var(--accent); margin: 0; }
-  .cond p { margin: 4px 0 0; } .bar { position: sticky; bottom: 0; padding: 8px 0; background: var(--bg); }
-  .bar button { width: 100%; }
-  input[type='file'] { min-height: 44px; padding-top: 10px; }
+  .cond p { margin: 4px 0 0; }
+  .bar { position: sticky; bottom: 0; padding: 12px 0 4px; background: linear-gradient(to top, var(--bg) 60%, transparent); }
+  .bar button { width: 100%; min-height: 48px; font-size: 15px; }
 </style>
