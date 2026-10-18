@@ -42,6 +42,7 @@ export default defineConfig({
     })
   ],
   server: {
+    allowedHosts: true,  // dev server only: lets another machine on the LAN open it by IP or hostname
     proxy: Object.fromEntries(['/api', '/healthz', '/tiles'].map((p) => [p, process.env.API_URL || 'http://localhost:8000']))
   }
 });
