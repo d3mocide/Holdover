@@ -7,6 +7,7 @@
     gauge: 'M12 3l7 9-7 9-7-9z',
     settings: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2',
     close: 'M6 6l12 12M18 6 6 18',
+    layers: 'M12 3 3 8l9 5 9-5zM3 13l9 5 9-5',
     external: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6'
   };
 </script>

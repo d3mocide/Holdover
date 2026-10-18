@@ -39,21 +39,21 @@
 
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
-    <h3 class="quiet small">Stocking</h3>
+    <h3 class="eyebrow">Stocking</h3>
     <ul>
       {#each ordered as s (s.week_of)}
         <li class="srow">
           <span class="dot {s.freshness}" title={FRESH_LABEL[s.freshness]}></span>
-          <span class="grow">{weekLabel(s.week_of)}
-            <span class="quiet small">{s.freshness === 'upcoming' ? 'scheduled' : ''}</span></span>
-          <span class="mono">{fish(s)}</span>
+          <span class="grow wk">{weekLabel(s.week_of)}</span>
+          {#if s.freshness === 'upcoming'}<span class="tag">scheduled</span>{/if}
+          <span class="fish">{fish(s)}</span>
         </li>
       {/each}
     </ul>
     <p class="quiet small">Weeks, not days. The schedule can change without notice. As of {hhmm(wb.stocking[0]?.scraped_at)}.</p>
 
     {#if wb.report_items?.length}
-      <h3 class="quiet small">From the weekly report</h3>
+      <h3 class="eyebrow">From the weekly report</h3>
       {#each wb.report_items as r}
         <blockquote>
           <p class="small">{r.note}{r.rating !== 'unknown' ? ` (${r.rating})` : ''}</p>
@@ -63,7 +63,7 @@
     {/if}
 
     {#if mine.length}
-      <h3 class="quiet small">Your trips here</h3>
+      <h3 class="eyebrow">Your trips here</h3>
       <p class="small">{mine.length} trip{mine.length === 1 ? '' : 's'}, last {longDate(mine[0].started_at?.slice(0, 10))}.
         {Object.entries(mineCatch.reduce((a, c) => ({ ...a, [c.species ?? 'unspecified']: (a[c.species ?? 'unspecified'] ?? 0) + (c.count || 0) }), {})).map(([k, v]) => `${v} ${k}`).join(', ')}</p>
     {/if}
@@ -80,13 +80,17 @@
 
 <style>
   .sheet { position: relative; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; height: 100%; }
-  h2 { font-size: 20px; padding-right: 48px; }
+  h2 { font-size: 22px; letter-spacing: -0.01em; padding-right: 48px; }
+  h3 { margin-top: 10px; }
   .close { position: absolute; top: 8px; right: 8px; padding: 0; }
   .small { font-size: 13px; margin: 0; }
   ul { list-style: none; margin: 0; padding: 0; }
-  .srow { display: flex; gap: 10px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--line); }
+  .srow { display: flex; gap: 10px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--hair); }
+  .wk { white-space: nowrap; }
+  .tag { font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fresh-1); border: 1px solid color-mix(in srgb, var(--fresh-1) 45%, transparent); border-radius: 999px; padding: 1px 8px; }
+  .fish { min-width: 96px; font-size: 13px; color: var(--text-quiet); text-align: right; font-variant-numeric: tabular-nums; }
   .grow { flex: 1; }
-  blockquote { margin: 0; padding: 4px 0 4px 10px; border-left: 2px solid var(--fresh-2); }
+  blockquote { margin: 0; padding: 4px 0 4px 12px; border-left: 2px solid var(--fresh-2); background: linear-gradient(90deg, var(--glow-1), transparent 70%); border-radius: 2px; }
   blockquote p { margin: 2px 0; }
   .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 </style>

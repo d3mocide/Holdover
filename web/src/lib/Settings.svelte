@@ -115,13 +115,14 @@
 
 <style>
   .settings { padding: 16px; display: flex; flex-direction: column; gap: 16px; max-width: 640px; overflow-y: auto; height: 100%; }
-  fieldset { border: 1px solid var(--line); border-radius: 12px; }
+  fieldset { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); padding: 8px 16px 12px; }
+  legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
   .opt { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--text); margin: 0; }
-  .opt input { width: 20px; height: 20px; accent-color: var(--accent); }
-  h1 { font-size: 22px; } h2 { font-size: 16px; margin-bottom: 8px; } h3 { font-size: 14px; margin: 12px 0 4px; }
+  
+  h1 { font-size: 24px; letter-spacing: -0.01em; } h2 { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); margin-bottom: 8px; } h3 { font-size: 14px; margin: 12px 0 4px; }
   .row { display: flex; justify-content: space-between; gap: 12px; margin: 4px 0; flex-wrap: wrap; }
   .gap { justify-content: flex-start; } .top { margin-top: 12px; }
   .small { font-size: 13px; margin: 0; }
-  .alias { border-top: 1px solid var(--line); padding: 8px 0; }
+  .alias { border-top: 1px solid var(--hair); padding: 8px 0; }
   .alias p { margin: 0 0 4px; }
 </style>

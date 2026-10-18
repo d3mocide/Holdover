@@ -21,7 +21,7 @@
 
   function palette() {
     return {
-      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), line: css('--road'), gauge: css('--gauge'),
+      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
       f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), accent: css('--accent'), bg: css('--bg')
     };
   }
@@ -34,14 +34,18 @@
       style.layers.push(
         { id: 'landuse', type: 'fill', source: 'oregon', 'source-layer': 'landuse',
           filter: ['in', ['get', 'kind'], ['literal', ['park', 'forest', 'wood', 'national_park', 'nature_reserve', 'protected_area']]],
-          paint: { 'fill-color': c.forest, 'fill-opacity': 0.85 } },
+          paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
         { id: 'natural', type: 'fill', source: 'oregon', 'source-layer': 'natural',
-          filter: ['in', ['get', 'kind'], ['literal', ['forest', 'wood']]], paint: { 'fill-color': c.forest, 'fill-opacity': 0.85 } },
+          filter: ['in', ['get', 'kind'], ['literal', ['forest', 'wood']]], paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
         { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', paint: { 'fill-color': c.water } },
         { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'LineString'],
-          paint: { 'line-color': c.river, 'line-width': 1.2 } },
+          paint: { 'line-color': c.river, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.5, 10, 1, 13, 2], 'line-opacity': 0.85 } },
+        { id: 'roads-minor', type: 'line', source: 'oregon', 'source-layer': 'roads', minzoom: 10,
+          filter: ['!', ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]]],
+          paint: { 'line-color': c.minor, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 14, 1.2] } },
         { id: 'roads', type: 'line', source: 'oregon', 'source-layer': 'roads',
-          paint: { 'line-color': c.line, 'line-width': 0.8 } }
+          filter: ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]],
+          paint: { 'line-color': c.line, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.5, 10, 1, 14, 2.2] } }
       );
     }
     return style;
@@ -51,7 +55,8 @@
     const c = palette();
     return {
       color: ['match', ['get', 'freshness'], 'this_week', c.f1, 'recent', c.f2, 'older', c.f3, 'upcoming', c.bg, c.f3],
-      stroke: ['match', ['get', 'freshness'], 'upcoming', c.f1, c.bg]
+      stroke: ['match', ['get', 'freshness'], 'upcoming', c.f1, c.bg],
+      halo: ['match', ['get', 'freshness'], 'this_week', c.f1, 'recent', c.f2, 'older', c.f3, c.f1]
     };
   }
 
@@ -66,7 +71,9 @@
     for (const [name, img] of Object.entries({
       'gauge-icon': icon((g) => { g.fillStyle = c.gauge; g.strokeStyle = c.bg; g.lineWidth = 3; g.beginPath();
         g.moveTo(16, 3); g.lineTo(29, 16); g.lineTo(16, 29); g.lineTo(3, 16); g.closePath(); g.fill(); g.stroke(); }),
-      'report-icon': icon((g) => { g.fillStyle = css('--text-quiet'); g.fillRect(6, 6, 20, 20); })
+      ...Object.fromEntries([['excellent', c.f1], ['good', c.f2], ['fair', c.warn], ['slow', c.f3], ['unknown', c.f3]].map(([k, col]) => [`report-${k}`,
+        icon((g) => { g.fillStyle = c.bg; g.beginPath(); g.roundRect(4, 4, 24, 24, 7); g.fill();
+          g.fillStyle = col; g.beginPath(); g.roundRect(8, 8, 16, 16, 4); g.fill(); })]))
     })) { if (map.hasImage(name)) map.removeImage(name); map.addImage(name, img); }
   }
 
@@ -84,14 +91,19 @@
     map.addLayer({ id: 'advisory-ring', type: 'circle', source: 'stocking', filter: isL('advisory'), paint: {
       'circle-radius': 15, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
     map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
-      'icon-image': 'report-icon', 'icon-size': 0.5, 'icon-offset': [16, -16], 'icon-allow-overlap': true }, paint: {
-      'icon-opacity': ['match', ['get', 'rating'], 'excellent', 1, 'good', 0.8, 'fair', 0.55, 'slow', 0.35, 0.3] } });
+      'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.55, 'icon-offset': [18, -18], 'icon-allow-overlap': true } });
+    const fishN = ['coalesce', ['get', 'last_total'], ['get', 'next_total'], 0];
+    const rad = ['interpolate', ['linear'], ['sqrt', fishN], 0, 6, 30, 8, 60, 11, 100, 14];
+    map.addLayer({ id: 'stocking-halo', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
+      'circle-radius': ['+', rad, 7], 'circle-color': p.halo, 'circle-opacity': ['match', ['get', 'freshness'], 'upcoming', 0, 'older', 0.1, 0.24], 'circle-blur': 0.9 } });
     map.addLayer({ id: 'stocking-pts', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
-      'circle-radius': 8, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2 } });
+      'circle-radius': rad, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2.5 } });
     map.addLayer({ id: 'gauge-pts', type: 'symbol', source: 'stocking', filter: isL('gauge'), layout: {
       'icon-image': 'gauge-icon', 'icon-size': 0.75, 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'stocking-sel-glow', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
+      'circle-radius': 26, 'circle-color': c.accent, 'circle-opacity': 0.22, 'circle-blur': 0.8 } });
     map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
-      'circle-radius': 12, 'circle-color': p.color, 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
+      'circle-radius': ['+', rad, 5], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
     for (const l of ['stocking-pts', 'advisory-ring', 'report-badge']) {
       map.on('click', l, (e) => onselect?.(e.features[0].properties.id));
     }
@@ -151,6 +163,8 @@
     const vis = (on) => (on ? 'visible' : 'none');
     map.setLayoutProperty('stocking-pts', 'visibility', vis(showStocking));
     map.setLayoutProperty('stocking-sel', 'visibility', vis(showStocking));
+    map.setLayoutProperty('stocking-halo', 'visibility', vis(showStocking));
+    map.setLayoutProperty('stocking-sel-glow', 'visibility', vis(showStocking));
     map.setLayoutProperty('gauge-pts', 'visibility', vis(showGauges));
     map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
     map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
@@ -158,6 +172,7 @@
   $effect(() => {
     if (!ready) return;
     map.setFilter('stocking-sel', selFilter(selectedId ?? -1));
+    map.setFilter('stocking-sel-glow', selFilter(selectedId ?? -1));
     const f = data?.features.find((x) => x.properties.layer === 'stocking' && x.properties.id === selectedId);
     if (f) map.easeTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), duration: 400 });
   });
@@ -173,11 +188,13 @@
         map.setPaintProperty('water', 'fill-color', c.water);
         map.setPaintProperty('waterway', 'line-color', c.river);
         map.setPaintProperty('roads', 'line-color', c.line);
+        map.setPaintProperty('roads-minor', 'line-color', c.minor);
       }
       map.setPaintProperty('stocking-pts', 'circle-color', p.color);
       map.setPaintProperty('stocking-pts', 'circle-stroke-color', p.stroke);
-      map.setPaintProperty('stocking-sel', 'circle-color', p.color);
+      map.setPaintProperty('stocking-halo', 'circle-color', p.halo);
       map.setPaintProperty('stocking-sel', 'circle-stroke-color', c.accent);
+      map.setPaintProperty('stocking-sel-glow', 'circle-color', c.accent);
       map.setPaintProperty('advisory-ring', 'circle-stroke-color', c.accent);
       map.setPaintProperty('journal-pts', 'circle-color', css('--text'));
       map.setPaintProperty('journal-pts', 'circle-stroke-color', c.bg);

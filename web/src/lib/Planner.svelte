@@ -52,7 +52,7 @@
           </span>
           <span class="end">
             {#if f}<span class="dot {f.freshness}" title={FRESH_LABEL[f.freshness]}></span>{/if}
-            <span class="mono score">{Math.round(s.score)}</span>
+            <span class="mono score" class:hi={s.score >= 60} class:mid={s.score >= 45 && s.score < 60}>{Math.round(s.score)}</span>
           </span>
         </button>
         <details class="how">
@@ -97,33 +97,35 @@
 <style>
   .panel { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
   .row { display: flex; justify-content: space-between; align-items: baseline; }
-  h1 { font-size: 20px; } h2 { font-weight: 500; }
+  h1 { font-size: 22px; letter-spacing: -0.01em; } h2 { font-weight: 500; }
   .small { font-size: 13px; margin: 0; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .chip { padding: 0 12px; min-height: 44px; font-size: 13px; }
   .chip.accent[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   ul.plain { display: block; list-style: disc; padding: 8px 0 0 16px; }
-  .spotli { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  .spotli.sel { border-color: var(--fresh-2); }
+  .spotli { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); transition: border-color 0.15s, background 0.15s; }
+  .spotli:hover { background: rgba(255, 255, 255, 0.07); }
+  .spotli.sel { border-color: var(--fresh-1); box-shadow: 0 0 0 1px var(--fresh-1), 0 0 22px var(--glow-1); }
   .spot { width: 100%; justify-content: flex-start; align-items: flex-start; text-align: left; border: 0; background: none; padding: 8px 12px; gap: 10px; height: auto; }
   .rank { color: var(--text-quiet); min-width: 18px; padding-top: 2px; }
   .body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
   .name { font-weight: 500; }
   .why { white-space: pre-line; }
   .end { display: flex; align-items: center; gap: 8px; padding-top: 2px; }
-  .score { font-size: 16px; font-weight: 500; }
+  .score { font-size: 24px; font-weight: 600; line-height: 1; color: var(--text-quiet); }
+  .score.hi { color: var(--fresh-1); text-shadow: 0 0 18px var(--glow-1); } .score.mid { color: var(--fresh-2); }
   .how { padding: 0 12px 8px 40px; }
   .how summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--text-quiet); }
   .frow { display: grid; grid-template-columns: 78px 1fr 40px; gap: 2px 8px; align-items: center; margin: 4px 0; }
   .fl { color: var(--text); } .pts { text-align: right; }
   .fd { grid-column: 1 / -1; }
   .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
-  .bar i { display: block; height: 100%; background: var(--fresh-2); } .bar i.nodata { background: var(--fresh-3); }
-  .report { border: 1px solid var(--line); border-radius: 12px; padding: 4px 12px; background: var(--surface); }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--fresh-2), var(--fresh-1)); border-radius: 3px; } .bar i.nodata { background: var(--fresh-3); }
+  .report { border: 1px solid var(--hair); border-radius: 14px; padding: 4px 12px; background: var(--glass-fill); }
   .report summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
   .digest { margin: 4px 0; } .bullet { margin: 6px 0; } .report p { margin: 4px 0; }
-  .notice { background: var(--surface); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin: 0; }
+  .notice { background: var(--glass-fill); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin: 0; }
   summary { cursor: pointer; }
   .linkish { background: none; border: 0; color: var(--fresh-1); text-decoration: underline; min-height: 44px; padding: 0 4px; }
   footer { margin-top: auto; padding-top: 8px; }

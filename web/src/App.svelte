@@ -33,6 +33,8 @@
   let spots = $state(null);
   let spotsError = $state('');
   let showJournal = $state(true);
+  let layersOpen = $state(false);
+  let legendOpen = $state(false);
   let wbList = $state([]);
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
   let offlineFor = $state(undefined);
@@ -93,22 +95,29 @@
     <div class="planner" class:full={view === 'plan'}>
       <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
     </div>
-    <main class="mapwrap" class:hide={view === 'plan'}>
+    <main class="mapwrap" class:hide={view === 'plan'} class:sheet={selectedId && !dayFor} class:wide={!!dayFor}>
       <MapView {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
-      <div class="layers card" role="group" aria-label="Map layers">
-        <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showReports} /> Report ratings</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showJournal} /> My pins &amp; trips</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showAdvisories} /> Advisories</label>
+      <div class="layers glass" role="group" aria-label="Map layers">
+        <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
+        {#if layersOpen}
+          <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showReports} /> Report ratings</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showJournal} /> My pins &amp; trips</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showAdvisories} /> Advisories</label>
+        {/if}
       </div>
-      <div class="legend card" aria-label="Stocking freshness legend">
-        <span><i class="dot this_week"></i> This week</span>
-        <span><i class="dot recent"></i> Last 2 weeks</span>
-        <span><i class="dot older"></i> Older</span>
-        <span><i class="dot upcoming"></i> Scheduled</span>
-        <span><i class="sym diamond"></i> Gauge (provisional)</span>
-        <span><i class="sym ring"></i> Algae advisory/precaution</span>
+      <div class="legend glass" aria-label="Map legend">
+        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}>Legend</button>
+        {#if legendOpen}
+          <span><i class="dot this_week"></i> This week</span>
+          <span><i class="dot recent"></i> Last 2 weeks</span>
+          <span><i class="dot older"></i> Older</span>
+          <span><i class="dot upcoming"></i> Scheduled</span>
+          <span><i class="sym diamond"></i> Gauge (provisional)</span>
+          <span><i class="sym ring"></i> Algae advisory/precaution</span>
+          <span class="quiet sm">Bigger pin, more fish</span>
+        {/if}
       </div>
       <button class="offline" onclick={() => (offlineFor = selectedId)}>Prepare for offline</button>
     </main>
@@ -135,7 +144,8 @@
   .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; gap: 12px; padding: 12px; }
   .shell > :global(*) { grid-row: 1; }
   .shell > :global(.page) { grid-column: 2 / -1; }
-  .rail, .planner, .layers, .legend, .offline, .sheetwrap { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .rail, .layers, .legend, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .planner, .sheetwrap { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
   .logo { margin-bottom: 12px; }
   .navbtn { flex-direction: column; border: 0; background: none; width: 56px; height: 56px; gap: 2px; border-radius: 12px; color: var(--text-quiet); padding: 0; }
@@ -146,12 +156,19 @@
   .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-column: 1 / -1; }
   .sheetwrap { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
   .page { overflow: auto; }
-  .layers { position: absolute; top: 12px; right: 60px; padding: 6px 14px; z-index: 2; border-radius: 14px; }
+  .mapwrap { --sheet-inset: 0px; }
+  .mapwrap.sheet { --sheet-inset: 364px; }
+  .mapwrap.wide { --sheet-inset: calc(min(520px, 60%) + 12px); }
+  .mapwrap :global(.maplibregl-ctrl-top-right) { right: var(--sheet-inset); top: 4px; transition: right 0.25s ease; }
+  .layers { position: absolute; top: 12px; right: calc(60px + var(--sheet-inset)); padding: 4px; z-index: 2; border-radius: 14px; display: flex; flex-direction: column; transition: right 0.25s ease; }
+  .layers .lyr { padding: 0 12px; }
+  .pill { border: 0; background: none; min-height: 36px; padding: 0 10px; font-size: 13px; gap: 6px; }
   .lyr { display: flex; align-items: center; gap: 8px; min-height: 36px; margin: 0; color: var(--text); font-size: 13px; }
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: 456px; bottom: 12px; border-radius: 14px; display: flex; gap: 14px; padding: 8px 12px; font-size: 12px; z-index: 2; flex-wrap: wrap; max-width: calc(100% - 24px); }
+  .legend { position: absolute; left: 456px; bottom: 12px; border-radius: 14px; display: flex; gap: 6px 14px; padding: 4px 8px; font-size: 12px; z-index: 2; flex-wrap: wrap; align-items: center; max-width: calc(100% - 24px); }
+  .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .overlay { position: absolute; inset: 0; z-index: 15; background: var(--bg); }
   .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
@@ -174,6 +191,7 @@
     .planner.full { height: 100%; border-radius: 0; }
     .mapwrap.hide { display: none; }
     .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: 0; height: 62%; z-index: 4; border-radius: 20px 20px 0 0; }
+    .mapwrap.sheet, .mapwrap.wide { --sheet-inset: 0px; }
     .layers { right: 60px; top: 12px; }
     .offline { top: 12px; }
     .lyr.off { display: none; }
