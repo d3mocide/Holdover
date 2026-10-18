@@ -1,5 +1,6 @@
 <script>
   import Tile from './Tile.svelte';
+  import Icon from './Icon.svelte';
   import { asOf, cToF, TREND } from './api.js';
   let { c } = $props();
   const w = $derived(c.weather?.day);
@@ -7,18 +8,18 @@
 </script>
 
 <div class="grid">
-  <Tile label="Forecast" value={w ? `${w.temp_f}°F` : null}
+  <Tile icon="forecast" label="Forecast" value={w ? `${w.temp_f}°F` : null}
     sub={w ? `${w.short}${w.precip_pct != null ? `, ${w.precip_pct}% rain` : ''}, wind ${w.wind} ${w.wind_dir ?? ''}` : 'No forecast cached'}
     stale={c.weather?.stale} asof={c.weather ? `NWS ${asOf(c.weather.as_of)}` : ''} />
-  <Tile label="Daylight" value={c.daylight ? `${c.daylight.sunrise}–${c.daylight.sunset}` : null}
+  <Tile icon="sun" label="Daylight" value={c.daylight ? `${c.daylight.sunrise}–${c.daylight.sunset}` : null}
     sub={c.daylight ? `Light ${c.daylight.first_light}–${c.daylight.last_light}` : 'No location'} asof="computed" />
-  <Tile label="Water temp" value={c.water_temp_f ? `${Math.round(c.water_temp_f.value)}°F` : null}
+  <Tile icon="temp" label="Water temp" value={c.water_temp_f ? `${Math.round(c.water_temp_f.value)}°F` : null}
     sub={c.water_temp_f ? 'USGS, provisional' : 'No temperature gauge'} asof={c.water_temp_f ? asOf(c.water_temp_f.observed_at) : ''} />
-  <Tile label="Moon" value={c.moon.phase} sub={`Day ${c.moon.age_days} of cycle`} asof="computed" />
+  <Tile icon="moon" label="Moon" value={c.moon.phase} sub={`Day ${c.moon.age_days} of cycle`} asof="computed" />
 </div>
 
 {#if c.gauges.length}
-  <h3 class="quiet small">Flow</h3>
+  <h3 class="eyebrow head"><Icon name="flow" size={14} /> Flow</h3>
   {#each c.gauges as g (g.id)}
     <div class="g">
       <span class="grow">{g.name}</span>
@@ -31,6 +32,7 @@
 
 {#if c.advisories.length}
   <div class="adv" role="note">
+    <span class="advh"><Icon name="advisory" size={18} /></span>
     {#each c.advisories as a}<p><strong>{a.kind === 'algae:advisory' ? 'Algae advisory' : 'Algae precaution'}</strong> (OHA, issued {a.issued}). {a.text}</p>{/each}
     <a href={c.advisory_page} target="_blank" rel="noopener">OHA current advisories</a>
   </div>
@@ -41,9 +43,11 @@
 <style>
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .small { font-size: 13px; margin: 6px 0 0; }
-  .g { display: flex; flex-wrap: wrap; gap: 4px 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .g { display: flex; flex-wrap: wrap; gap: 4px 8px; padding: 6px 0; border-bottom: 1px solid var(--hair); }
   .grow { flex: 1; min-width: 140px; } .full { flex-basis: 100%; margin: 0; }
   .stale { color: var(--accent); border: 1px solid var(--accent); border-radius: 4px; padding: 0 4px; }
-  .adv { border: 1px solid var(--accent); border-radius: 12px; padding: 8px 12px; margin-top: 8px; }
+  .head { display: flex; align-items: center; gap: 6px; margin-top: 10px; } .head :global(svg) { color: var(--fresh-2); }
+  .adv { border: 1px solid var(--accent); border-radius: 14px; padding: 8px 12px; margin-top: 8px; background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .advh { color: var(--accent); display: inline-flex; margin-bottom: 2px; }
   .adv p { margin: 0 0 4px; font-size: 14px; }
 </style>

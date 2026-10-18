@@ -10,7 +10,7 @@
 <section class="panel" aria-label="Ranked spots">
   <header>
     <div class="row">
-      <h1>Holdover</h1>
+      <h1>Hold<span class="ov">over</span></h1>
       <span class="quiet mono small">{data?.meta.as_of ? `Synced ${hhmm(data.meta.as_of)}` : 'Not synced'}</span>
     </div>
     <p class="quiet small">Willamette zone</p>
@@ -97,7 +97,7 @@
 <style>
   .panel { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
   .row { display: flex; justify-content: space-between; align-items: baseline; }
-  h1 { font-size: 22px; letter-spacing: -0.01em; } h2 { font-weight: 500; }
+  h1 { font-size: 24px; letter-spacing: -0.02em; } .ov { color: var(--fresh-1); } h2 { font-weight: 500; }
   .small { font-size: 13px; margin: 0; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .chip { padding: 0 12px; min-height: 44px; font-size: 13px; }

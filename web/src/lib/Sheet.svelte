@@ -69,8 +69,8 @@
     {/if}
 
     <div class="actions">
-      <button class="primary" onclick={() => onday(wb.id)}>Plan the day</button>
-      <button onclick={() => onlog(wb.id)}>Log a trip here</button>
+      <button class="primary" onclick={() => onday(wb.id)}><Icon name="plan" size={18} /> Plan the day</button>
+      <button onclick={() => onlog(wb.id)}><Icon name="log" size={18} /> Log a trip here</button>
       {#if wb.regs_url}
         <a class="btn" href={wb.regs_url} target="_blank" rel="noopener">Official regulations on ODFW <Icon name="external" /></a>
       {/if}
@@ -85,10 +85,10 @@
   .close { position: absolute; top: 8px; right: 8px; padding: 0; }
   .small { font-size: 13px; margin: 0; }
   ul { list-style: none; margin: 0; padding: 0; }
-  .srow { display: flex; gap: 10px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--hair); }
+  .srow { display: flex; gap: 8px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--hair); }
   .wk { white-space: nowrap; }
-  .tag { font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fresh-1); border: 1px solid color-mix(in srgb, var(--fresh-1) 45%, transparent); border-radius: 999px; padding: 1px 8px; }
-  .fish { min-width: 96px; font-size: 13px; color: var(--text-quiet); text-align: right; font-variant-numeric: tabular-nums; }
+  .tag { font-size: 10px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--fresh-1); border: 1px solid color-mix(in srgb, var(--fresh-1) 45%, transparent); border-radius: 999px; padding: 1px 7px; flex: none; }
+  .fish { flex: none; white-space: nowrap; font-size: 12.5px; color: var(--text-quiet); text-align: right; font-variant-numeric: tabular-nums; }
   .grow { flex: 1; }
   blockquote { margin: 0; padding: 4px 0 4px 12px; border-left: 2px solid var(--fresh-2); background: linear-gradient(90deg, var(--glow-1), transparent 70%); border-radius: 2px; }
   blockquote p { margin: 2px 0; }

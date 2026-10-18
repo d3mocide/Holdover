@@ -119,7 +119,7 @@
           <span class="quiet sm">Bigger pin, more fish</span>
         {/if}
       </div>
-      <button class="offline" onclick={() => (offlineFor = selectedId)}>Prepare for offline</button>
+      <button class="offline" onclick={() => (offlineFor = selectedId)}><Icon name="offline" size={18} /> Prepare for offline</button>
     </main>
     {#if dayFor && view === 'map'}
       <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>

@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'Holdover',
         short_name: 'Holdover',
         description: 'Oregon fishing planner and journal',
-        theme_color: '#0F1A17',
-        background_color: '#0F1A17',
+        theme_color: '#0b1613',
+        background_color: '#0b1613',
         display: 'standalone',
         start_url: '/',
         icons: [
