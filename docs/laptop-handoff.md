@@ -24,9 +24,10 @@ Or without Docker: `pip install -e '.[dev]'`, `pytest` (75 tests), `cd web && np
 
 ## 2. Data that is a best guess: review it
 
-- **Waterbody coordinates** (`app/seed.py`): approximate and from memory. 15 of 58 have none and are not pinned.
-  Check every pin against a map. Gauge coordinates, by contrast, were verified against live USGS.
-- **Gauge-to-waterbody links** (`GAUGE_LINKS`) and **fishery hints** (`FISHERY_HINTS`): my judgement. Steelhead
+- **Waterbody coordinates** (`app/seed.py`): cross-checked 2026-10-18 against OSM names in the basemap. 51 of 58 are pinned
+  (35 verified or snapped), 7 still have no pin. Per-row status and how to fix any pin: `docs/waterbody-pins.md`.
+  Gauge coordinates, by contrast, were verified against live USGS.
+- **Gauge-to-waterbody links** (`GAUGE_LINKS`; Leaburg, Cottage Grove and Estacada tailwater gauges added 2026-10-18) and **fishery hints** (`FISHERY_HINTS`): my judgement. Steelhead
   and warmwater lists are short until you accept report items.
 - **Starred waterbodies**: you didn't give me yours. `POST /api/admin/waterbodies/{id}/star`. NWS also
   auto-refreshes one stocked waterbody per ~0.25 degree cell.

@@ -1,9 +1,10 @@
 """Willamette-zone waterbody seed.
 
 Alias strings are the exact labels used on the ODFW stocking schedule (fetched 2026-10-17).
-Coordinates are APPROXIMATE, entered from general knowledge, and have NOT been verified against
-a map. Entries with lat/lon None have no coordinate yet and are listed under "needs coordinates"
-instead of being drawn. The owner should review every row before trusting a pin location.
+The SEED coordinates are the original hand-entered values, APPROXIMATE and from general knowledge.
+COORD_UPDATES (below) overrides them with positions cross-checked against named OpenStreetMap
+features in the basemap (scripts/check_coords.py). Waterbodies with no coordinate at all are listed
+under "needs coordinates" instead of being drawn. Rows not in COORD_UPDATES remain unverified.
 """
 import json
 
@@ -80,6 +81,57 @@ SEED: list[tuple[str, str, float | None, float | None, list[str]]] = [
 ]
 
 
+# Verified or snapped 2026-10-18 with scripts/check_coords.py against the Protomaps/OSM basemap.
+# name -> (lat, lon, how). "osm" = same-named lake/pond/reservoir feature, label point or centroid;
+# "snap" = nearest vertex of the same-named river/creek line (rivers have no single true point);
+# "likely" = the OSM name differs from ODFW's, so it is a judgement call worth a second look.
+COORD_UPDATES: dict[str, tuple[float, float, str]] = {
+    "Benson Lake": (45.5776, -122.1239, "osm"),
+    "Bethany Pond": (45.5569, -122.8719, "likely"),  # OSM: Bethany Lake (Bethany Lake Park)
+    "Blue Lake": (45.5539, -122.4478, "osm"),
+    "Blue River": (44.1689, -122.3305, "snap"),
+    "Blue River Reservoir": (44.1883, -122.2658, "osm"),  # OSM: Blue River Lake
+    "Breitenbush River": (44.7582, -122.1183, "snap"),
+    "Canby Pond": (45.2529, -122.7043, "osm"),
+    "Carmen Reservoir": (44.3400, -122.0038, "osm"),
+    "Commonwealth Lake": (45.5119, -122.8080, "osm"),
+    "Cottage Grove Reservoir": (43.6971, -123.0708, "osm"),  # OSM: Cottage Grove Lake
+    "Detroit Reservoir": (44.7113, -122.1819, "osm"),  # OSM: Detroit Lake
+    "Dexter Reservoir": (43.9162, -122.7988, "osm"),
+    "Dorena Reservoir": (43.7704, -122.9151, "osm"),  # OSM: Dorena Lake
+    "Dorman Pond": (45.6128, -123.2457, "osm"),
+    "Faraday Lake": (45.2627, -122.3068, "osm"),
+    "Fall Creek (Willamette R)": (43.9459, -122.7583, "snap"),
+    "Fall Creek Reservoir": (43.9499, -122.7422, "osm"),  # OSM: Fall Creek Lake
+    "Foster Reservoir": (44.4185, -122.6388, "osm"),  # OSM: Foster Lake
+    "Freeway Lakes, East": (44.5908, -123.0653, "likely"),  # OSM: Freeway Lakes (one point for the complex)
+    "Green Peter Reservoir": (44.4897, -122.4155, "osm"),  # OSM: Green Peter Lake
+    "Harriet Lake": (45.0738, -121.9619, "osm"),  # OSM: Lake Harriet
+    "Henry Hagg Lake": (45.4865, -123.2208, "osm"),
+    "Hills Creek Reservoir": (43.6882, -122.4521, "osm"),
+    "Leaburg Lake": (44.1414, -122.5949, "osm"),
+    "McKenzie River (above Leaburg Dam)": (44.1319, -122.4997, "snap"),
+    "McKenzie River (below Leaburg Dam)": (44.0609, -122.8065, "snap"),
+    "North Fork Reservoir": (45.2330, -122.2558, "osm"),
+    "Quartzville Creek": (44.5480, -122.4311, "snap"),
+    "Salish Pond, West": (45.5307, -122.4448, "likely"),  # OSM: Salish Ponds Park
+    "Salmon Creek": (43.7524, -122.4016, "snap"),
+    "Santiam River, North Fork": (44.7842, -122.6083, "snap"),
+    "Smith River Reservoir": (44.3202, -122.0463, "likely"),  # OSM: Smith Reservoir (Smith River, McKenzie basin)
+    "Timber Linn Lake": (44.6380, -123.0554, "osm"),
+    "Timothy Lake": (45.1262, -121.7884, "osm"),
+    "Trillium Lake": (45.2699, -121.7394, "osm"),
+    "Turner Lake": (44.8584, -122.9559, "osm"),
+    "Walter Wirth Lake": (44.9095, -122.9891, "osm"),  # OSM: Wirth Lake
+    "Waverly Lake": (44.6405, -123.0697, "osm"),
+    "Willamette River, Coast Fork": (43.8144, -123.0446, "snap"),
+}
+
+
+def _same(a: float | None, b: float | None) -> bool:
+    return (a is None and b is None) or (a is not None and b is not None and abs(a - b) < 1e-6)
+
+
 # Which fisheries a water supports beyond stocked trout. Seed hints from general knowledge, NOT verified:
 # the owner should correct them. Trout membership comes from the stocking schedule itself, and any
 # water also joins a fishery when an accepted report item names a matching species.
@@ -94,13 +146,18 @@ FISHERY_HINTS = {
 def seed_waterbodies(session: Session) -> int:
     """Idempotent: adds missing waterbodies and their confirmed aliases."""
     added = 0
-    for name, kind, lat, lon, labels in SEED:
+    for name, kind, seed_lat, seed_lon, labels in SEED:
+        upd = COORD_UPDATES.get(name)
+        lat, lon = (upd[0], upd[1]) if upd else (seed_lat, seed_lon)
         wb = session.scalar(select(Waterbody).where(Waterbody.name == name))
         if wb is None:
             wb = Waterbody(name=name, kind=kind, lat=lat, lon=lon, zone=ZONE, regs_url=REGS_URL)
             session.add(wb)
             session.flush()
             added += 1
+        elif upd and _same(wb.lat, seed_lat) and _same(wb.lon, seed_lon):
+            # Still holds the original hand-entered value: safe to correct. Anything else was set deliberately.
+            wb.lat, wb.lon = lat, lon
         if name in FISHERY_HINTS and wb.species_json is None:
             wb.species_json = json.dumps({"fisheries": FISHERY_HINTS[name], "source": "seed hint, unverified"})
         for label in labels:
@@ -144,6 +201,10 @@ GAUGE_LINKS = {
     "Willamette River, Coast Fork": ["14157500", "14153500"],
     "Quartzville Creek": ["14185900"],
     "Dexter Reservoir": ["14150000"],
+    # Tailwater gauges just below the dam on the same river, like Dexter's.
+    "Leaburg Lake": ["14163150"],
+    "Cottage Grove Reservoir": ["14153500"],
+    "Estacada Lake": ["14210000"],
 }
 
 

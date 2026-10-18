@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -121,3 +121,22 @@ def star(wb_id: int, body: Star, session: Session = Depends(get_session)):
     wb.starred = int(body.starred)
     session.commit()
     return {"id": wb.id, "starred": bool(wb.starred)}
+
+
+class Coords(BaseModel):
+    # Willamette zone with margin. A wrong-hemisphere sign slip is the likeliest typo, so bounds are checked.
+    lat: float | None = Field(None, ge=41.9, le=46.4)
+    lon: float | None = Field(None, ge=-124.9, le=-116.4)
+
+
+@router.post("/waterbodies/{wb_id}/coords")
+def set_coords(wb_id: int, body: Coords, session: Session = Depends(get_session)):
+    """Place or move a waterbody's pin. Send both lat and lon, or both null to remove the pin."""
+    if (body.lat is None) != (body.lon is None):
+        raise HTTPException(422, "send both lat and lon, or neither")
+    wb = session.get(Waterbody, wb_id)
+    if wb is None:
+        raise HTTPException(404)
+    wb.lat, wb.lon = body.lat, body.lon
+    session.commit()
+    return {"id": wb.id, "name": wb.name, "lat": wb.lat, "lon": wb.lon}
