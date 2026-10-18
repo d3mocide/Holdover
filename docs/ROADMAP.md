@@ -24,7 +24,7 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 | 5 | Planner | Done |
 | 6 | Design system | Done |
 | 7 | Accounts | Done |
-| 8 | Gear | In progress |
+| 8 | Gear | Done |
 | 9 | Hardening and first deployment | Planned |
 | 10 | Journal depth and journal-informed scoring | Planned |
 | 11 | More sources and statewide coverage | Planned |
@@ -152,7 +152,7 @@ the login throttle sees the proxy's address, so configure forwarded headers or r
 
 ## Phase 8: Gear
 
-**Status:** In progress. **Goal:** a per-person tackle database that feeds the journal and, later, the planner.
+**Status:** Done. **Goal:** a per-person tackle database that feeds the journal and, later, the planner.
 
 Decisions (owner, 2026-10-17): optional "gear used" picker on trips; items, setups, trip link and basic stats in
 v1; a small Oregon starter catalog.
@@ -161,12 +161,16 @@ v1; a small Oregon starter catalog.
 lure and setup; no other account can read or reference it; tests, e2e and axe pass.
 
 - [x] Server: `gear_item`, `gear_setup`, trip/catch references, owner-scoped sync, reference checks, export (6 tests)
-- [x] Local: IndexedDB schema v2, gear and setups in the sync queue and device-ownership logic
-- [ ] Starter catalog (about 60 common Oregon lures, flies, tackle) and pure stats functions with unit tests
-- [ ] Gear tab: items (with photos), setups, stats
-- [ ] Log-trip picker (setup, lures, "caught on") and gear shown on journal cards
-- [ ] Browser test: offline create and sync, two-account isolation
-- [ ] Docs: `accounts.md` data table, BRAND icon additions
+- [x] Local: IndexedDB schema v2, gear and setups in the sync queue and the device-ownership logic
+- [x] Starter catalog (77 common Oregon lures, flies and tackle; brands only where certain) and pure stats functions (8 unit tests)
+- [x] Gear tab: items with photos, search and filters; setups; "What works" stats; add/edit/retire/delete
+- [x] Log-trip picker (setup, lures, "caught on") and gear on journal cards
+- [x] Gate evidence: `tests/e2e/gear.mjs` (22 checks, including a second account that cannot see or reference the
+      gear, an item created offline syncing after reconnect, and axe clean on every gear view); 113 backend tests
+
+**Carried forward:** stats are computed on this device from the local journal (so they work offline) and show shared
+credit for "on trips"; gear is not yet used by the planner or the pack list (Phase 10); gear photos are uploaded at
+full size (no resizing yet); gear is not shown on the waterbody sheet.
 
 ## Phase 9: Hardening and first deployment
 

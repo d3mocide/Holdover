@@ -126,3 +126,15 @@ BRAND, plus a test that keeps them from drifting.
 - Found by the audit: IBM Plex is correctly self-hosted via `@fontsource` (shipped and precached); the handoff's
   persistent-storage request is not implemented; the phone search pill and sheet handle from the original mockup
   were never built; the original handoff's open items 1, 5 and 6 are still open or have changed (see ROADMAP).
+
+### 2026-10-17 · this commit · Phase 8 · Gear complete, browser tests committed
+Starter catalog, stats functions, the Gear tab (items, setups, "What works"), forms, the log-trip picker, gear on
+journal cards, a fish-hook nav icon; the account and gear browser scripts and a safe `setup.sh` now live in `tests/e2e`.
+- Verified: 113 `pytest`; 13 frontend unit tests; `gear.mjs` 22 of 22 and `accounts.mjs` 37 of 37 from the committed
+  scripts; offline e2e 11 of 11; axe clean on every gear view (desktop and phone); the phone nav fits six tabs with
+  64 px targets. A second account cannot see, reference or attach to another's gear.
+- Found: axe caught `aria-pressed` on `role="tab"` in my first gear tabs (now plain toggle buttons); a missing
+  space in the stats line; my own "hide the suggestion after picking" tweak briefly hid the starter list (caught by the
+  browser test). Running the scripts from the repo exposed that a stale server on the same port made tests pass or fail
+  against the wrong instance, so `setup.sh` now refuses a busy port.
+- Not checked: gear on a real phone or over HTTPS; photo upload size on a slow connection.

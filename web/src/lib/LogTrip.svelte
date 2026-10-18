@@ -4,6 +4,7 @@
   import { countPending, syncNow } from './sync.svelte.js';
   import { asOf } from './api.js';
   import Icon from './Icon.svelte';
+  import { TRIP_KINDS } from './gearCatalog.js';
 
   let { wbList = [], initialWb = null, onclose, onsaved } = $props();
 
@@ -13,7 +14,10 @@
   let gpsMsg = $state('');
   let startedAt = $state(local());
   let endedAt = $state('');
-  let species = $state([{ name: '', count: 0, photo: null }]);
+  let species = $state([{ name: '', count: 0, photo: null, gearUuid: '' }]);
+  let setupUuid = $state('');
+  let gearSel = $state([]);
+  let gearAll = $state([]), setupsAll = $state([]);
   let method = $state('');
   let notes = $state('');
   let saving = $state(false);
@@ -21,6 +25,14 @@
   let online = $state(navigator.onLine);
   let cachedAt = $state(null);
   let draftLoaded = $state(false);
+
+  $effect(() => {
+    db.gear.toArray().then((v) => (gearAll = v.filter((g) => !g.deleted && g.status === 'active' && TRIP_KINDS.includes(g.kind)).sort((a, b) => a.name.localeCompare(b.name))));
+    db.setups.toArray().then((v) => (setupsAll = v.filter((s) => !s.deleted).sort((a, b) => a.name.localeCompare(b.name))));
+  });
+  const toggleGear = (u) => (gearSel = gearSel.includes(u) ? gearSel.filter((x) => x !== u) : [...gearSel, u]);
+  // lures picked for the trip come first in each "caught on" list
+  const lureOptions = $derived([...gearAll.filter((g) => gearSel.includes(g.uuid)), ...gearAll.filter((g) => !gearSel.includes(g.uuid))]);
 
   const COMMON = ['rainbow trout', 'cutthroat trout', 'brown trout', 'steelhead', 'coho', 'spring chinook', 'fall chinook', 'smallmouth bass', 'largemouth bass', 'bluegill', 'crappie', 'walleye', 'shad', 'kokanee'];
 
@@ -39,15 +51,15 @@
     metaGet('tripDraft').then((d) => {
       if (d && !initialWb) {
         wbId = d.wbId ?? wbId; startedAt = d.startedAt ?? startedAt; endedAt = d.endedAt ?? ''; method = d.method ?? '';
-        notes = d.notes ?? ''; gps = d.gps ?? null;
-        if (d.species?.length) species = d.species.map((s) => ({ name: s.name, count: s.count, photo: null }));
+        notes = d.notes ?? ''; gps = d.gps ?? null; setupUuid = d.setupUuid ?? ''; gearSel = d.gearSel ?? [];
+        if (d.species?.length) species = d.species.map((s) => ({ name: s.name, count: s.count, photo: null, gearUuid: s.gearUuid ?? '' }));
       }
       draftLoaded = true;
     });
   });
   $effect(() => {
     if (!draftLoaded) return;
-    const snap = { wbId, startedAt, endedAt, method, notes, gps, species: species.map((s) => ({ name: s.name, count: s.count })) };
+    const snap = { wbId, startedAt, endedAt, method, notes, gps, setupUuid, gearSel, species: species.map((s) => ({ name: s.name, count: s.count, gearUuid: s.gearUuid })) };
     metaSet('tripDraft', snap);
   });
 
@@ -74,14 +86,15 @@
           uuid: tripId, started_at: iso(startedAt), ended_at: iso(endedAt), waterbody_id: wbId ? Number(wbId) : null,
           lat: gps?.lat ?? wb?.lat ?? null, lon: gps?.lon ?? wb?.lon ?? null, notes: notes || null,
           conditions_json: cond.json ? JSON.stringify(cond.json) : null, conditions_source: cond.source,
+          setup_uuid: setupUuid || null, gear_json: gearSel.length ? JSON.stringify(gearSel) : null,
           updated_at: now, deleted: 0, dirty: 1
         });
         const rows = species.filter((s) => s.name.trim() || s.count > 0);
-        if (!rows.length && method.trim()) rows.push({ name: '', count: 0, photo: null }); // method with no catch
+        if (!rows.length && method.trim()) rows.push({ name: '', count: 0, photo: null, gearUuid: '' }); // method with no catch
         for (const s of rows) {
           await db.catches.add({
             uuid: uuid(), trip_uuid: tripId, species: s.name.trim() || null, count: s.count, length_in: null,
-            method: method.trim() || null, kept: null, photo_path: null, photo_blob: s.photo, updated_at: now, deleted: 0, dirty: 1
+            method: method.trim() || null, gear_uuid: s.gearUuid || null, kept: null, photo_path: null, photo_blob: s.photo, updated_at: now, deleted: 0, dirty: 1
           });
         }
       });
@@ -129,11 +142,32 @@
         <span class="mono count" aria-live="polite">{s.count}</span>
         <button onclick={() => step(s, 1)} aria-label="More {s.name || 'fish'}">+</button>
       </div>
+      {#if lureOptions.length}
+        <div class="f"><label for="co{i}">Caught on (optional)</label>
+          <select id="co{i}" bind:value={s.gearUuid}><option value="">Not recorded</option>{#each lureOptions as g}<option value={g.uuid}>{g.name}</option>{/each}</select></div>
+      {/if}
       <div class="f"><label for="ph{i}">Photo (optional)</label>
         <input id="ph{i}" type="file" accept="image/*" onchange={(e) => (s.photo = e.currentTarget.files?.[0] ?? null)} /></div>
     {/each}
-    <button onclick={() => (species = [...species, { name: '', count: 0, photo: null }])}>Add species</button>
+    <button onclick={() => (species = [...species, { name: '', count: 0, photo: null, gearUuid: '' }])}>Add species</button>
   </fieldset>
+
+  {#if setupsAll.length || gearAll.length}
+    <fieldset>
+      <legend>Gear used (optional)</legend>
+      {#if setupsAll.length}
+        <div class="f"><label for="setup">Setup</label>
+          <select id="setup" bind:value={setupUuid}><option value="">None</option>{#each setupsAll as st}<option value={st.uuid}>{st.name}</option>{/each}</select></div>
+      {/if}
+      {#if gearAll.length}
+        <div class="f"><span class="lbl" id="lures-l">Lures, flies and tackle</span>
+          <div class="chips" role="group" aria-labelledby="lures-l">{#each gearAll as g (g.uuid)}
+            <button class="chip" aria-pressed={gearSel.includes(g.uuid)} onclick={() => toggleGear(g.uuid)}>{g.name}</button>{/each}</div></div>
+      {/if}
+    </fieldset>
+  {:else}
+    <p class="quiet small hint">Add your gear in the Gear tab to record what you used.</p>
+  {/if}
 
   <div class="f"><label for="meth">Lure or method</label><input id="meth" type="text" bind:value={method} placeholder="e.g. 1/8 oz spinner, drift rig" /></div>
   <div class="f"><label for="nt">Notes</label><input id="nt" type="text" bind:value={notes} /></div>
@@ -167,7 +201,8 @@
   fieldset { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); display: flex; flex-direction: column; gap: 12px; padding: 8px 14px 14px; }
   legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
   .small { font-size: 13px; margin: 0; } .err { color: var(--accent); margin: 0; }
-  .cond p { margin: 4px 0 0; }
+  .cond p { margin: 4px 0 0; } .chips { display: flex; gap: 6px; flex-wrap: wrap; } .chips .chip { border-radius: 999px; padding: 0 14px; font-size: 13px; }
+  .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); } .hint { margin: 0; }
   .bar { position: sticky; bottom: 0; padding: 12px 0 4px; background: linear-gradient(to top, var(--bg) 60%, transparent); }
   .bar button { width: 100%; min-height: 48px; font-size: 15px; }
 </style>

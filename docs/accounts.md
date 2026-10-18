@@ -11,7 +11,7 @@ reports without signing in. Signing in adds sync across devices and per-person d
 | Journal (trips, catches, pins, photos) | on this device only | synced to your account; only you can read it |
 | Home location | on this device | your account |
 | Favorites | on this device | your account (also get their own forecast refresh) |
-| Gear database (planned) | n/a | your account |
+| Gear and setups, and what you used on each trip | on this device only | synced to your account; private to you |
 | Waterbody pins, ODFW label matching, report review | n/a | admins only |
 
 Signing in merges what the device had: favorites are unioned in, and a home location is adopted only if the

@@ -5,16 +5,22 @@
   import { longDate, hhmm } from './api.js';
   import { auth } from './auth.svelte.js';
   import Icon from './Icon.svelte';
+  import { namesFor } from './gearStats.js';
 
   let { wbList = [], onlog } = $props();
-  let trips = $state([]), catches = $state([]);
+  let trips = $state([]), catches = $state([]), gear = $state([]), setups = $state([]);
   $effect(() => {
     const s1 = liveQuery(() => db.trips.toArray()).subscribe((v) => (trips = v.filter((t) => !t.deleted).sort((a, b) => (b.started_at ?? '').localeCompare(a.started_at ?? ''))));
     const s2 = liveQuery(() => db.catches.toArray()).subscribe((v) => (catches = v.filter((c) => !c.deleted)));
-    return () => { s1.unsubscribe(); s2.unsubscribe(); };
+    const s3 = liveQuery(() => db.gear.toArray()).subscribe((v) => (gear = v));
+    const s4 = liveQuery(() => db.setups.toArray()).subscribe((v) => (setups = v));
+    return () => { s1.unsubscribe(); s2.unsubscribe(); s3.unsubscribe(); s4.unsubscribe(); };
   });
   const name = (id) => wbList.find((w) => w.id === id)?.name;
   const catchesFor = (t) => catches.filter((c) => c.trip_uuid === t.uuid && (c.species || c.count));
+  const setupName = (t) => setups.find((x) => x.uuid === t.setup_uuid && !x.deleted)?.name;
+  const gearNames = (t) => namesFor(t.gear_json, gear);
+  const caughtOn = (c) => gear.find((g) => g.uuid === c.gear_uuid && !g.deleted)?.name;
   const total = (t) => catchesFor(t).reduce((n, c) => n + (c.count || 0), 0);
 
   async function remove(t) {
@@ -57,6 +63,8 @@
           <span class="mono small">{t.started_at ? longDate(t.started_at.slice(0, 10)) : ''}</span>
         </div>
         <p class="small">{total(t)} fish{catchesFor(t).length ? ': ' + catchesFor(t).map((c) => `${c.count || 0} ${c.species ?? '?'}`).join(', ') : ''}</p>
+        {#if setupName(t) || gearNames(t).length}<p class="gearline small"><Icon name="gear" size={14} /> {[setupName(t), ...gearNames(t)].filter(Boolean).join(' · ')}</p>{/if}
+        {#each catchesFor(t).filter(caughtOn) as c}<p class="quiet small">{c.count || 0} {c.species ?? 'fish'} on {caughtOn(c)}</p>{/each}
         {#if catchesFor(t)[0]?.method}<p class="quiet small">{catchesFor(t)[0].method}</p>{/if}
         {#if t.notes}<p class="small">{t.notes}</p>{/if}
         <p class="quiet small">
@@ -81,6 +89,7 @@
   .card { position: relative; } .card button { position: absolute; right: 6px; bottom: 6px; border: 0; background: none; color: var(--text-quiet); }
   .top { display: flex; justify-content: space-between; gap: 8px; } .small { font-size: 13px; margin: 2px 0; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .gearline { display: flex; align-items: center; gap: 6px; color: var(--fresh-2); }
   .empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 36px 20px; }
   .empty .eico { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair), 0 0 28px var(--glow-1); }
   .empty p { margin: 0 0 8px; max-width: 360px; } .empty button { position: static; color: var(--on-accent); border: 1px solid var(--accent); background: var(--accent); }

@@ -10,6 +10,9 @@
   import Legend from './lib/Legend.svelte';
   import DayView from './lib/DayView.svelte';
   import Journal from './lib/Journal.svelte';
+  import Gear from './lib/Gear.svelte';
+  import GearForm from './lib/GearForm.svelte';
+  import SetupForm from './lib/SetupForm.svelte';
   import LogTrip from './lib/LogTrip.svelte';
   import Offline from './lib/Offline.svelte';
   import { liveQuery } from 'dexie';
@@ -21,7 +24,7 @@
   let theme = $state(stored('holdover.theme', 'fir'));
   let view = $state('map');
   // The side panel sizes to its content: roomy for lists with detail, compact for the map list.
-  const PANEL = { map: 'min(380px, 40vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
+  const PANEL = { map: 'min(380px, 40vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
   let panelW = $state(380);
   let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
   $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
@@ -47,6 +50,9 @@
   const inviteCode = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('invite') : null;
   let invite = $state(inviteCode);
   if (inviteCode) { view = 'settings'; try { history.replaceState(null, '', location.pathname); } catch { /* ignore */ } }
+  let gearEdit = $state(undefined); // undefined: closed, null: new item, object: editing
+  let gearBrowse = $state(false);
+  let setupEdit = $state(undefined);
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
   let offlineFor = $state(undefined);
   let journalGeo = $state(null);
@@ -85,7 +91,7 @@
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
   $effect(() => { load(); loadReport(); });
 
-  const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gauges', 'Gauges', 'gauge']];
+  const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
   const select = (id) => { selectedId = id; dayFor = null; if (view !== 'map') view = 'map'; };
 </script>
 
@@ -110,6 +116,8 @@
       <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} />
     {:else if view === 'journal'}
       <Journal {wbList} onlog={() => (logFor = null)} />
+    {:else if view === 'gear'}
+      <Gear {wbList} onitem={(g, browse = false) => { gearBrowse = browse; gearEdit = g; }} onsetup={(st) => (setupEdit = st)} />
     {:else}
       <Gauges />
     {/if}
@@ -142,6 +150,12 @@
       <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} onday={(id) => (dayFor = id)} onlog={(id) => (logFor = id)} /></div>
     {/if}
 
+  {#if gearEdit !== undefined}
+    <div class="overlay"><GearForm item={gearEdit} browse={gearBrowse} onclose={() => (gearEdit = undefined)} onsaved={() => (gearEdit = undefined)} /></div>
+  {/if}
+  {#if setupEdit !== undefined}
+    <div class="overlay"><SetupForm setup={setupEdit} onclose={() => (setupEdit = undefined)} onsaved={() => (setupEdit = undefined)} /></div>
+  {/if}
   {#if logFor !== undefined}
     <div class="overlay"><LogTrip {wbList} initialWb={logFor} onclose={() => (logFor = undefined)} onsaved={() => { logFor = undefined; view = 'journal'; }} /></div>
   {/if}

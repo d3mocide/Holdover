@@ -181,7 +181,7 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
   standalone ones get a label.
 - **Adding an icon:** draw it on the same grid with the same stroke, add it to `icons.js`, regenerate the atlas image,
   and use it through `Icon.svelte`. Do not paste SVG into components or import an icon library.
-- A fish glyph means fish, a drop in a diamond means a stream gauge. Keep those meanings unique.
+- A fish glyph means fish, a drop in a diamond means a stream gauge, a fish hook means your gear. Keep those meanings unique.
 
 ### Map marker language
 

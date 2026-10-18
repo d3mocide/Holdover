@@ -18,6 +18,8 @@ export const icons = {
   offline: '<path d="M7 18a4.4 4.4 0 0 1-.7-8.7 6 6 0 0 1 11.5 1.5A3.6 3.6 0 0 1 17 18"/><path d="M12 11.5V19M9.2 16.4 12 19.2l2.8-2.8"/><g class="a"><path d="M7 18a4.4 4.4 0 0 1-.7-8.7 6 6 0 0 1 11.5 1.5A3.6 3.6 0 0 1 17 18z"/></g>',
   log: '<path d="M12 21s-6.2-5.3-6.2-10.2a6.2 6.2 0 1 1 12.4 0C18.2 15.7 12 21 12 21z"/><path d="M12 8v5.5M9.2 10.8h5.6"/><g class="a"><path d="M12 21s-6.2-5.3-6.2-10.2a6.2 6.2 0 1 1 12.4 0C18.2 15.7 12 21 12 21z"/></g>',
 
+  gear: '<circle cx="13.5" cy="4.6" r="1.7"/><path d="M13.5 6.3V14a4.5 4.5 0 0 1-9 0v-2M4.5 12l2.3-2.5"/><g class="a"><circle cx="13.5" cy="4.6" r="1.7"/></g>',
+
   // --- subjects ---
   fish: `<path d="${FISH}"/><path d="M9.6 9.3c.9 1.6.9 4.1 0 5.7"/><circle cx="6.6" cy="11" r=".9" fill="currentColor" stroke="none"/><g class="a"><path d="${FISH}"/></g>`,
   stocking: `<path d="M3 17.5h11.5V9.5H3zM14.5 12h3.8l2.7 3v2.5h-6.5"/><circle cx="7" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/><g class="a"><path d="M3 9.5h11.5v8H3z"/></g>`,

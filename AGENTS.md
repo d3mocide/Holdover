@@ -62,7 +62,8 @@ These come from the product's promises. Breaking one is a bug even if every test
 - **Tests are part of the change.** Run before saying done:
   - `pytest` (all must pass; do not weaken or delete a test to make it pass)
   - `cd web && npm run build` (and `npm test` for the pure-logic unit tests)
-  - the offline e2e in [tests/e2e/README.md](tests/e2e/README.md) when sync, auth or offline code changed
+  - the browser tests in [tests/e2e/README.md](tests/e2e/README.md) (offline, accounts, gear) when sync, auth, gear or
+    offline code changed
   - an axe-core pass on the views you touched, in all three themes, desktop and phone (zero violations)
 - **New behaviour gets a test that fails without it**, especially isolation, validation and sync edge cases.
 - **Fix the cause.** If a test exposes a real bug, fix the bug and say what it was. Do not paper over it.
