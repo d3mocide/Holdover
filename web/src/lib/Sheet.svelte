@@ -1,7 +1,7 @@
 <script>
-  import { api, FRESH_LABEL, weekLabel, longDate } from './api.js';
+  import { api, longDate } from './api.js';
   import { hhmm } from './clock.svelte.js';
-  import { stockingSections } from './stockingGroups.js';
+  import StockingList from './StockingList.svelte';
   import Conditions from './Conditions.svelte';
   import { db } from './db.js';
   import Icon from './Icon.svelte';
@@ -15,8 +15,6 @@
   let favMsg = $state('');
   const star = async () => { favMsg = ''; try { await toggleFavorite(id); } catch (e) { favMsg = e.message; } };
 
-  const sections = $derived(wb ? stockingSections(wb.stocking) : []);
-  const fish = (s) => [s.legals && `${s.legals.toLocaleString()} legals`, s.trophy && `${s.trophy.toLocaleString()} trophy`].filter(Boolean).join(' + ') || `${s.total.toLocaleString()} fish`;
 
   $effect(() => {
     const sub = liveQuery(async () => ({ trips: await db.trips.toArray(), catches: await db.catches.toArray(), gear: await db.gear.toArray() }))
@@ -46,24 +44,7 @@
 
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
-    <h3 class="eyebrow">Stocking</h3>
-    {#each sections as sec (sec.key)}
-      <p class="eyebrow sub">{sec.title}</p>
-      {#each sec.years as y (y.year)}
-        <p class="yr">{y.year}</p>
-        <ul>
-          {#each y.items as s (s.week_of)}
-            <li class="srow">
-              <span class="dot {s.freshness}" title={FRESH_LABEL[s.freshness]}></span>
-              <span class="grow wk">{weekLabel(s.week_of)}</span>
-              {#if s.freshness === 'upcoming'}<span class="tag">scheduled</span>{/if}
-              <span class="fish">{fish(s)}</span>
-            </li>
-          {/each}
-        </ul>
-      {/each}
-    {/each}
-    <p class="quiet small">Weeks, not days. The schedule can change without notice. As of {hhmm(wb.stocking[0]?.scraped_at)}.</p>
+    <StockingList stocking={wb.stocking} level={3} asOfIso={wb.stocking[0]?.scraped_at} />
 
     {#if wb.report_items?.length}
       <h3 class="eyebrow">From the weekly report</h3>
@@ -109,11 +90,6 @@
   .star.on { color: var(--warn); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--warn) 55%, transparent)); }
   .small { font-size: 13px; margin: 0; } .err { color: var(--accent); }
   ul { list-style: none; margin: 0; padding: 0; }
-  .srow { display: flex; gap: 8px; align-items: center; min-height: 40px; border-bottom: 1px solid var(--hair); }
-  .wk { white-space: nowrap; }
-  .sub { margin: 10px 0 0; } .yr { margin: 8px 0 0; font-size: 12.5px; font-weight: 600; color: var(--text-quiet); letter-spacing: 0.04em; }
-  .tag { font-size: 10px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--fresh-1); border: 1px solid color-mix(in srgb, var(--fresh-1) 45%, transparent); border-radius: 999px; padding: 1px 7px; flex: none; }
-  .fish { flex: none; white-space: nowrap; font-size: 12.5px; color: var(--text-quiet); text-align: right; font-variant-numeric: tabular-nums; }
   .grow { flex: 1; }
   blockquote { margin: 0; padding: 4px 0 4px 12px; border-left: 2px solid var(--fresh-2); background: linear-gradient(90deg, var(--glow-1), transparent 70%); border-radius: 2px; }
   blockquote p { margin: 2px 0; }

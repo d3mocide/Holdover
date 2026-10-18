@@ -156,8 +156,8 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 
 | Tier | Use | Fill | Blur |
 | --- | --- | --- | --- |
-| Light | Nav rail, offline button, map controls | `--bg` at 58% | 20 px |
-| Dense | Anything with text you must read: planner, side panel, detail sheet, Layers, Legend, popups | `--bg` at 94% | 28 px |
+| Light | Nav rail, offline button, map controls, the closed Layers and Legend buttons | `--bg` at 58% | 20 px |
+| Dense | Anything with text you must read: planner, side panel, detail sheet, the open Layers and Legend lists, popups | `--bg` at 94% | 28 px |
 
 - **Rule:** if text sits on it, it is dense. (A light panel let pins show through a title; that is why.)
 - **Gutter: 16 px** between panels and from every screen edge. The map is full-bleed; every control is measured from

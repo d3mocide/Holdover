@@ -101,6 +101,7 @@
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
   // Where a waterbody's sheet can open: over the map, which is visible on the Map tab and, on a wide screen, beside the Plan list.
   const drawerOpen = $derived(gearEdit !== undefined || setupEdit !== undefined || editTrip !== undefined || logFor !== undefined);
+  $effect(() => { if (drawerOpen) legendOpen = false; });
   const onMap = $derived(view === 'map' || (view === 'plan' && wide));
   // With a sheet open beside the Plan list, the list narrows so the sheet can be wide.
   const select = (id) => { selectedId = id; dayFor = null; if (!onMap) view = 'map'; };
@@ -136,7 +137,7 @@
   </main>
   <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap}>
       <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
-      <div class="layers glass" role="group" aria-label="Map layers">
+      <div class="layers glass" class:open={layersOpen} role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
         {#if layersOpen}
           <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
@@ -147,8 +148,8 @@
           <label class="lyr"><input type="checkbox" bind:checked={showFire} /> Fire danger and fires</label>
         {/if}
       </div>
-      <div class="legend glass" aria-label="Map legend">
-        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> Legend</button>
+      <div class="legend glass" class:open={legendOpen} aria-label="Map legend">
+        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> <span class="lgl">Legend</span></button>
         {#if legendOpen}<Legend {theme} />
         {/if}
       </div>
@@ -188,8 +189,9 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: left 0.25s ease; }
   .ptoggle :global(svg) { transform: rotate(180deg); transition: transform 0.2s ease; }
   .shell.collapsed .ptoggle { left: 92px; } .shell.collapsed .ptoggle :global(svg) { transform: none; }
-  .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
-  .planner, .sheetwrap, .layers, .legend { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .rail, .offline, .layers, .legend { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  /* Layers and Legend are small buttons until opened: clear chrome glass like the rail, dense once their text list is showing. */
+  .planner, .sheetwrap, .layers.open, .legend.open { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
   .logo { margin-bottom: 12px; }
   .navbtn { flex-direction: column; border: 0; background: none; width: 56px; height: 56px; gap: 2px; border-radius: 12px; color: var(--text-quiet); padding: 0; }
@@ -213,19 +215,22 @@
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: calc(112px + var(--panel-w, 380px) + var(--drawer-shift, 0px)); transition: left 0.25s ease; bottom: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
+  .legend { position: absolute; left: calc(112px + var(--panel-w, 380px) + var(--drawer-shift, 0px)); transition: left 0.25s ease; top: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
   .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .overlay { grid-area: auto !important; position: absolute; inset: 0; z-index: 15; background: var(--page-bg); overflow: hidden; }
   /* On a wide screen, forms (log a trip, gear, setups) open as a side drawer over the map instead of taking the whole page. */
   @media (min-width: 900px) {
-    /* While a form drawer is open the map's left-hand controls (Prepare for offline, Legend) slide over to clear it. */
+    /* While a form drawer is open the map's left-hand controls (Legend) slide over to clear it. */
     .shell.drawer { --drawer-shift: calc(min(520px, calc(100% - 128px - var(--panel-w, 0px))) + 16px); }
-    /* Beside the drawer, Legend rises clear of the map credit (a licence requirement). */
-    .shell.drawer .mapwrap .legend { bottom: 44px; }
+    /* Beside the drawer there is little room: Legend shrinks to its icon (and its list is closed when a drawer opens). */
+    .shell.drawer .lgl { display: none; }
     /* It opens right beside the panel it came from (Journal, Gear, ...), not at the far edge of the screen. */
     .overlay { inset: 16px auto 16px calc(112px + var(--panel-w, 0px)); width: min(520px, calc(100% - 128px - var(--panel-w, 0px))); border-radius: 20px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
       border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  }
+  @media (min-width: 900px) and (max-width: 1299px) {
+    .shell.drawer .legend { display: none; }  /* no room beside the drawer; it reopens when the drawer closes */
   }
   .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
   .sym.diamond { background: var(--gauge); border-color: var(--bg); box-shadow: 0 0 0 1px var(--gauge); }
@@ -256,13 +261,10 @@
     /* Collapsed: bottom right, above the map's attribution (a licence requirement, never covered). */
     .shell.collapsed .ptoggle, .shell.collapsed.tall .ptoggle, .shell.collapsed.full .ptoggle { top: auto; left: auto; right: 16px; margin: 0; bottom: calc(var(--nav-h) + 52px); }
     .ptoggle :global(svg) { transform: rotate(90deg); } .shell.collapsed .ptoggle :global(svg) { transform: rotate(-90deg); }
-    .shell.nopanel .mapwrap .legend { bottom: 16px; }
     .shell.collapsed .mapwrap.hide { display: block; }  /* Plan hides the map on a phone: hiding the panel brings it back */
-    .shell.collapsed .mapwrap .legend, .shell.collapsed.tall .mapwrap .legend { bottom: 16px; }
     .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
     .planner.full { height: 100%; border-radius: 0; }
     .planner.tall { height: 68%; }
-    .mapwrap.tall .legend { bottom: calc(68% + 16px); }
     .mapwrap.hide { display: none; }
     .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: var(--nav-h); height: calc(62% - var(--nav-h)); z-index: 6; border-radius: 20px 20px 0 0; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
     .planner { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -271,7 +273,8 @@
     .layers { right: 16px; top: calc(16px + var(--safe-top)); }
     .offline { top: calc(16px + var(--safe-top)); }
     .lyr.off { display: none; }
-    .legend { left: 16px; bottom: calc(42% + 16px); }
+    .legend { left: 68px; top: calc(16px + var(--safe-top)); }  /* beside the offline icon */
+    .legend.open { left: 16px; top: calc(68px + var(--safe-top)); right: 16px; }
     .offline { left: 16px; right: auto; }
     .pickbar { left: 16px; }
     .mapwrap { inset: 0 0 var(--nav-h) 0; }

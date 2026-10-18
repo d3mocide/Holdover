@@ -197,3 +197,13 @@ def test_status_line_says_what_is_wrong():
     assert "not configured" in LLMClient("", "").status_line()
     down = LLMClient("http://llm.test/v1", "m", transport=httpx.MockTransport(lambda r: httpx.Response(500)))
     assert "did not answer GET /models" in down.status_line()
+
+
+def test_answer_in_a_reasoning_field_is_read_when_content_is_empty():
+    from app.llm.schemas import DigestResult
+    for field in ("reasoning", "reasoning_content"):
+        body = {"choices": [{"message": {"role": "assistant", "content": "", field: json.dumps({"digest": "Coho are moving up the North Santiam."})}}]}
+        out = llm_with(lambda r, b=body: httpx.Response(200, json=b)).chat_json("s", "u", DigestResult)
+        assert out.digest.startswith("Coho are moving")
+    plain = {"choices": [{"message": {"content": json.dumps({"digest": "From content."}), "reasoning": "thinking..."}}]}
+    assert llm_with(lambda r: httpx.Response(200, json=plain)).chat_json("s", "u", DigestResult).digest == "From content."  # content wins

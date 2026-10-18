@@ -68,6 +68,10 @@ input[type='text'], input[type='password'], input[type='datetime-local'], input[
   min-height: 44px; border-radius: 10px; border: 1px solid var(--hair); background: rgba(0, 0, 0, 0.28);
   color: var(--text); padding: 0 12px; font: 400 14px 'IBM Plex Sans', sans-serif; width: 100%; min-width: 0;
 }
+/* The open list of a native select is drawn by the browser from the option's own colours: the select's translucent background
+   made it fall back to the OS grey. Give the options opaque theme colours. */
+select option, select optgroup { background-color: var(--bg); color: var(--text); }
+select option:checked { background: linear-gradient(var(--fresh-3), var(--fresh-3)); color: var(--text); }
 label { display: block; margin-bottom: 4px; color: var(--text-quiet); font-size: 13px; }
 .card { background: var(--glass-fill); border: 1px solid var(--hair); border-radius: 14px; padding: 12px 14px; }
 .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; display: inline-block; }

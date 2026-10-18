@@ -75,7 +75,10 @@ class LLMClient:
         if r.status_code != 200:
             raise ValueError(f"LLM HTTP {r.status_code}: {r.text[:200]}")
         try:
-            content = r.json()["choices"][0]["message"]["content"]
+            message = r.json()["choices"][0]["message"]
+            # Reasoning models served by llama.cpp-style servers can leave "content" empty and put the answer in
+            # "reasoning_content" (or "reasoning"). The JSON is the same; read whichever holds it.
+            content = message.get("content") or message.get("reasoning_content") or message.get("reasoning") or ""
             return schema.model_validate(_fit(json.loads(_strip_fence(content)), schema))
         except Exception as exc:  # malformed JSON, wrong shape, missing keys
             raise ValueError(f"invalid LLM output: {exc}") from exc
