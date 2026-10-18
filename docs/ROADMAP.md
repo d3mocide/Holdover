@@ -26,7 +26,7 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 | 7 | Accounts | Done |
 | 8 | Gear | Done |
 | 9 | Hardening and first deployment | Planned |
-| 10 | Journal depth and journal-informed scoring | Planned |
+| 10 | Journal depth and journal-informed scoring | In progress |
 | 11 | More sources and statewide coverage | Planned |
 | 12 | Coast and marine | Planned |
 | 13 | Light theme | Planned |
@@ -165,8 +165,8 @@ lure and setup; no other account can read or reference it; tests, e2e and axe pa
 - [x] Starter catalog (77 common Oregon lures, flies and tackle; brands only where certain) and pure stats functions (8 unit tests)
 - [x] Gear tab: items with photos, search and filters; setups; "What works" stats; add/edit/retire/delete
 - [x] Log-trip picker (setup, lures, "caught on") and gear on journal cards
-- [x] Gate evidence: `tests/e2e/gear.mjs` (22 checks, including a second account that cannot see or reference the
-      gear, an item created offline syncing after reconnect, and axe clean on every gear view); 113 backend tests
+- [x] Gate evidence: `tests/e2e/gear.mjs` (a second account that cannot see or reference the gear, an item
+      created offline syncing after reconnect, axe clean on every gear view); backend and unit tests
 
 **Carried forward:** stats are computed on this device from the local journal (so they work offline) and show shared
 credit for "on trips"; gear is not yet used by the planner or the pack list (Phase 10); gear photos are uploaded at
@@ -192,10 +192,10 @@ its server.
 
 ## Phase 10: Journal depth and journal-informed scoring
 
-**Status:** Planned. **Goal:** use what people log. Needs Phase 8's gear data.
+**Status:** In progress. **Goal:** use what people log. Needs Phase 8's gear data.
 
-- [ ] Edit an existing trip
-- [ ] Per-waterbody history: catches by species, conditions of the best days
+- [x] Edit an existing trip (in place; keeps the conditions captured at the time; removed catches are soft-deleted)
+- [x] Per-waterbody history on the sheet: trips, fish, catches by species, best day with its conditions, most productive lure
 - [ ] Journal-informed scoring factor (for example, waters and lures that worked under similar flows)
 - [ ] Gear in the pack list ("you already own this")
 

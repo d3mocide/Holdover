@@ -53,6 +53,7 @@
   let gearEdit = $state(undefined); // undefined: closed, null: new item, object: editing
   let gearBrowse = $state(false);
   let setupEdit = $state(undefined);
+  let editTrip = $state(undefined); // undefined: closed, otherwise the trip row being edited
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
   let offlineFor = $state(undefined);
   let journalGeo = $state(null);
@@ -115,7 +116,7 @@
     {:else if view === 'settings'}
       <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} />
     {:else if view === 'journal'}
-      <Journal {wbList} onlog={() => (logFor = null)} />
+      <Journal {wbList} onlog={() => (logFor = null)} onedit={(t) => (editTrip = t)} />
     {:else if view === 'gear'}
       <Gear {wbList} onitem={(g, browse = false) => { gearBrowse = browse; gearEdit = g; }} onsetup={(st) => (setupEdit = st)} />
     {:else}
@@ -155,6 +156,9 @@
   {/if}
   {#if setupEdit !== undefined}
     <div class="overlay"><SetupForm setup={setupEdit} onclose={() => (setupEdit = undefined)} onsaved={() => (setupEdit = undefined)} /></div>
+  {/if}
+  {#if editTrip !== undefined}
+    <div class="overlay"><LogTrip {wbList} trip={editTrip} onclose={() => (editTrip = undefined)} onsaved={() => (editTrip = undefined)} /></div>
   {/if}
   {#if logFor !== undefined}
     <div class="overlay"><LogTrip {wbList} initialWb={logFor} onclose={() => (logFor = undefined)} onsaved={() => { logFor = undefined; view = 'journal'; }} /></div>

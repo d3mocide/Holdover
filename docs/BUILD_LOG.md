@@ -151,3 +151,13 @@ Persistent-storage request and a Storage card in Settings; login throttle aware 
 - Not checked: any of it behind a real reverse proxy over HTTPS, the storage request on a real phone (Safari may
   decline silently), moving existing SQLite data to Postgres (no tool).
 
+### 2026-10-18 · this commit · Phase 10 · Edit a trip, history per waterbody
+Existing trips can be edited in place (pre-filled form, original conditions kept, removed catches soft-deleted,
+no duplicate on the server); the waterbody sheet now shows your history there: trips, fish, catches by species, the
+best day with the conditions captured that day, and the most productive lure.
+- Verified: 117 `pytest`; 20 frontend unit tests (the history and conditions logic, including ties, deleted rows,
+  junk values, and "a skunk has no best day"); `gear.mjs` 43 of 43 (now covers editing, removal, one-trip-on-the-server
+  and the history panel, axe on both new views); `accounts.mjs` 37 of 37; offline e2e clean.
+- Found: nothing broke; the only test change was a stale server on the e2e port in an earlier run (guarded since).
+- Not checked: editing on a phone; "best day" is by fish count only (no weighting by effort or hours).
+

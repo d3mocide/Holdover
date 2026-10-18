@@ -7,7 +7,7 @@
   import Icon from './Icon.svelte';
   import { namesFor } from './gearStats.js';
 
-  let { wbList = [], onlog } = $props();
+  let { wbList = [], onlog, onedit } = $props();
   let trips = $state([]), catches = $state([]), gear = $state([]), setups = $state([]);
   $effect(() => {
     const s1 = liveQuery(() => db.trips.toArray()).subscribe((v) => (trips = v.filter((t) => !t.deleted).sort((a, b) => (b.started_at ?? '').localeCompare(a.started_at ?? ''))));
@@ -71,7 +71,7 @@
           {t.dirty ? 'Waiting to sync' : 'Synced'}
           {#if t.conditions_source}· conditions {t.conditions_source}{cond(t)?.cache_as_of ? ` (as of ${hhmm(cond(t).cache_as_of)})` : ''}{/if}
         </p>
-        <button onclick={() => remove(t)} aria-label="Delete trip"><Icon name="close" /></button>
+        <div class="acts"><button onclick={() => onedit(t)} aria-label="Edit trip">Edit</button><button onclick={() => remove(t)} aria-label="Delete trip"><Icon name="close" /></button></div>
       </li>
     {/each}
   </ul>
@@ -86,7 +86,8 @@
   .page { padding: 20px 16px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   header { display: flex; justify-content: space-between; align-items: center; min-height: 44px; } h1 { font-size: 24px; letter-spacing: -0.01em; }
   ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; margin: 0; }
-  .card { position: relative; } .card button { position: absolute; right: 6px; bottom: 6px; border: 0; background: none; color: var(--text-quiet); }
+  .card { position: relative; } .acts { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 2px; }
+  .acts button { border: 0; background: none; color: var(--text-quiet); font-size: 13px; } .acts button:first-child { color: var(--fresh-1); }
   .top { display: flex; justify-content: space-between; gap: 8px; } .small { font-size: 13px; margin: 2px 0; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   .gearline { display: flex; align-items: center; gap: 6px; color: var(--fresh-2); }

@@ -3,10 +3,11 @@
   import Conditions from './Conditions.svelte';
   import { db } from './db.js';
   import Icon from './Icon.svelte';
+  import { liveQuery } from 'dexie';
   import { isFavorite, toggleFavorite } from './auth.svelte.js';
+  import { waterbodyHistory } from './journalStats.js';
   let { id, onclose, onday, onlog } = $props();
-  let mine = $state([]);
-  let mineCatch = $state([]);
+  let allTrips = $state([]), allCatches = $state([]), allGear = $state([]);
   let wb = $state(null);
   let error = $state('');
   let favMsg = $state('');
@@ -19,11 +20,11 @@
   const fish = (s) => [s.legals && `${s.legals.toLocaleString()} legals`, s.trophy && `${s.trophy.toLocaleString()} trophy`].filter(Boolean).join(' + ') || `${s.total.toLocaleString()} fish`;
 
   $effect(() => {
-    db.trips.where('waterbody_id').equals(id).filter((t) => !t.deleted).toArray().then(async (t) => {
-      mine = t.sort((a, b) => (b.started_at ?? '').localeCompare(a.started_at ?? ''));
-      mineCatch = (await db.catches.filter((c) => !c.deleted && mine.some((x) => x.uuid === c.trip_uuid)).toArray());
-    });
+    const sub = liveQuery(async () => ({ trips: await db.trips.toArray(), catches: await db.catches.toArray(), gear: await db.gear.toArray() }))
+      .subscribe((v) => { allTrips = v.trips; allCatches = v.catches; allGear = v.gear; });
+    return () => sub.unsubscribe();
   });
+  const history = $derived(waterbodyHistory({ trips: allTrips, catches: allCatches, gear: allGear, waterbodyId: id }));
   $effect(() => {
     wb = null; error = '';
     api.waterbody(id).then((v) => (wb = v)).catch((e) => (error = e.message));
@@ -69,10 +70,19 @@
       {/each}
     {/if}
 
-    {#if mine.length}
-      <h3 class="eyebrow">Your trips here</h3>
-      <p class="small">{mine.length} trip{mine.length === 1 ? '' : 's'}, last {longDate(mine[0].started_at?.slice(0, 10))}.
-        {Object.entries(mineCatch.reduce((a, c) => ({ ...a, [c.species ?? 'unspecified']: (a[c.species ?? 'unspecified'] ?? 0) + (c.count || 0) }), {})).map(([k, v]) => `${v} ${k}`).join(', ')}</p>
+    {#if history.trips}
+      <h3 class="eyebrow">Your history here</h3>
+      <p class="small">{history.trips} trip{history.trips === 1 ? '' : 's'} · {history.fish} fish · last {longDate(history.last)}</p>
+      {#if history.bySpecies.length}<p class="small quiet">{history.bySpecies.map((x) => `${x.count} ${x.species}`).join(', ')}</p>{/if}
+      {#if history.best}
+        <div class="best card">
+          <span class="eyebrow">Best day</span>
+          <strong>{longDate(history.best.date)} · {history.best.fish} fish</strong>
+          {#if history.best.conditions.length}<span class="quiet small">{history.best.conditions.join(' · ')}</span>
+          {:else}<span class="quiet small">No conditions were captured that day.</span>{/if}
+        </div>
+      {/if}
+      {#if history.topGear}<p class="small">Most productive here: <strong>{history.topGear.name}</strong> <span class="quiet">({history.topGear.count} fish)</span></p>{/if}
     {/if}
 
     <div class="actions">
@@ -101,5 +111,6 @@
   .grow { flex: 1; }
   blockquote { margin: 0; padding: 4px 0 4px 12px; border-left: 2px solid var(--fresh-2); background: linear-gradient(90deg, var(--glow-1), transparent 70%); border-radius: 2px; }
   blockquote p { margin: 2px 0; }
+  .best { display: flex; flex-direction: column; gap: 2px; margin: 4px 0; } .best strong { font-weight: 500; }
   .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 </style>

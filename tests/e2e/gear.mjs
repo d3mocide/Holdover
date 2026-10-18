@@ -85,6 +85,41 @@ const srv = await pull(p);
 ok(srv.gear.length === 3 && srv.setups.length === 1, `server has the gear (3) and setup (1): got ${srv.gear.length}/${srv.setups.length}`);
 ok(srv.trips[0].setup_uuid === srv.setups[0].uuid && srv.catches[0].gear_uuid === srv.gear.find(g => g.name === 'Panther Martin spinner').uuid, 'trip and catch carry their gear references on the server');
 
+// ---- edit the trip that was just logged
+await nav(p, 'Journal'); await p.waitForTimeout(500);
+await p.getByRole('button', { name: 'Edit trip' }).first().click(); await p.waitForTimeout(600);
+ok(await p.getByRole('heading', { name: 'Edit trip' }).isVisible(), 'editing opens the Edit trip form');
+ok((await p.getByLabel('Species 1').inputValue()) === 'rainbow trout', 'the form is pre-filled with the existing catch');
+ok((await p.getByLabel('Setup').evaluate((e) => e.selectedOptions[0].textContent)) === 'Light spinning', 'the form is pre-filled with the setup');
+ok(await p.getByText('Conditions stay as captured').isVisible(), 'editing says the captured conditions are kept');
+await axe(p, 'Edit trip form');
+await p.getByRole('button', { name: /More rainbow trout/ }).click(); await p.getByRole('button', { name: /More rainbow trout/ }).click();
+await p.getByLabel('Notes').fill('edited in the evening');
+await p.getByRole('button', { name: 'Save changes' }).click(); await p.waitForTimeout(2500);
+ok(await p.getByText('3 fish: 3 rainbow trout').isVisible() && await p.getByText('edited in the evening').isVisible(), 'the journal card shows the edit');
+let e1 = await pull(p);
+ok(e1.trips.filter(t => !t.deleted).length === 1, 'editing updated the trip in place: still exactly one trip on the server');
+ok(e1.trips[0].notes === 'edited in the evening' && e1.catches.find(c => !c.deleted).count === 3, 'the server has the new notes and the new count');
+// ---- your history shows on the waterbody sheet
+await nav(p, 'Map'); await p.waitForTimeout(600);
+await p.getByRole('button', { name: /Dexter Reservoir/ }).first().click(); await p.waitForTimeout(2200);
+ok(await p.getByText('Your history here').isVisible(), 'the sheet shows your history at this waterbody');
+ok(await p.getByText('1 trip · 3 fish').isVisible(), 'history: trips and fish');
+ok(await p.getByText('3 rainbow trout', { exact: true }).isVisible(), 'history: catches by species');
+ok(await p.getByText('Best day').isVisible() && await p.getByText(/· 3 fish$/).first().isVisible(), 'history: the best day');
+ok(await p.getByText('Most productive here:').isVisible() && await p.getByText('Panther Martin spinner').first().isVisible(), 'history: the lure that caught the fish here');
+await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/sheet-history.png' : undefined });
+await axe(p, 'Sheet with history');
+await p.getByRole('button', { name: 'Close details' }).click(); await p.waitForTimeout(300);
+await nav(p, 'Journal'); await p.waitForTimeout(400);
+await p.getByRole('button', { name: 'Edit trip' }).first().click(); await p.waitForTimeout(500);
+await p.getByLabel('Species 1').fill(''); await p.getByRole('button', { name: /Fewer/ }).first().click().catch(() => {});
+for (let i = 0; i < 3; i++) await p.getByRole('button', { name: /^Fewer/ }).first().click().catch(() => {});
+await p.getByRole('button', { name: 'Save changes' }).click(); await p.waitForTimeout(2500);
+e1 = await pull(p);
+ok(e1.catches.filter(c => !c.deleted).length === 0 && e1.catches.some(c => c.deleted), 'removing a catch while editing deletes it on the server (soft delete)');
+ok(e1.trips.filter(t => !t.deleted).length === 1, 'the trip itself is untouched');
+
 // ---- another account sees none of it and cannot reference it
 const ctx2 = await b.newContext({ viewport: { width: 1440, height: 900 } }); const q = await ctx2.newPage();
 await q.goto(BASE); await q.waitForTimeout(2500); await login(q, 'sam', 'sams-long-password'); await q.reload(); await q.waitForTimeout(3000);

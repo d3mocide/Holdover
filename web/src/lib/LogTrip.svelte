@@ -7,20 +7,24 @@
   import { TRIP_KINDS } from './gearCatalog.js';
   import { requestPersistence } from './storage.js';
 
-  let { wbList = [], initialWb = null, onclose, onsaved } = $props();
+  let { wbList = [], initialWb = null, trip = null, onclose, onsaved } = $props();
+  const editing = !!trip; // editing keeps the conditions captured when the trip was first saved
 
   const local = (d = new Date()) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-  let wbId = $state(initialWb ? String(initialWb) : '');
-  let gps = $state(null);
+  const toLocal = (iso) => (iso ? local(new Date(iso)) : '');
+  const parseList = (j) => { try { const v = JSON.parse(j || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } };
+  let wbId = $state(trip ? (trip.waterbody_id != null ? String(trip.waterbody_id) : '') : initialWb ? String(initialWb) : '');
+  let gps = $state(trip && trip.waterbody_id == null && trip.lat != null ? { lat: trip.lat, lon: trip.lon } : null);
   let gpsMsg = $state('');
-  let startedAt = $state(local());
-  let endedAt = $state('');
+  let startedAt = $state(trip ? toLocal(trip.started_at) : local());
+  let endedAt = $state(trip ? toLocal(trip.ended_at) : '');
+  let loadedCatches = $state([]); // the stored catch rows of the trip being edited
   let species = $state([{ name: '', count: 0, photo: null, gearUuid: '' }]);
-  let setupUuid = $state('');
-  let gearSel = $state([]);
+  let setupUuid = $state(trip?.setup_uuid ?? '');
+  let gearSel = $state(parseList(trip?.gear_json));
   let gearAll = $state([]), setupsAll = $state([]);
   let method = $state('');
-  let notes = $state('');
+  let notes = $state(trip?.notes ?? '');
   let saving = $state(false);
   let err = $state('');
   let online = $state(navigator.onLine);
@@ -47,8 +51,18 @@
     if (wbId) db.cond.get(Number(wbId)).then((c) => (cachedAt = c?.fetched_at ?? null));
   });
 
-  // Draft: restored once, then kept on every edit.
   $effect(() => {
+    if (!trip) return;
+    db.catches.where('trip_uuid').equals(trip.uuid).toArray().then((rows) => {
+      loadedCatches = rows.filter((c) => !c.deleted);
+      if (loadedCatches.length) species = loadedCatches.map((c) => ({ uuid: c.uuid, name: c.species ?? '', count: c.count ?? 0, photo: null, gearUuid: c.gear_uuid ?? '' }));
+      method = loadedCatches.find((c) => c.method)?.method ?? '';
+    });
+  });
+
+  // Draft: restored once, then kept on every edit. (Editing an existing trip never uses the new-trip draft.)
+  $effect(() => {
+    if (editing) return;
     metaGet('tripDraft').then((d) => {
       if (d && !initialWb) {
         wbId = d.wbId ?? wbId; startedAt = d.startedAt ?? startedAt; endedAt = d.endedAt ?? ''; method = d.method ?? '';
@@ -78,10 +92,35 @@
     if (!wbId && !gps) { err = 'Pick a waterbody or pin your GPS location.'; return; }
     saving = true;
     try {
-      const tripId = uuid(), now = nowIso();
+      const tripId = trip?.uuid ?? uuid(), now = nowIso();
       const wb = wbList.find((w) => String(w.id) === wbId);
-      const cond = await captureConditions(wbId ? Number(wbId) : null);
       const iso = (v) => (v ? new Date(v).toISOString() : null);
+      if (editing) {
+        await db.transaction('rw', db.trips, db.catches, async () => {
+          await db.trips.update(tripId, {
+            started_at: iso(startedAt), ended_at: iso(endedAt), waterbody_id: wbId ? Number(wbId) : null,
+            lat: gps?.lat ?? wb?.lat ?? trip.lat ?? null, lon: gps?.lon ?? wb?.lon ?? trip.lon ?? null, notes: notes || null,
+            setup_uuid: setupUuid || null, gear_json: gearSel.length ? JSON.stringify(gearSel) : null, updated_at: now, dirty: 1
+          });
+          const rows = species.filter((s) => s.name.trim() || s.count > 0);
+          if (!rows.length && method.trim()) rows.push({ name: '', count: 0, photo: null, gearUuid: '' });
+          const keep = new Set();
+          for (const s of rows) {
+            const fields = { species: s.name.trim() || null, count: s.count, method: method.trim() || null, gear_uuid: s.gearUuid || null, updated_at: now, dirty: 1 };
+            if (s.uuid) {
+              keep.add(s.uuid);
+              await db.catches.update(s.uuid, s.photo ? { ...fields, photo_blob: s.photo, photo_path: null } : fields); // a new photo replaces the old
+            } else {
+              await db.catches.add({ uuid: uuid(), trip_uuid: tripId, length_in: null, kept: null, photo_path: null, photo_blob: s.photo, deleted: 0, ...fields });
+            }
+          }
+          for (const c of loadedCatches) if (!keep.has(c.uuid)) await db.catches.update(c.uuid, { deleted: 1, updated_at: now, dirty: 1 });
+        });
+        await countPending(); syncNow();
+        onsaved?.(tripId);
+        return;
+      }
+      const cond = await captureConditions(wbId ? Number(wbId) : null);
       await db.transaction('rw', db.trips, db.catches, async () => {
         await db.trips.add({
           uuid: tripId, started_at: iso(startedAt), ended_at: iso(endedAt), waterbody_id: wbId ? Number(wbId) : null,
@@ -108,10 +147,10 @@
   }
 </script>
 
-<section class="log" aria-label="Log a trip">
+<section class="log" aria-label={editing ? 'Edit trip' : 'Log a trip'}>
   <header>
     <button onclick={onclose} aria-label="Close"><Icon name="close" /></button>
-    <h1>Log a trip</h1><span class="badge quiet">Draft</span>
+    <h1>{editing ? 'Edit trip' : 'Log a trip'}</h1>{#if !editing}<span class="badge quiet">Draft</span>{/if}
   </header>
 
   {#if !online}<p class="banner" role="status">Saved on this phone, syncs when you have signal.</p>{/if}
@@ -175,6 +214,10 @@
   <div class="f"><label for="nt">Notes</label><input id="nt" type="text" bind:value={notes} /></div>
 
   <div class="card cond">
+    {#if editing}
+      <strong>Conditions stay as captured</strong>
+      <p class="quiet small">{trip.conditions_source === 'cached' ? 'Saved from cached values' : 'Saved from live values'} when you first logged this trip. Editing does not change them.</p>
+    {:else}
     <strong>Conditions captured on save</strong>
     <p class="quiet small">
       {#if !wbId}Pick a waterbody to capture flow, weather and stocking.
@@ -182,10 +225,11 @@
       {:else if cachedAt}Offline: will use cached values, {asOf(cachedAt)}. Marked as cached.
       {:else}Offline and nothing cached for this waterbody yet: conditions will be left blank.{/if}
     </p>
+    {/if}
   </div>
 
   {#if err}<p role="alert" class="err">{err}</p>{/if}
-  <div class="bar"><button class="primary" onclick={save} disabled={saving}>{saving ? 'Saving…' : 'Save trip'}</button></div>
+  <div class="bar"><button class="primary" onclick={save} disabled={saving}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Save trip'}</button></div>
 </section>
 
 <style>
