@@ -23,8 +23,8 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        navigateFallbackDenylist: [/^\/api\//, /^\/healthz/, /^\/tiles\//],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,pbf}'],
+        navigateFallbackDenylist: [/^\/api\//, /^\/healthz/, /^\/tiles\//, /^\/fonts\//],
         runtimeCaching: [
           {
             // /api/day is excluded on purpose: the app keeps its own IndexedDB copy with an explicit as-of time,

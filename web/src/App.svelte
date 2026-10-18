@@ -151,8 +151,10 @@
   .lbl { font-size: 10px; }
   .spacer { flex: 1; }
   .planner { grid-column: 2; z-index: 3; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
-  .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-column: 1 / -1; }
-  .sheetwrap { position: absolute; top: 16px; right: 16px; bottom: 16px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
+  /* grid-area: auto keeps absolutely positioned children relative to the shell's padding box, so the map is
+     full-bleed and every overlay offset is measured from the screen edge, not from the grid's inner padding. */
+  .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-area: auto !important; }
+  .sheetwrap { grid-area: auto !important; position: absolute; top: 16px; right: 16px; bottom: 16px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
   .mapwrap { --sheet-inset: 0px; }
   .mapwrap.sheet { --sheet-inset: 356px; }
   .mapwrap.wide { --sheet-inset: calc(min(520px, 60%) + 16px); }
@@ -197,6 +199,6 @@
     .lyr.off { display: none; }
     .legend { left: 16px; bottom: calc(42% + 16px); }
     .offline { left: 16px; }
-    .mapwrap { inset: 0 0 var(--nav-h) 0; grid-column: 1; }
+    .mapwrap { inset: 0 0 var(--nav-h) 0; }
   }
 </style>

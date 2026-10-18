@@ -22,17 +22,26 @@
 
   function palette() {
     return {
-      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), shore: css('--shore'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
+      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), label: css('--text-quiet'), labelHi: css('--text'), shore: css('--shore'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
       f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), accent: css('--accent'), bg: css('--bg')
     };
   }
 
+  const NAME = ['coalesce', ['get', 'name:en'], ['get', 'name']];
+  // [id, kind_detail, minzoom, [zoom, size, ...], emphasised]. One layer per rank: filters cannot test zoom.
+  const PLACE_KINDS = [['city', 'city', 5, [5, 12, 10, 17], true], ['town', 'town', 7, [7, 10.5, 12, 14], false],
+    ['village', 'village', 10, [10, 10, 14, 12.5], false], ['hamlet', 'hamlet', 12, [12, 10, 15, 12], false]];
+
   function baseStyle(withTiles) {
     const c = palette();
-    const style = { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': c.land } }] };
+    // With a basemap the ground is the sea and the land is drawn on top: anything outside the data (the
+    // Pacific beyond the extract) then reads as open ocean instead of a hard seam under the glass panels.
+    const style = { version: 8, glyphs: `${location.origin}/fonts/{fontstack}/{range}.pbf`, sources: {},
+      layers: [{ id: 'bg', type: 'background', paint: { 'background-color': withTiles ? c.water : c.land } }] };
     if (withTiles) {
       style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 };
       style.layers.push(
+        { id: 'earth', type: 'fill', source: 'oregon', 'source-layer': 'earth', paint: { 'fill-color': c.land } },
         { id: 'landuse', type: 'fill', source: 'oregon', 'source-layer': 'landuse',
           filter: ['in', ['get', 'kind'], ['literal', ['park', 'forest', 'wood', 'national_park', 'nature_reserve', 'protected_area']]],
           paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
@@ -56,7 +65,21 @@
           paint: { 'line-color': c.minor, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 14, 1.2] } },
         { id: 'roads', type: 'line', source: 'oregon', 'source-layer': 'roads',
           filter: ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]],
-          paint: { 'line-color': c.line, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.5, 10, 1, 14, 2.2] } }
+          paint: { 'line-color': c.line, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.5, 10, 1, 14, 2.2] } },
+        // Labels: Noto Sans glyphs are bundled under /fonts (and precached), so these work offline.
+        { id: 'label-water-line', type: 'symbol', source: 'oregon', 'source-layer': 'water', minzoom: 9,
+          filter: ['all', ['==', ['geometry-type'], 'LineString'], ['has', 'name']],
+          layout: { 'symbol-placement': 'line', 'text-field': NAME, 'text-font': ['Noto Sans Italic'], 'text-size': ['interpolate', ['linear'], ['zoom'], 9, 10, 14, 13], 'text-letter-spacing': 0.06 },
+          paint: { 'text-color': c.river, 'text-halo-color': c.bg, 'text-halo-width': 1.4 } },
+        { id: 'label-water', type: 'symbol', source: 'oregon', 'source-layer': 'water', minzoom: 8,
+          filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['has', 'name']],
+          layout: { 'text-field': NAME, 'text-font': ['Noto Sans Italic'], 'text-size': ['interpolate', ['linear'], ['zoom'], 8, 10, 13, 13], 'text-max-width': 7 },
+          paint: { 'text-color': c.river, 'text-halo-color': c.bg, 'text-halo-width': 1.4 } },
+        ...PLACE_KINDS.map(([id, detail, minzoom, sizes, hi]) => ({ id: `label-${id}`, type: 'symbol', source: 'oregon', 'source-layer': 'places', minzoom,
+          filter: ['all', ['==', ['get', 'kind'], 'locality'], ['==', ['get', 'kind_detail'], detail]],
+          layout: { 'text-field': NAME, 'text-font': ['Noto Sans Medium'], 'text-size': ['interpolate', ['linear'], ['zoom'], ...sizes], 'text-max-width': 8, 'text-padding': 8, 'symbol-sort-key': ['get', 'sort_key'] },
+          paint: { 'text-color': hi ? c.labelHi : c.label, 'text-opacity': hi ? 0.92 : 0.8, 'text-halo-color': c.bg, 'text-halo-width': 1.6, 'text-halo-blur': 0.5 } }))
+
       );
     }
     return style;
@@ -162,7 +185,7 @@
       hasBasemap = withTiles;
       map = new maplibregl.Map({
         container: el, style: baseStyle(withTiles), center: [-122.9, 44.6], zoom: 7.4,
-        attributionControl: { compact: true }, padding: { left: inset }, maxBounds: [[-125.5, 41.5], [-116, 47]]
+        attributionControl: { compact: true }, padding: { left: inset }, maxBounds: [[-128.5, 41.8], [-116.3, 46.5]]
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       map.on('load', async () => { await addLayers(); ready = true; });
@@ -207,8 +230,11 @@
     if (!ready) return;
     queueMicrotask(() => {
       const c = palette(); const p = freshnessPaint();
-      map.setPaintProperty('bg', 'background-color', c.land);
+      map.setPaintProperty('bg', 'background-color', hasBasemap ? c.water : c.land);
       if (hasBasemap) {
+        map.setPaintProperty('earth', 'fill-color', c.land);
+        for (const l of ['label-water-line', 'label-water']) { map.setPaintProperty(l, 'text-color', c.river); map.setPaintProperty(l, 'text-halo-color', c.bg); }
+        for (const [id,,,, hi] of PLACE_KINDS) { map.setPaintProperty(`label-${id}`, 'text-color', hi ? c.labelHi : c.label); map.setPaintProperty(`label-${id}`, 'text-halo-color', c.bg); }
         map.setPaintProperty('landuse', 'fill-color', c.forest);
         map.setPaintProperty('natural', 'fill-color', c.forest);
         map.setPaintProperty('water', 'fill-color', c.water);

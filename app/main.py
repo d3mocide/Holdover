@@ -72,9 +72,10 @@ if (web / "index.html").exists():
 
     @app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
     def spa(path: str):
-        if path.startswith(("api/", "tiles/")):
-            return JSONResponse({"detail": "Not Found"}, status_code=404)
         f = (web / path).resolve()
         if path and f.is_file() and web in f.parents:
             return FileResponse(f)
+        # Asset-like prefixes must 404, not fall through to the SPA shell (a missing glyph range is not HTML).
+        if path.startswith(("api/", "tiles/", "fonts/")):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
         return FileResponse(web / "index.html")

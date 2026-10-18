@@ -19,3 +19,9 @@ With the compose setup the file lives in the `holdover-data` volume. Install it 
 The `pmtiles` CLI is a single Go binary: https://github.com/protomaps/go-pmtiles/releases (the extract above transferred about 550 MB and took about 15 seconds on a home connection).
 
 The map draws lakes and reservoirs as closed polygons and rivers from their centerlines. River polygons in OSM are often open-ended, so they only fade in at high zoom (`web/src/lib/MapView.svelte`).
+
+## Labels and fonts
+
+Place and water names use MapLibre glyphs (SDF PBF) bundled in `web/public/fonts/` (Noto Sans Regular, Medium, Italic; Latin ranges 0-255 and 256-511; about 620 KB; SIL OFL 1.1, see `NOTICE.txt` there). They are served by the app itself and precached by the service worker, so labels work offline with no third-party requests. Names come from the tiles (`name:en`, falling back to `name`). A glyph range that is not bundled returns 404 and affected characters are omitted. To add more scripts, fetch more ranges from https://github.com/protomaps/basemaps-assets into the same folders.
+
+With a basemap installed the map ground is the sea and land polygons (`earth`) are drawn on top, so the Pacific beyond the extract reads as open ocean under the side panels. The map is limited to the extract area (`maxBounds` in `MapView.svelte`).
