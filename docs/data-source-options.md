@@ -16,10 +16,12 @@ publisher states, not legal advice, and per [AGENTS.md](../AGENTS.md) a new sour
 | 1 | **USGS Water Data API** (replaces the legacy endpoint the app uses now) | Yes, documented (OGC API) | Yes, all 16 gauges, same values | **Required**: the app's flow data stops in early 2027 | Small to medium | **Do first** |
 | 2 | **Reservoir levels** (Army Corps, 10 Willamette reservoirs) | Yes, JSON, **undocumented** | Yes, all 10 | **High**: drawdowns change access and fishing | Medium | **Second**, after reading the Corps' terms |
 | 3 | **Wildfire perimeters** (NIFC WFIGS) | Yes, ArcGIS REST | Yes, 16 Oregon perimeters | Medium (safety, smoke, "check closures") | Small to medium | Third |
-| 4 | **ODF fire "regulated use" zones** | Yes, ArcGIS REST | Yes, 72 polygons; **meaning of the codes unknown** | Low to medium, ODF-protected lands only | Small once decoded | Fourth; needs ODF to explain the codes |
+| 4 | **ODF fire danger by regulated-use area** (found in Vertex) | Yes, ArcGIS REST | Yes, 63 zones, level 1 Low to 4 Extreme; **codes now decoded** | Medium, ODF-protected lands only | Small | Third, with wildfire |
 | 5 | **OWRD gauges** | Station list yes; **readings: no documented API** | Station list only | Low for rivers: USGS already covers most; OWRD's own pages redirect to USGS | Medium to high (scraping) | Skip, or ask OWRD |
 | 6 | **ODFW fish-district polygons** | Yes, ArcGIS REST | Yes (on ArcGIS Online; the handoff's URL is blocked) | Low: districts are **not** the stocking zones | Small | Low |
-| 7 | **Tides and coast** (NOAA CO-OPS) | Yes, documented | Yes (South Beach) | High for Phase 12, none for the current zone | Medium | Phase 12 |
+| 7 | **River flood status and forecasts** (NOAA NWPS, found in Vertex) | Yes, keyless bbox API | Yes, 165 gauges in the Willamette area | Medium: official flood categories and forecast crests | Small to medium | After the Corps levels |
+| 8 | **Satellite fire hotspots** (NASA FIRMS, found in Vertex) | Yes, needs a free MAP_KEY | Not probed (needs your key) | Medium: earliest fire warning | Small | When you have a key |
+| 9 | **Tides and coast** (NOAA CO-OPS) | Yes, documented | Yes (South Beach) | High for Phase 12, none for the current zone | Medium | Phase 12 |
 
 ---
 
@@ -100,16 +102,21 @@ a Corps web page. **Effort:** medium (new adapter, certificate bundle, history c
 - **Value:** medium (safety, smoke, access). **Effort:** small to medium: fetch, point-in-radius check per waterbody, a
   warning chip on the sheet and a map layer, tests.
 
-## 4. ODF fire "regulated use" zones
+## 4. ODF fire danger by regulated-use area
 
-- **Endpoint (verified):** `gis.odf.oregon.gov/ags1/rest/services/WebMercator/RegulatedUse/MapServer/0`, described as
-  regulated-use boundaries for "ODF protected lands", currently **72 polygons**.
-- **Problem:** the only attribute is a short code (`KR`, `RR-3`, `SW-1`). Without ODF's key I cannot say what each code
-  means, whether the layer is current today, or which activities are restricted. **Do not ship this without ODF
-  explaining it**; restating restrictions wrongly would break the project's first rule.
-- **Coverage:** ODF-protected private and state lands only. It does not cover national forests, BLM land or parks,
-  which is where much of the fishing is. There is no single API for campfire restrictions across agencies.
-- **Value:** low to medium. **Effort:** small once decoded. Ask ODF (gis.info or the Regulated Use page owner).
+**Update 2026-10-18, thanks to Vertex.** My first probe found a layer of 72 "regulated use" polygons with only short area
+codes and no meaning. Vertex's ODF poller uses a different ODF service that carries the level:
+`gis.odf.oregon.gov/odfags/rest/services/Hosted/Fire_Danger_Level_View/FeatureServer/0` (the one behind ODF's own
+fire-restrictions map). **Verified live:** 63 protection zones, fields `regusearea` (the same codes, e.g. `SW-1`, `RR-3`,
+`KR`), `district`, `firedanger` (1 Low, 2 Moderate, 3 High, 4 Extreme) and `pendingchangedatetime`. Today: 30 Low,
+30 Moderate, 3 High. The codes in the two ODF layers match, so the earlier mystery is solved.
+
+- **Use:** point-in-polygon for each waterbody: "ODF fire danger here: Moderate (zone SW-1)", linking to ODF's page for what
+  the level means. Never restate which activities are restricted.
+- **Coverage:** ODF-protected lands only. National forests, BLM land and parks are not in it. There is no single feed for
+  campfire restrictions across agencies.
+- **Value:** medium. **Effort:** small (about 140 KB of simplified polygons; Vertex requests them with server-side
+  simplification, `maxAllowableOffset`). Terms: the layer's copyright field says "Oregon Department of Forestry"; no licence text.
 
 ## 5. OWRD gauges: probably skip
 
@@ -134,7 +141,25 @@ a Corps web page. **Effort:** medium (new adapter, certificate bundle, history c
   republish staff contact details.
 - **Value:** low. **Effort:** small.
 
-## 7. Tides and coast (Phase 12)
+## 7. River flood status and forecasts (NOAA NWPS), found in Vertex
+
+`https://api.water.noaa.gov/nwps/v1/gauges?bbox.xmin=..&bbox.ymin=..&bbox.xmax=..&bbox.ymax=..&srid=EPSG_4326`, keyless.
+**Verified:** 165 gauges in the Willamette area, each with observed stage and flow and an **official flood category**
+(`no_flooding`, `action`, `minor`, `moderate`, `major`, or `not_defined`) plus forecast crest. Its Willamette at Albany
+reading (4.52 kcfs) agrees with USGS (4,520 cfs). Cautions: 91 of the 165 have no defined flood stages, 9 are not current,
+flow arrives in `kcfs` and `-999` means "no value". **Use:** a "river status" line for linked gauges ("Willamette at
+Salem: action stage, forecast to crest Tuesday"), as a safety cue for blown-out water. It complements USGS (water
+temperature and more gauges) and does not replace it. Vertex's code for this is a good reference. Effort: small to medium
+(map NWPS ids `lid` to the seed gauges).
+
+## 8. Satellite fire hotspots (NASA FIRMS), found in Vertex
+
+VIIRS thermal detections show fires hours before incident reports. The API (`firms.modaps.eosdis.nasa.gov/api/area/csv/{key}/{source}/{bbox}/{days}`)
+needs a **free MAP_KEY** (signup at the FIRMS site), which only you can obtain, so I have not probed it. Vertex runs it
+behind an optional key (idle without one) and takes care not to log URLs, since the key is in the path. Same pattern here
+if you want it. Value: medium; effort small once a key exists.
+
+## 9. Tides and coast (Phase 12)
 
 NOAA CO-OPS has a documented, free JSON API (`api.tidesandcurrents.noaa.gov/api/prod/datagetter`). **Verified** with South Beach,
 Oregon (water level, 6-minute data). It requires an `application` name parameter, has request-length limits and a throttling policy, and
@@ -148,11 +173,13 @@ orders; TripCheck road conditions (needs a key). Listed so they are not forgotte
 
 ## Recommended order
 
-1. **USGS migration** (deadline; small).
-2. **Reservoir levels** (largest user benefit; first read the Corps' terms and ask Portland District about the service).
-3. **Wildfire perimeters** (clear API, clear safety value).
-4. Ask ODF what the regulated-use codes mean; decide then.
+1. ~~USGS migration~~ **done 2026-10-18**.
+2. **Reservoir levels** (largest user benefit; the Corps' terms still need reading, and Portland District could be asked about the service).
+3. **Fire together**: ODF fire danger by area (verified, decoded), NIFC active perimeters, and FIRMS hotspots if you get a key. One fire card on the sheet and a map layer.
+4. **River flood status** from NWPS.
 5. Leave OWRD and the district polygons unless a concrete need appears.
+
+Owner approved building from government sources on 2026-10-18 (non-commercial use). The reuse model is Vertex, the owner's own project (GPL-3.0, same license), for endpoints and parsing patterns; each source still gets its terms recorded in sources.md.
 
 Each new source also needs its terms read and recorded in [sources.md](sources.md), polite polling (identifying User-Agent,
 low rates, hash skip where it helps), a stale badge, saved fixtures, tests and a credit in Settings. The map and sheet

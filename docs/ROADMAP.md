@@ -205,13 +205,13 @@ its server.
 ## Phase 11: More sources and statewide coverage
 
 **Status:** Planned. APIs researched and probed on 2026-10-18: see [data-source-options.md](data-source-options.md) for
-endpoints, what was verified, terms, effort and the recommended order. Each source needs the owner's go-ahead, its
-terms read and recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit.
+endpoints, what was verified, terms, effort and the recommended order. The owner approved building from government sources (2026-10-18). Each source still needs its
+terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit.
 
 - [ ] **Reservoir levels** from the Army Corps (10 Willamette reservoirs, JSON, undocumented service with a certificate
       quirk): elevation, change, and comparison with the same date in past years. Highest user value
-- [ ] **Wildfire perimeters** from NIFC WFIGS (ArcGIS REST, 16 Oregon perimeters today): "active fire near here", never a closure claim
-- [ ] ODF fire regulated-use zones: blocked until ODF explains the area codes; ODF-protected lands only
+- [ ] **Fire card and map layer**: ODF fire danger by regulated-use area (63 zones, verified, codes decoded via Vertex), NIFC active perimeters ("active fire near here", never a closure claim), and NASA FIRMS hotspots if the owner gets a free MAP_KEY
+- [ ] **River flood status** from NOAA NWPS (165 gauges in the area, official flood categories and forecast crests; found in Vertex)
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
 - [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value
 - [ ] Statewide coverage (more zones: the schedule already supports a zone parameter; needs seed, pins and gauges per zone) and, if SQLite stops being enough, PostGIS

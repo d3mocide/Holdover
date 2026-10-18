@@ -224,3 +224,15 @@ new gauge backfills a week of discharge only. The legacy endpoint stays behind `
 - Not checked: USGS rate limits (their pages did not state them; usage is one small request per 30 minutes); behaviour
   when the legacy endpoint is finally switched off (that path is simply unused).
 
+### 2026-10-18 · this commit · Phase 11 · Findings from Vertex
+Read the owner's sibling project Vertex (GPL-3.0, `~/Projects/vertex`) for existing stream and fire code, and recorded
+the reusable findings in `docs/data-source-options.md` after verifying each endpoint live.
+- Verified: ODF **Fire Danger Level** service (63 zones, levels 1-4; its area codes match the regulated-use layer, so the
+  codes are decoded); **NOAA NWPS** (165 gauges in the Willamette area, official flood categories; agrees with USGS at
+  Albany); NIFC's year-to-date service with an Oregon and not-contained filter (14 active). NASA FIRMS needs a free key
+  (not probed).
+- Found: Vertex's own note says the USGS legacy feed was already returning 503s and timeouts for it, which supports the
+  migration. Its NIFC poller shows useful patterns: server-side geometry simplification, a recent-date filter, and treating
+  ArcGIS's "HTTP 200 with an error object" as a failure. Vertex is the owner's own work, so code can move between the
+  projects (same license); the plan is to reuse endpoints and patterns, adapted to Holdover's raw-first, pure-parser design.
+
