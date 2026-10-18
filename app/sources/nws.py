@@ -92,10 +92,11 @@ def age_hours(fetched_at: str) -> float:
 
 
 def forecast_points(session: Session) -> list[Waterbody]:
-    """Starred waterbodies, plus one stocked waterbody per ~0.25 degree cell so the planner has a nearby
-    forecast for every spot without one NWS call per waterbody."""
-    from app.models import StockingSnapshot, WaterbodyAlias
-    starred = list(session.scalars(select(Waterbody).where(Waterbody.starred == 1)))
+    """Every user's favorite waterbodies, plus one stocked waterbody per ~0.25 degree cell so the planner has a
+    nearby forecast for every spot without one NWS call per waterbody."""
+    from app.models import Favorite, StockingSnapshot, WaterbodyAlias
+    starred = list(session.scalars(select(Waterbody).where(
+        Waterbody.id.in_(select(Favorite.waterbody_id)) | (Waterbody.starred == 1)).order_by(Waterbody.id)))
     stocked_ids = {r for r in session.scalars(
         select(WaterbodyAlias.waterbody_id).join(StockingSnapshot, StockingSnapshot.alias_id == WaterbodyAlias.id)
         .where(WaterbodyAlias.confirmed == 1)) if r}

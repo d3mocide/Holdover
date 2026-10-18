@@ -7,18 +7,27 @@
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
   import Gauges from './lib/Gauges.svelte';
+  import Legend from './lib/Legend.svelte';
   import DayView from './lib/DayView.svelte';
   import Journal from './lib/Journal.svelte';
+  import Gear from './lib/Gear.svelte';
+  import GearForm from './lib/GearForm.svelte';
+  import SetupForm from './lib/SetupForm.svelte';
   import LogTrip from './lib/LogTrip.svelte';
   import Offline from './lib/Offline.svelte';
   import { liveQuery } from 'dexie';
   import { db, metaGet, metaSet } from './lib/db.js';
   import { startSync, syncState } from './lib/sync.svelte.js';
-  import { getToken } from './lib/api.js';
+  import { auth, loadAuth, prefs, homeForRequests, setHome } from './lib/auth.svelte.js';
 
   const stored = (k, d) => { try { return localStorage.getItem(k) || d; } catch { return d; } };
   let theme = $state(stored('holdover.theme', 'fir'));
   let view = $state('map');
+  // The side panel sizes to its content: roomy for lists with detail, compact for the map list.
+  const PANEL = { map: 'min(380px, 40vw)', plan: 'min(520px, 44vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
+  let panelW = $state(380);
+  let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
+  $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
   let data = $state(null);
   let report = $state(null);
   let error = $state('');
@@ -26,6 +35,8 @@
   let showStocking = $state(true);
   let showGauges = $state(true);
   let showAdvisories = $state(true);
+  let showFire = $state(true);
+  let fireData = $state(null);
   let showReports = $state(true);
   let dayFor = $state(null);
   let offset = $state(0);
@@ -33,14 +44,25 @@
   let spots = $state(null);
   let spotsError = $state('');
   let showJournal = $state(true);
+  let layersOpen = $state(false);
+  let legendOpen = $state(false);
   let wbList = $state([]);
+  let picking = $state(false);
+  // An invite link looks like /?invite=CODE. Read it once, then clean the address bar so the code is not bookmarked.
+  const inviteCode = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('invite') : null;
+  let invite = $state(inviteCode);
+  if (inviteCode) { view = 'settings'; try { history.replaceState(null, '', location.pathname); } catch { /* ignore */ } }
+  let gearEdit = $state(undefined); // undefined: closed, null: new item, object: editing
+  let gearBrowse = $state(false);
+  let setupEdit = $state(undefined);
+  let editTrip = $state(undefined); // undefined: closed, otherwise the trip row being edited
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
   let offlineFor = $state(undefined);
   let journalGeo = $state(null);
 
   $effect(() => {
     api.waterbodyList().then(async (l) => { wbList = l; await metaSet('wbList', l); }).catch(async () => { wbList = await metaGet('wbList', []); });
-    startSync();
+    loadAuth().then(startSync); // sync needs to know who is signed in
   });
   $effect(() => {
     const sub = liveQuery(async () => {
@@ -66,16 +88,17 @@
   $effect(() => {
     const o = offset, f = fishery;
     spotsError = '';
-    api.spots(isoDay(o), f).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
+    const home = homeForRequests(); // signed in: the server uses the account's home; signed out: this device's
+    api.spots(isoDay(o), f, home).then((v) => (spots = v)).catch((e) => (spotsError = e.message));
   });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
-  $effect(() => { load(); loadReport(); });
+  $effect(() => { load(); loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
-  const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gauges', 'Gauges', 'gauge']];
+  const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
   const select = (id) => { selectedId = id; dayFor = null; if (view !== 'map') view = 'map'; };
 </script>
 
-<div class="shell">
+<div class="shell" style:--panel-w={PANEL[view] ?? PANEL.map}>
   <nav class="rail" aria-label="Main">
     <span class="logo"><Logo /></span>
     {#each tabs as [k, label, icon]}
@@ -89,42 +112,57 @@
     </button>
   </nav>
 
-  {#if view === 'map' || view === 'plan'}
-    <div class="planner" class:full={view === 'plan'}>
-      <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!getToken()} onreview={() => (view = 'settings')} />
-    </div>
-    <main class="mapwrap" class:hide={view === 'plan'}>
-      <MapView {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} onselect={select} />
-      <div class="layers card" role="group" aria-label="Map layers">
-        <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showReports} /> Report ratings</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showJournal} /> My pins &amp; trips</label>
-        <label class="lyr"><input type="checkbox" bind:checked={showAdvisories} /> Advisories</label>
+  <main class="planner" bind:clientWidth={panelW} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
+    {#if view === 'map' || view === 'plan'}
+      <Planner {data} {report} {spots} {spotsError} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} />
+    {:else if view === 'settings'}
+      <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} />
+    {:else if view === 'journal'}
+      <Journal {wbList} onlog={() => (logFor = null)} onedit={(t) => (editTrip = t)} />
+    {:else if view === 'gear'}
+      <Gear {wbList} onitem={(g, browse = false) => { gearBrowse = browse; gearEdit = g; }} onsetup={(st) => (setupEdit = st)} />
+    {:else}
+      <Gauges />
+    {/if}
+  </main>
+  <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && view === 'map'} class:wide={!!dayFor && view === 'map'}>
+      <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
+      <div class="layers glass" role="group" aria-label="Map layers">
+        <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
+        {#if layersOpen}
+          <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showReports} /> Report ratings</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showJournal} /> My pins &amp; trips</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showAdvisories} /> Advisories</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showFire} /> Fire danger and fires</label>
+        {/if}
       </div>
-      <div class="legend card" aria-label="Stocking freshness legend">
-        <span><i class="dot this_week"></i> This week</span>
-        <span><i class="dot recent"></i> Last 2 weeks</span>
-        <span><i class="dot older"></i> Older</span>
-        <span><i class="dot upcoming"></i> Scheduled</span>
-        <span><i class="sym diamond"></i> Gauge (provisional)</span>
-        <span><i class="sym ring"></i> Algae advisory/precaution</span>
+      <div class="legend glass" aria-label="Map legend">
+        <button class="pill" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> Legend</button>
+        {#if legendOpen}<Legend {theme} />
+        {/if}
       </div>
-      <button class="offline" onclick={() => (offlineFor = selectedId)}>Prepare for offline</button>
-    </main>
+      {#if picking}
+        <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
+      {/if}
+      <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline"><Icon name="offline" size={18} /> <span class="olbl">Prepare for offline</span></button>
+  </div>
     {#if dayFor && view === 'map'}
       <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
     {:else if selectedId && view === 'map'}
       <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} onday={(id) => (dayFor = id)} onlog={(id) => (logFor = id)} /></div>
     {/if}
-  {:else if view === 'settings'}
-    <main class="page"><Settings {theme} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); api.spots(isoDay(offset), fishery).then((v) => (spots = v)).catch(() => {}); }} /></main>
-  {:else if view === 'journal'}
-    <main class="page"><Journal {wbList} onlog={() => (logFor = null)} /></main>
-  {:else}
-    <main class="page"><Gauges /></main>
-  {/if}
 
+  {#if gearEdit !== undefined}
+    <div class="overlay"><GearForm item={gearEdit} browse={gearBrowse} onclose={() => (gearEdit = undefined)} onsaved={() => (gearEdit = undefined)} /></div>
+  {/if}
+  {#if setupEdit !== undefined}
+    <div class="overlay"><SetupForm setup={setupEdit} onclose={() => (setupEdit = undefined)} onsaved={() => (setupEdit = undefined)} /></div>
+  {/if}
+  {#if editTrip !== undefined}
+    <div class="overlay"><LogTrip {wbList} trip={editTrip} onclose={() => (editTrip = undefined)} onsaved={() => (editTrip = undefined)} /></div>
+  {/if}
   {#if logFor !== undefined}
     <div class="overlay"><LogTrip {wbList} initialWb={logFor} onclose={() => (logFor = undefined)} onsaved={() => { logFor = undefined; view = 'journal'; }} /></div>
   {/if}
@@ -132,46 +170,74 @@
 </div>
 
 <style>
-  .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; }
-  .shell > :global(.page) { grid-column: 2 / -1; }
-  .rail { background: var(--bg); border-right: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
+  .shell { --sheet-w: min(340px, calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(520px, calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
+  .shell > :global(*) { grid-row: 1; }
+  .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .planner, .sheetwrap, .layers, .legend { background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .rail { grid-column: 1; z-index: 3; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; }
   .logo { margin-bottom: 12px; }
   .navbtn { flex-direction: column; border: 0; background: none; width: 56px; height: 56px; gap: 2px; border-radius: 12px; color: var(--text-quiet); padding: 0; }
-  .navbtn[aria-current='page'] { background: var(--surface); color: var(--fresh-1); }
+  .navbtn[aria-current='page'] { background: var(--glass-fill); color: var(--fresh-1); box-shadow: inset 0 0 0 1px var(--glass-line), 0 0 18px var(--glow-1); }
   .lbl { font-size: 10px; }
   .spacer { flex: 1; }
-  .planner { border-right: 1px solid var(--line); background: var(--bg); overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
-  .mapwrap { position: relative; min-width: 0; }
-  .sheetwrap { position: absolute; top: 0; right: 0; bottom: 0; width: 340px; background: var(--bg); border-left: 1px solid var(--line); z-index: 5; }
-  .page { overflow: auto; }
-  .layers { position: absolute; top: 12px; right: 56px; padding: 6px 12px; z-index: 2; background: var(--surface); }
+  .planner { grid-column: 2; z-index: 3; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+  /* grid-area: auto keeps absolutely positioned children relative to the shell's padding box, so the map is
+     full-bleed and every overlay offset is measured from the screen edge, not from the grid's inner padding. */
+  .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-area: auto !important; }
+  .sheetwrap { grid-area: auto !important; position: absolute; top: 16px; right: 16px; bottom: 16px; width: var(--sheet-w); border-radius: 20px; overflow: hidden; z-index: 5; }
+  .mapwrap { --sheet-inset: 0px; }
+  .mapwrap.sheet { --sheet-inset: calc(var(--sheet-w) + 16px); }
+  .mapwrap.wide { --sheet-inset: calc(var(--wide-w) + 16px); }
+  .mapwrap :global(.maplibregl-ctrl-top-right) { right: var(--sheet-inset); top: 16px; transition: right 0.25s ease; }
+  .mapwrap :global(.maplibregl-ctrl-top-right .maplibregl-ctrl) { margin: 0 16px 0 0; }
+  .layers { position: absolute; top: 16px; right: calc(76px + var(--sheet-inset)); padding: 6px; z-index: 2; border-radius: 14px; display: flex; flex-direction: column; transition: right 0.25s ease; }
+  .layers .lyr { padding: 0 14px; gap: 12px; }
+  .pill { border: 0; background: none; min-height: 44px; padding: 0 14px; font-size: 13px; gap: 10px; justify-content: flex-start; min-height: 44px; }
   .lyr { display: flex; align-items: center; gap: 8px; min-height: 36px; margin: 0; color: var(--text); font-size: 13px; }
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 14px; padding: 8px 12px; font-size: 12px; z-index: 2; flex-wrap: wrap; max-width: calc(100% - 24px); }
+  .legend { position: absolute; left: calc(112px + var(--panel-w, 380px)); transition: left 0.25s ease; bottom: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
+  .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .overlay { position: absolute; inset: 0; z-index: 15; background: var(--bg); }
+  .overlay { position: absolute; inset: 0; z-index: 15; background: var(--page-bg); overflow: hidden; }
   .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
+  .sym.diamond { background: var(--gauge); border-color: var(--bg); box-shadow: 0 0 0 1px var(--gauge); }
   .sym.diamond { transform: rotate(45deg); }
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
-  .sheetwrap.wide { width: min(520px, 60%); }
-  .offline { position: absolute; left: 12px; top: 12px; z-index: 2; }
+  .sheetwrap.wide { width: var(--wide-w); }
+  .pickbar { position: absolute; left: calc(112px + var(--panel-w, 380px)); top: 72px; z-index: 3; border-radius: 14px; padding: 4px 4px 4px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .offline { position: absolute; left: calc(112px + var(--panel-w, 380px)); transition: left 0.25s ease; top: 16px; z-index: 2; color: var(--text); gap: 10px; padding: 0 20px; }
 
+  @media (max-width: 1099px) {
+    .mapwrap :global(.maplibregl-ctrl-top-right) { display: none; }
+    .layers { right: calc(16px + var(--sheet-inset)); }
+  }
+  @media (min-width: 900px) and (max-width: 1099px) {
+    .olbl { display: none; } .offline { padding: 0; width: 44px; }
+  }
   @media (max-width: 899px) {
-    .shell { grid-template-columns: 1fr; grid-template-rows: 1fr 64px; }
-    .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-right: 0; border-top: 1px solid var(--line); padding: 0 4px; order: 9; gap: 0; }
+    .shell { --nav-h: calc(64px + env(safe-area-inset-bottom, 0px)); grid-template-columns: 1fr; grid-template-rows: 1fr var(--nav-h); gap: 0; padding: 0; }
+    .rail { grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; border-radius: 0; border-width: 1px 0 0; padding: 0 4px env(safe-area-inset-bottom, 0px); order: 9; gap: 0; }
     .logo, .spacer { display: none; }
     .navbtn { flex: 1; width: auto; height: 100%; }
     .shell > :global(*) { grid-column: 1; grid-row: 1; }
     .shell > .rail { grid-row: 2; }
-    .planner { z-index: 3; align-self: end; height: 42%; border: 1px solid var(--line); border-radius: 16px 16px 0 0; }
+    .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
     .planner.full { height: 100%; border-radius: 0; }
+    .planner.tall { height: 68%; }
+    .mapwrap.tall .legend { bottom: calc(68% + 16px); }
     .mapwrap.hide { display: none; }
-    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; height: 62%; z-index: 4; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; }
-    .layers { right: 12px; top: 64px; }
-    .offline { top: 64px; }
+    .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: var(--nav-h); height: calc(62% - var(--nav-h)); z-index: 6; border-radius: 20px 20px 0 0; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .planner { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .mapwrap.sheet, .mapwrap.wide { --sheet-inset: 0px; }
+    .mapwrap :global(.maplibregl-ctrl-top-right) { display: none; }
+    .layers { right: 16px; top: calc(16px + var(--safe-top)); }
+    .offline { top: calc(16px + var(--safe-top)); }
     .lyr.off { display: none; }
-    .legend { bottom: calc(42% + 12px); }
+    .legend { left: 16px; bottom: calc(42% + 16px); }
+    .offline { left: 16px; }
+    .pickbar { left: 16px; }
+    .mapwrap { inset: 0 0 var(--nav-h) 0; }
   }
 </style>

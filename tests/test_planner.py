@@ -14,7 +14,7 @@ from app.planner import FISHERIES, rank, template_text, wind_mph
 from app.seed import seed_waterbodies
 from app.sources import nws, odfw_report, usgs
 from app.sources.odfw_stocking import ingest_page
-from conftest import FIX
+from conftest import FIX, usgs_fetch
 
 TODAY = date(2026, 10, 17)
 
@@ -23,7 +23,7 @@ def load(session, with_weather=False):
     seed_waterbodies(session)
     ingest_page(session, "u", 200, (FIX / "odfw_stocking" / "wv_p0.html").read_bytes())
     ingest_page(session, "u2", 200, (FIX / "odfw_stocking" / "wv_p1.html").read_bytes())
-    usgs.run_job(session, lambda u: (200, (FIX / "usgs" / "iv_sample.json").read_bytes()))
+    usgs.run_job(session, usgs_fetch())
     odfw_report.ingest(session, odfw_report.URL, 200, (FIX / "odfw_report" / "index.html").read_bytes())
     if with_weather:
         wb = session.scalar(select(Waterbody).where(Waterbody.name == "Alton Baker Canal"))

@@ -12,24 +12,24 @@ export default defineConfig({
         name: 'Holdover',
         short_name: 'Holdover',
         description: 'Oregon fishing planner and journal',
-        theme_color: '#0F1A17',
-        background_color: '#0F1A17',
+        theme_color: '#0b1613',
+        background_color: '#0b1613',
         display: 'standalone',
         start_url: '/',
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        navigateFallbackDenylist: [/^\/api\//, /^\/healthz/, /^\/tiles\//],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,pbf}'],
+        navigateFallbackDenylist: [/^\/api\//, /^\/healthz/, /^\/tiles\//, /^\/fonts\//],
         runtimeCaching: [
           {
-            // /api/day is excluded on purpose: the app keeps its own IndexedDB copy with an explicit as-of time,
+            // /api/auth and /api/me are never cached: they say who is signed in. /api/day is excluded on purpose: the app keeps its own IndexedDB copy with an explicit as-of time,
             // so an offline fetch must fail rather than silently return old data labelled live.
-            urlPattern: ({ url }) => url.pathname.startsWith('/api/') && !/^\/api\/(admin|day|journal|sync)\//.test(url.pathname),
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/') && !/^\/api\/(admin|day|journal|sync|auth|me)\//.test(url.pathname),
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'api-reads' }
           }
@@ -38,6 +38,6 @@ export default defineConfig({
     })
   ],
   server: {
-    proxy: { '/api': 'http://localhost:8000', '/healthz': 'http://localhost:8000', '/tiles': 'http://localhost:8000' }
+    proxy: Object.fromEntries(['/api', '/healthz', '/tiles'].map((p) => [p, process.env.API_URL || 'http://localhost:8000']))
   }
 });

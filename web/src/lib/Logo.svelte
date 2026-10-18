@@ -1,5 +1,12 @@
-<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="var(--fresh-1)" stroke-width="2.4"
+<script>
+  import { mark } from './icons.js';
+</script>
+<svg width="34" height="34" viewBox="0 0 32 32" fill="none" stroke="var(--fresh-1)" stroke-width="1.75"
   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M3 8c2-2 4 2 8 0s6 2 8 0 3-1 6 0" /><path d="M3 14c2-2 4 2 8 0s6 2 8 0 3-1 6 0" />
-  <path d="M3 20c2-2 4 2 8 0s6 2 8 0 3-1 6 0" />
+  {@html mark}
 </svg>
+
+<style>
+  svg :global(.a) { fill: var(--fresh-1); opacity: 0.3; stroke: none; }
+  svg { filter: drop-shadow(0 0 10px var(--glow-1)); }
+</style>

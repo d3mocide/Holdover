@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import scheduler
-from app.api import admin, conditions, journal, planner, reports, stocking
+from app.api import accounts, admin, conditions, fire, journal, planner, reports, stocking
 from app.config import get_settings
 
 log = logging.getLogger("holdover")
@@ -17,8 +17,6 @@ log = logging.getLogger("holdover")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     s = get_settings()
-    if not s.holdover_token:
-        log.warning("HOLDOVER_TOKEN is not set: admin endpoints are locked")
     if s.run_scheduler:
         scheduler.start()
     yield
@@ -31,7 +29,9 @@ app.include_router(stocking.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
 app.include_router(conditions.router, prefix="/api")
 app.include_router(journal.router, prefix="/api")
+app.include_router(fire.router, prefix="/api")
 app.include_router(planner.router, prefix="/api")
+app.include_router(accounts.router, prefix="/api")
 app.include_router(admin.router, prefix="/api/admin")
 
 
@@ -72,9 +72,10 @@ if (web / "index.html").exists():
 
     @app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
     def spa(path: str):
-        if path.startswith(("api/", "tiles/")):
-            return JSONResponse({"detail": "Not Found"}, status_code=404)
         f = (web / path).resolve()
         if path and f.is_file() and web in f.parents:
             return FileResponse(f)
+        # Asset-like prefixes must 404, not fall through to the SPA shell (a missing glyph range is not HTML).
+        if path.startswith(("api/", "tiles/", "fonts/")):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
         return FileResponse(web / "index.html")

@@ -1,15 +1,23 @@
 services:
   holdover:
+    # Deploy: `docker compose pull && docker compose up -d` (the published image).
+    # Build locally instead: `docker compose up -d --build`.
+    image: ghcr.io/d3mocide/holdover:${HOLDOVER_TAG:-main}
     build: .
     restart: unless-stopped
-    ports: ["8000:8000"]   # put your TLS reverse proxy in front; service workers need HTTPS
-    volumes: ["./data:/data"]
+    ports: ["${HOLDOVER_PORT:-8000}:8000"]   # put your TLS reverse proxy in front; service workers need HTTPS
+    volumes: ["holdover-data:/data"]
     environment:
-      HOLDOVER_TOKEN: ${HOLDOVER_TOKEN:?set HOLDOVER_TOKEN}
       USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
       TZ: America/Los_Angeles
+      USGS_API: ${USGS_API:-ogc}   # ogc (default) or legacy; legacy is retired by USGS in early 2027
+      TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-0}   # set to 1 behind one reverse proxy so the login throttle sees real client addresses
+      COOKIE_SECURE: ${COOKIE_SECURE:-}   # empty: Secure when the request is HTTPS (directly or via X-Forwarded-Proto)
       HOME_LAT: ${HOME_LAT:-}
       HOME_LON: ${HOME_LON:-}
       LLM_BASE_URL: ${LLM_BASE_URL:-}
       LLM_MODEL: ${LLM_MODEL:-}
       LLM_API_KEY: ${LLM_API_KEY:-}
+
+volumes:
+  holdover-data:

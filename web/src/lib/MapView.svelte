@@ -6,12 +6,13 @@
   import { onMount } from 'svelte';
   import * as maplibregl from 'maplibre-gl';
   import { registerTileProtocol, basemapAvailable } from './tiles.js';
+  import { markers } from './icons.js';
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true } = $props();
+  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -21,22 +22,66 @@
 
   function palette() {
     return {
-      land: css('--land'), water: css('--water'), river: css('--river'), line: css('--line'),
+      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), label: css('--text-quiet'), labelHi: css('--text'), shore: css('--shore'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
       f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), accent: css('--accent'), bg: css('--bg')
     };
   }
 
+  const NAME = ['coalesce', ['get', 'name:en'], ['get', 'name']];
+  // [id, kind_detail, minzoom, [zoom, size, ...], emphasised]. One layer per rank: filters cannot test zoom.
+  const PLACE_KINDS = [['city', 'city', 5, [5, 12, 10, 17], true], ['town', 'town', 7, [7, 10.5, 12, 14], false],
+    ['village', 'village', 10, [10, 10, 14, 12.5], false], ['hamlet', 'hamlet', 12, [12, 10, 15, 12], false]];
+
   function baseStyle(withTiles) {
     const c = palette();
-    const style = { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': c.land } }] };
+    // With a basemap the ground is the sea and the land is drawn on top: anything outside the data (the
+    // Pacific beyond the extract) then reads as open ocean instead of a hard seam under the glass panels.
+    const style = { version: 8, glyphs: `${location.origin}/fonts/{fontstack}/{range}.pbf`, sources: {},
+      layers: [{ id: 'bg', type: 'background', paint: { 'background-color': withTiles ? c.water : c.land } }] };
     if (withTiles) {
-      style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 };
+      // ODbL requires visible credit for OpenStreetMap data; the Protomaps builds ask for theirs too.
+      style.sources.oregon = { type: 'vector', tiles: ['holdover://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors · <a href="https://protomaps.com" target="_blank" rel="noopener">Protomaps</a>' };
       style.layers.push(
-        { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', paint: { 'fill-color': c.water } },
-        { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', '$type', 'LineString'],
-          paint: { 'line-color': c.river, 'line-width': 1 } },
+        { id: 'earth', type: 'fill', source: 'oregon', 'source-layer': 'earth', paint: { 'fill-color': c.land } },
+        { id: 'landuse', type: 'fill', source: 'oregon', 'source-layer': 'landuse',
+          filter: ['in', ['get', 'kind'], ['literal', ['park', 'forest', 'wood', 'national_park', 'nature_reserve', 'protected_area']]],
+          paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
+        { id: 'natural', type: 'fill', source: 'oregon', 'source-layer': 'natural',
+          filter: ['in', ['get', 'kind'], ['literal', ['forest', 'wood']]], paint: { 'fill-color': c.forest, 'fill-opacity': 0.7 } },
+        // River polygons in OSM are often open-ended or hand-split, so they read as glitches when drawn hard.
+        // Lakes/reservoirs are closed shapes: fill + soft edge. Rivers lean on their centerlines and only
+        // gain a faint polygon fill once zoomed in far enough for the geometry to be trustworthy.
+        { id: 'water', type: 'fill', source: 'oregon', 'source-layer': 'water', filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['!', ['in', ['get', 'kind_detail'], ['literal', ['river', 'canal', 'stream']]]]],
+          paint: { 'fill-color': c.water } },
+        { id: 'water-river', type: 'fill', source: 'oregon', 'source-layer': 'water', minzoom: 10, filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['in', ['get', 'kind_detail'], ['literal', ['river', 'canal', 'stream']]]],
+          paint: { 'fill-color': c.water, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0, 12.5, 0.75] } },
+        { id: 'water-edge', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['!', ['in', ['get', 'kind_detail'], ['literal', ['river', 'canal', 'stream']]]]],
+          layout: { 'line-join': 'round' },
+          paint: { 'line-color': c.shore, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.6, 12, 1.4], 'line-opacity': 0.5, 'line-blur': 0.6 } },
+        { id: 'waterway', type: 'line', source: 'oregon', 'source-layer': 'water', filter: ['==', ['geometry-type'], 'LineString'],
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: { 'line-color': c.river, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.7, 10, 1.6, 13, 3, 16, 5], 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.45, 10, 0.8] } },
+        { id: 'roads-minor', type: 'line', source: 'oregon', 'source-layer': 'roads', minzoom: 10,
+          filter: ['!', ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]]],
+          paint: { 'line-color': c.minor, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 14, 1.2] } },
         { id: 'roads', type: 'line', source: 'oregon', 'source-layer': 'roads',
-          paint: { 'line-color': c.line, 'line-width': 0.8 } }
+          filter: ['in', ['get', 'kind'], ['literal', ['highway', 'major_road']]],
+          paint: { 'line-color': c.line, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.5, 10, 1, 14, 2.2] } },
+        // Labels: Noto Sans glyphs are bundled under /fonts (and precached), so these work offline.
+        { id: 'label-water-line', type: 'symbol', source: 'oregon', 'source-layer': 'water', minzoom: 9,
+          filter: ['all', ['==', ['geometry-type'], 'LineString'], ['has', 'name']],
+          layout: { 'symbol-placement': 'line', 'text-field': NAME, 'text-font': ['Noto Sans Italic'], 'text-size': ['interpolate', ['linear'], ['zoom'], 9, 10, 14, 13], 'text-letter-spacing': 0.06 },
+          paint: { 'text-color': c.river, 'text-halo-color': c.bg, 'text-halo-width': 1.4 } },
+        { id: 'label-water', type: 'symbol', source: 'oregon', 'source-layer': 'water', minzoom: 8,
+          filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['has', 'name']],
+          layout: { 'text-field': NAME, 'text-font': ['Noto Sans Italic'], 'text-size': ['interpolate', ['linear'], ['zoom'], 8, 10, 13, 13], 'text-max-width': 7 },
+          paint: { 'text-color': c.river, 'text-halo-color': c.bg, 'text-halo-width': 1.4 } },
+        ...PLACE_KINDS.map(([id, detail, minzoom, sizes, hi]) => ({ id: `label-${id}`, type: 'symbol', source: 'oregon', 'source-layer': 'places', minzoom,
+          filter: ['all', ['==', ['get', 'kind'], 'locality'], ['==', ['get', 'kind_detail'], detail]],
+          layout: { 'text-field': NAME, 'text-font': ['Noto Sans Medium'], 'text-size': ['interpolate', ['linear'], ['zoom'], ...sizes], 'text-max-width': 8, 'text-padding': 8, 'symbol-sort-key': ['get', 'sort_key'] },
+          paint: { 'text-color': hi ? c.labelHi : c.label, 'text-opacity': hi ? 0.92 : 0.8, 'text-halo-color': c.bg, 'text-halo-width': 1.6, 'text-halo-blur': 0.5 } }))
+
       );
     }
     return style;
@@ -46,56 +91,95 @@
     const c = palette();
     return {
       color: ['match', ['get', 'freshness'], 'this_week', c.f1, 'recent', c.f2, 'older', c.f3, 'upcoming', c.bg, c.f3],
-      stroke: ['match', ['get', 'freshness'], 'upcoming', c.f1, c.bg]
+      stroke: ['match', ['get', 'freshness'], 'upcoming', c.f1, c.bg],
+      halo: ['match', ['get', 'freshness'], 'this_week', c.f1, 'recent', c.f2, 'older', c.f3, c.f1]
     };
   }
 
-  function icon(draw) {
-    const cv = document.createElement('canvas'); cv.width = cv.height = 32;
-    const g = cv.getContext('2d'); draw(g);
-    return g.getImageData(0, 0, 32, 32);
+  // Marker art lives in icons.js as SVG; rasterise at 2x so it stays sharp on phones.
+  function svgImage(inner, size = 40) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const cv = document.createElement('canvas'); cv.width = cv.height = size * 2;
+        const g = cv.getContext('2d'); g.drawImage(img, 0, 0, size * 2, size * 2);
+        resolve(g.getImageData(0, 0, size * 2, size * 2));
+      };
+      img.onerror = reject;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${size * 2}" height="${size * 2}" viewBox="0 0 40 40">${inner}</svg>`);
+    });
   }
-  function addIcons() {
+  async function addIcons() {
     const c = palette();
-    const stroke = css('--text');
-    for (const [name, img] of Object.entries({
-      'gauge-icon': icon((g) => { g.fillStyle = c.bg; g.strokeStyle = stroke; g.lineWidth = 3; g.beginPath();
-        g.moveTo(16, 3); g.lineTo(29, 16); g.lineTo(16, 29); g.lineTo(3, 16); g.closePath(); g.fill(); g.stroke(); }),
-      'report-icon': icon((g) => { g.fillStyle = css('--text-quiet'); g.fillRect(6, 6, 20, 20); })
-    })) { if (map.hasImage(name)) map.removeImage(name); map.addImage(name, img); }
+    const base = { ring: 'rgba(255,255,255,0.18)', bg: c.bg, accent: c.accent };
+    const defs = {
+      'gauge-icon': markers.gauge({ ...base, main: c.gauge }),
+      'advisory-icon': markers.advisory({ ...base, main: c.accent }),
+      'journal-icon': markers.journal({ ...base, main: css('--text') }),
+      'home-icon': markers.home({ ...base, main: c.accent }),
+      ...Object.fromEntries([['excellent', c.f1, 4], ['good', c.f2, 3], ['fair', c.warn, 2], ['slow', c.f3, 1], ['unknown', c.f3, 0]]
+        .map(([k, col, n]) => [`report-${k}`, markers.report({ ...base, main: col }, n)]))
+    };
+    const imgs = await Promise.all(Object.entries(defs).map(async ([n, inner]) => [n, await svgImage(inner)]));
+    for (const [name, img] of imgs) {
+      if (map.hasImage(name)) map.removeImage(name);
+      map.addImage(name, img, { pixelRatio: 2 });
+    }
   }
 
   const isL = (l) => ['==', ['get', 'layer'], l];
   const selFilter = (id) => ['all', isL('stocking'), ['==', ['get', 'id'], id]];
 
-  function addLayers() {
-    addIcons();
+  async function addLayers() {
+    await addIcons();
     const p = freshnessPaint();
     const c = palette();
     map.addSource('stocking', { type: 'geojson', data: data ?? { type: 'FeatureCollection', features: [] } });
     map.addSource('journal', { type: 'geojson', data: journal ?? { type: 'FeatureCollection', features: [] } });
-    map.addLayer({ id: 'journal-pts', type: 'circle', source: 'journal', paint: {
-      'circle-radius': 5, 'circle-color': css('--text'), 'circle-stroke-color': c.bg, 'circle-stroke-width': 2, 'circle-opacity': 0.9 } });
-    map.addLayer({ id: 'advisory-ring', type: 'circle', source: 'stocking', filter: isL('advisory'), paint: {
-      'circle-radius': 15, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
+    map.addSource('home', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    const none = { type: 'FeatureCollection', features: [] };
+    map.addSource('fire-zones', { type: 'geojson', data: fire?.zones ?? none });
+    map.addSource('fire-perims', { type: 'geojson', data: fire?.fires ?? none });
+    // Danger zones: Low is only an outline, so the tint appears when it matters (Moderate and up, stronger for High and Extreme).
+    map.addLayer({ id: 'fire-zone-fill', type: 'fill', source: 'fire-zones', paint: { 'fill-color': c.warn, 'fill-opacity': ['match', ['get', 'level'], 2, 0.07, 3, 0.2, 4, 0.34, 0] } });
+    map.addLayer({ id: 'fire-zone-line', type: 'line', source: 'fire-zones', paint: { 'line-color': c.warn, 'line-width': ['match', ['get', 'level'], 3, 1.4, 4, 1.8, 0.8], 'line-opacity': ['match', ['get', 'level'], 1, 0.22, 0.55] } });
+    map.addLayer({ id: 'fire-perim-fill', type: 'fill', source: 'fire-perims', paint: { 'fill-color': c.accent, 'fill-opacity': 0.34 } });
+    map.addLayer({ id: 'fire-perim-line', type: 'line', source: 'fire-perims', paint: { 'line-color': c.accent, 'line-width': 2, 'line-dasharray': [2, 1.5] } });
+    map.addLayer({ id: 'fire-perim-label', type: 'symbol', source: 'fire-perims', minzoom: 8.5, layout: { 'text-field': ['concat', ['get', 'name'], ' fire'], 'text-font': ['Noto Sans Medium'], 'text-size': 12 },
+      paint: { 'text-color': c.accent, 'text-halo-color': c.bg, 'text-halo-width': 1.6 } });
+    map.addLayer({ id: 'journal-pts', type: 'symbol', source: 'journal', layout: {
+      'icon-image': 'journal-icon', 'icon-size': 0.6, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'home-pts', type: 'symbol', source: 'home', layout: {
+      'icon-image': 'home-icon', 'icon-size': 0.62, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'advisory-ring', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
+      'icon-image': 'advisory-icon', 'icon-size': 0.9, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
-      'icon-image': 'report-icon', 'icon-size': 0.5, 'icon-offset': [16, -16], 'icon-allow-overlap': true }, paint: {
-      'icon-opacity': ['match', ['get', 'rating'], 'excellent', 1, 'good', 0.8, 'fair', 0.55, 'slow', 0.35, 0.3] } });
+      'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.52, 'icon-offset': [20, -20], 'icon-allow-overlap': true } });
+    const fishN = ['coalesce', ['get', 'last_total'], ['get', 'next_total'], 0];
+    const rad = ['interpolate', ['linear'], ['sqrt', fishN], 0, 6, 30, 8, 60, 11, 100, 14];
+    map.addLayer({ id: 'stocking-halo', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
+      'circle-radius': ['+', rad, 7], 'circle-color': p.halo, 'circle-opacity': ['match', ['get', 'freshness'], 'upcoming', 0, 'older', 0.1, 0.24], 'circle-blur': 0.9 } });
     map.addLayer({ id: 'stocking-pts', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
-      'circle-radius': 8, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2 } });
+      'circle-radius': rad, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2.5 } });
     map.addLayer({ id: 'gauge-pts', type: 'symbol', source: 'stocking', filter: isL('gauge'), layout: {
-      'icon-image': 'gauge-icon', 'icon-size': 0.75, 'icon-allow-overlap': true } });
+      'icon-image': 'gauge-icon', 'icon-size': 0.72, 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'stocking-sel-glow', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
+      'circle-radius': 26, 'circle-color': c.accent, 'circle-opacity': 0.22, 'circle-blur': 0.8 } });
     map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
-      'circle-radius': 12, 'circle-color': p.color, 'circle-stroke-color': c.accent, 'circle-stroke-width': 3 } });
+      'circle-radius': ['+', rad, 5], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
     for (const l of ['stocking-pts', 'advisory-ring', 'report-badge']) {
-      map.on('click', l, (e) => onselect?.(e.features[0].properties.id));
+      map.on('click', l, (e) => { if (!pickMode) onselect?.(e.features[0].properties.id); });
     }
+    map.on('click', (e) => { if (pickMode) onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); });
     map.on('click', 'journal-pts', (e) => {
+      if (pickMode) return;
       const p = e.features[0].properties;
       const el = document.createElement('div'); el.textContent = p.label; 
       new maplibregl.Popup({ offset: 8 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
     });
     map.on('click', 'gauge-pts', (e) => {
+      if (pickMode) return;
       const p = e.features[0].properties;
       const el = document.createElement('div');
       const t = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; el.appendChild(d); };
@@ -120,14 +204,16 @@
       hasBasemap = withTiles;
       map = new maplibregl.Map({
         container: el, style: baseStyle(withTiles), center: [-122.9, 44.6], zoom: 7.4,
-        attributionControl: { compact: true }, maxBounds: [[-125.5, 41.5], [-116, 47]]
+        attributionControl: { compact: true }, padding: { left: inset }, maxBounds: [[-128.5, 41.8], [-116.3, 46.5]]
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-      map.on('load', () => { addLayers(); ready = true; });
+      map.on('load', async () => { await addLayers(); ready = true; });
     })();
     return () => { dead = true; map?.remove(); };
   });
 
+  $effect(() => { if (ready && fire) { map.getSource('fire-zones').setData(fire.zones); map.getSource('fire-perims').setData(fire.fires); } });
+  $effect(() => { if (ready) for (const id of ['fire-zone-fill', 'fire-zone-line', 'fire-perim-fill', 'fire-perim-line', 'fire-perim-label']) map.setLayoutProperty(id, 'visibility', showFire ? 'visible' : 'none'); });
   $effect(() => { if (ready && journal) map.getSource('journal').setData(journal); });
   $effect(() => { if (ready) map.setLayoutProperty('journal-pts', 'visibility', showJournal ? 'visible' : 'none'); });
   let fitted = false;
@@ -146,13 +232,22 @@
     const vis = (on) => (on ? 'visible' : 'none');
     map.setLayoutProperty('stocking-pts', 'visibility', vis(showStocking));
     map.setLayoutProperty('stocking-sel', 'visibility', vis(showStocking));
+    map.setLayoutProperty('stocking-halo', 'visibility', vis(showStocking));
+    map.setLayoutProperty('stocking-sel-glow', 'visibility', vis(showStocking));
     map.setLayoutProperty('gauge-pts', 'visibility', vis(showGauges));
     map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
     map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
   });
   $effect(() => {
     if (!ready) return;
+    map.getSource('home')?.setData({ type: 'FeatureCollection', features: home ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: [home.lon, home.lat] }, properties: {} }] : [] });
+  });
+  $effect(() => { if (ready) map.getCanvas().style.cursor = pickMode ? 'crosshair' : ''; });
+  $effect(() => { const l = inset; if (ready) map.setPadding({ left: l, top: 0, right: 0, bottom: 0 }); });
+  $effect(() => {
+    if (!ready) return;
     map.setFilter('stocking-sel', selFilter(selectedId ?? -1));
+    map.setFilter('stocking-sel-glow', selFilter(selectedId ?? -1));
     const f = data?.features.find((x) => x.properties.layer === 'stocking' && x.properties.id === selectedId);
     if (f) map.easeTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), duration: 400 });
   });
@@ -161,19 +256,28 @@
     if (!ready) return;
     queueMicrotask(() => {
       const c = palette(); const p = freshnessPaint();
-      map.setPaintProperty('bg', 'background-color', c.land);
+      map.setPaintProperty('bg', 'background-color', hasBasemap ? c.water : c.land);
       if (hasBasemap) {
+        map.setPaintProperty('earth', 'fill-color', c.land);
+        for (const l of ['label-water-line', 'label-water']) { map.setPaintProperty(l, 'text-color', c.river); map.setPaintProperty(l, 'text-halo-color', c.bg); }
+        for (const [id,,,, hi] of PLACE_KINDS) { map.setPaintProperty(`label-${id}`, 'text-color', hi ? c.labelHi : c.label); map.setPaintProperty(`label-${id}`, 'text-halo-color', c.bg); }
+        map.setPaintProperty('landuse', 'fill-color', c.forest);
+        map.setPaintProperty('natural', 'fill-color', c.forest);
         map.setPaintProperty('water', 'fill-color', c.water);
+        map.setPaintProperty('water-river', 'fill-color', c.water);
         map.setPaintProperty('waterway', 'line-color', c.river);
+        map.setPaintProperty('water-edge', 'line-color', c.shore);
         map.setPaintProperty('roads', 'line-color', c.line);
+        map.setPaintProperty('roads-minor', 'line-color', c.minor);
       }
+      for (const id of ['fire-zone-fill', 'fire-zone-line']) map.setPaintProperty(id, id.endsWith('fill') ? 'fill-color' : 'line-color', c.warn);
+      map.setPaintProperty('fire-perim-fill', 'fill-color', c.accent); map.setPaintProperty('fire-perim-line', 'line-color', c.accent);
+      map.setPaintProperty('fire-perim-label', 'text-color', c.accent); map.setPaintProperty('fire-perim-label', 'text-halo-color', c.bg);
       map.setPaintProperty('stocking-pts', 'circle-color', p.color);
       map.setPaintProperty('stocking-pts', 'circle-stroke-color', p.stroke);
-      map.setPaintProperty('stocking-sel', 'circle-color', p.color);
+      map.setPaintProperty('stocking-halo', 'circle-color', p.halo);
       map.setPaintProperty('stocking-sel', 'circle-stroke-color', c.accent);
-      map.setPaintProperty('advisory-ring', 'circle-stroke-color', c.accent);
-      map.setPaintProperty('journal-pts', 'circle-color', css('--text'));
-      map.setPaintProperty('journal-pts', 'circle-stroke-color', c.bg);
+      map.setPaintProperty('stocking-sel-glow', 'circle-color', c.accent);
       addIcons();
     });
   });

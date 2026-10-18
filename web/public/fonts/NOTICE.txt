@@ -1,0 +1,5 @@
+Map label glyphs (SDF, PBF format) for MapLibre.
+Source: https://github.com/protomaps/basemaps-assets (fonts/)
+Typeface: Noto Sans by The Noto Project Authors, licensed under the SIL Open Font License 1.1
+(https://openfontlicense.org). Only Latin ranges 0-255 and 256-511 are bundled. Other ranges are
+not present: the server returns 404 for them and labels with such characters simply omit them.

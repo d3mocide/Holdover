@@ -1,15 +1,21 @@
 # Moving to your laptop: first-run checklist
 
+> Partly superseded: the open items below are tracked in [ROADMAP.md](ROADMAP.md) (Phase 9) and what was done in
+> [BUILD_LOG.md](BUILD_LOG.md). Kept for the per-item commands.
+
+**Update 2026-10-17 (first laptop run):** the Dockerfile builds and runs; myodfw.com returns 200 to Python from a home network (item 1 below is cleared, but re-check from the server); 75 tests and the offline e2e pass; the Oregon basemap is installed (`docs/basemap.md`). Still open: items 2 to 5, HTTPS/phone testing (waiting on the server move), and the data review.
+
 Everything below was built and tested in a cloud sandbox with fixtures and a few live reads. These are the
 things that could **not** be proven there. Work down the list; each has the command that checks it.
 
 ## 0. Get it running
 
-    git clone https://github.com/d3mocide/Holdover && cd Holdover && git checkout claude/phase-1-foundation
-    cp .env.example .env            # set HOLDOVER_TOKEN, USER_AGENT (with a contact address), HOME_LAT, HOME_LON
-    docker compose up --build       # the Dockerfile was NOT built in the sandbox (no Docker daemon)
+    git clone https://github.com/d3mocide/Holdover && cd Holdover
+    cp .env.example .env            # set USER_AGENT (with a contact address); HOME_LAT/HOME_LON are only the server default now
+    docker compose exec holdover python -m app.cli create-user YOURNAME   # first user is the admin (docs/accounts.md)
+    docker compose up --build       # built and run on the laptop 2026-10-17; host port is HOLDOVER_PORT (default 8000)
 
-Or without Docker: `pip install -e '.[dev]'`, `pytest` (74 tests), `cd web && npm ci && npm run build`, then
+Or without Docker: `pip install -e '.[dev]'`, `pytest` (75 tests), `cd web && npm ci && npm run build`, then
 `python -m app.cli migrate && python -m app.cli seed && uvicorn app.main:app`.
 
 ## 1. Must check from your own network
@@ -22,11 +28,12 @@ Or without Docker: `pip install -e '.[dev]'`, `pytest` (74 tests), `cd web && np
 
 ## 2. Data that is a best guess: review it
 
-- **Waterbody coordinates** (`app/seed.py`): approximate and from memory. 15 of 58 have none and are not pinned.
-  Check every pin against a map. Gauge coordinates, by contrast, were verified against live USGS.
-- **Gauge-to-waterbody links** (`GAUGE_LINKS`) and **fishery hints** (`FISHERY_HINTS`): my judgement. Steelhead
+- **Waterbody coordinates** (`app/seed.py`): cross-checked 2026-10-18 against OSM names in the basemap. 51 of 58 are pinned
+  (35 verified or snapped), 7 still have no pin. Per-row status and how to fix any pin: `docs/waterbody-pins.md`.
+  Gauge coordinates, by contrast, were verified against live USGS.
+- **Gauge-to-waterbody links** (`GAUGE_LINKS`; Leaburg, Cottage Grove and Estacada tailwater gauges added 2026-10-18) and **fishery hints** (`FISHERY_HINTS`): my judgement. Steelhead
   and warmwater lists are short until you accept report items.
-- **Starred waterbodies**: you didn't give me yours. `POST /api/admin/waterbodies/{id}/star`. NWS also
+- **Favorites**: per account now (star on a waterbody). They get their own NWS forecast, which also
   auto-refreshes one stocked waterbody per ~0.25 degree cell.
 - **Scoring weights and curves** (`app/scoring.py`, `.env` `W_*`): starting points, not validated. Use the
   "Why this score" breakdown to tune them against your own experience.
