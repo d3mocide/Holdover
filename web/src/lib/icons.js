@@ -9,7 +9,7 @@ export const icons = {
   map: '<path d="M9 4.5 3.5 6.5v13L9 17.5l6 2 5.5-2v-13L15 6.5z"/><path d="M9 4.5v13M15 6.5v13"/><g class="a"><path d="M9 4.5v13l6 2v-13z"/></g>',
   plan: '<path d="M4.5 6.5h15v13h-15zM4.5 10.5h15M8.5 4v3.5M15.5 4v3.5M9 15.2l2.1 2.1 4-4.3"/><g class="a"><path d="M4.5 6.5h15v4h-15z"/></g>',
   journal: '<path d="M7 3.5h10.5a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H7z"/><path d="M7 3.5v17M10.5 8.5h5M10.5 12h5"/><g class="a"><path d="M14.5 3.5v6l1.75-1.4 1.75 1.4v-6z"/></g>',
-  gauge: '<path d="M12 3 21 12 12 21 3 12z"/><path d="M7 12c1.7-2.1 3.3-2.1 5 0s3.3 2.1 5 0"/><g class="a"><path d="M12 3 21 12 12 21 3 12z"/></g>',
+  gauge: '<path d="M12 3 21 12 12 21 3 12z"/><path d="M12 8c1.9 2.5 3 3.9 3 5.4a3 3 0 0 1-6 0C9 11.9 10.1 10.5 12 8z"/><g class="a"><path d="M12 8c1.9 2.5 3 3.9 3 5.4a3 3 0 0 1-6 0C9 11.9 10.1 10.5 12 8z"/></g>',
   settings: '<path d="M4 8h8.5M17.5 8H20M4 16h2.5M11.5 16H20"/><circle cx="15" cy="8" r="2.5"/><circle cx="9" cy="16" r="2.5"/><g class="a"><circle cx="15" cy="8" r="2.5"/><circle cx="9" cy="16" r="2.5"/></g>',
   layers: '<path d="M12 3.5 3.5 8.2 12 13l8.5-4.8z"/><path d="M3.5 12.2 12 17l8.5-4.8M3.5 16.2 12 21l8.5-4.8"/><g class="a"><path d="M12 3.5 3.5 8.2 12 13l8.5-4.8z"/></g>',
   legend: '<circle cx="6.5" cy="7" r="2"/><circle cx="6.5" cy="12" r="2"/><circle cx="6.5" cy="17" r="2"/><path d="M12 7h8M12 12h8M12 17h8"/>',
@@ -43,7 +43,7 @@ export const markers = {
   stocking: (c) => `<circle cx="20" cy="20" r="14" fill="${c.main}" opacity=".22"/><circle cx="20" cy="20" r="9" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/>`,
   stocking_scheduled: (c) => `<circle cx="20" cy="20" r="9" fill="none" stroke="${c.main}" stroke-width="2.5"/><circle cx="20" cy="20" r="2.2" fill="${c.main}"/>`,
   selected: (c) => `<circle cx="20" cy="20" r="17" fill="${c.accent}" opacity=".2"/><circle cx="20" cy="20" r="13" fill="none" stroke="${c.accent}" stroke-width="2.5"/><circle cx="20" cy="20" r="8" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/>`,
-  gauge: (c) => `<path d="M20 3 37 20 20 37 3 20z" fill="${c.main}" stroke="${c.bg}" stroke-width="3" stroke-linejoin="round"/><path d="M9.5 20c2.1-3.2 4.2-3.2 6.3 0s4.2 3.2 6.3 0 3.1-2.4 4.4-1.2" fill="none" stroke="${c.bg}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`,
+  gauge: (c) => `<path d="M20 3 37 20 20 37 3 20z" fill="${c.main}" stroke="${c.bg}" stroke-width="3" stroke-linejoin="round"/><path d="M20 10.5c4.2 5.4 6.8 8.4 6.8 11.9a6.8 6.8 0 0 1-13.6 0c0-3.5 2.6-6.5 6.8-11.9z" fill="${c.bg}"/>`,
   advisory: (c) => `<circle cx="20" cy="20" r="14" fill="${c.accent}" opacity=".15"/><circle cx="20" cy="20" r="12" fill="none" stroke="${c.accent}" stroke-width="3"/><path d="M20 13.5v8" stroke="${c.accent}" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="26.2" r="1.8" fill="${c.accent}"/>`,
   report: (c, pips) => `<rect x="4" y="4" width="32" height="32" rx="10" fill="${c.bg}" stroke="${c.main}" stroke-width="2"/><g transform="translate(8.5 6.5) scale(.96)" fill="none" stroke="${c.main}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${FISH}"/></g>` +
     [0, 1, 2, 3].map((i) => `<circle cx="${12.5 + i * 5}" cy="29.5" r="1.7" fill="${i < pips ? c.main : c.ring}"/>`).join(''),

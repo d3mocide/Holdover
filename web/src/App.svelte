@@ -135,7 +135,7 @@
 </div>
 
 <style>
-  .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; gap: 12px; padding: 12px; }
+  .shell { position: relative; height: 100%; display: grid; grid-template-columns: 64px 380px 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; }
   .shell > :global(*) { grid-row: 1; }
   .shell > :global(.page) { grid-column: 2 / -1; }
   .rail, .offline { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
@@ -148,20 +148,21 @@
   .spacer { flex: 1; }
   .planner { grid-column: 2; z-index: 3; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
   .mapwrap { position: absolute; inset: 0; min-width: 0; z-index: 0; grid-column: 1 / -1; }
-  .sheetwrap { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
+  .sheetwrap { position: absolute; top: 16px; right: 16px; bottom: 16px; width: 340px; border-radius: 20px; overflow: hidden; z-index: 5; }
   .page { overflow: auto; }
   .mapwrap { --sheet-inset: 0px; }
-  .mapwrap.sheet { --sheet-inset: 364px; }
-  .mapwrap.wide { --sheet-inset: calc(min(520px, 60%) + 12px); }
-  .mapwrap :global(.maplibregl-ctrl-top-right) { right: var(--sheet-inset); top: 4px; transition: right 0.25s ease; }
-  .layers { position: absolute; top: 12px; right: calc(60px + var(--sheet-inset)); padding: 4px; z-index: 2; border-radius: 14px; display: flex; flex-direction: column; transition: right 0.25s ease; }
-  .layers .lyr { padding: 0 12px; }
-  .pill { border: 0; background: none; min-height: 36px; padding: 0 10px; font-size: 13px; gap: 6px; }
+  .mapwrap.sheet { --sheet-inset: 356px; }
+  .mapwrap.wide { --sheet-inset: calc(min(520px, 60%) + 16px); }
+  .mapwrap :global(.maplibregl-ctrl-top-right) { right: var(--sheet-inset); top: 16px; transition: right 0.25s ease; }
+  .mapwrap :global(.maplibregl-ctrl-top-right .maplibregl-ctrl) { margin: 0 16px 0 0; }
+  .layers { position: absolute; top: 16px; right: calc(76px + var(--sheet-inset)); padding: 6px; z-index: 2; border-radius: 14px; display: flex; flex-direction: column; transition: right 0.25s ease; }
+  .layers .lyr { padding: 0 14px; gap: 12px; }
+  .pill { border: 0; background: none; min-height: 40px; padding: 0 14px; font-size: 13px; gap: 10px; justify-content: flex-start; }
   .lyr { display: flex; align-items: center; gap: 8px; min-height: 36px; margin: 0; color: var(--text); font-size: 13px; }
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: 456px; bottom: 12px; border-radius: 14px; display: flex; padding: 4px; z-index: 2; flex-direction: column; align-items: flex-start; }
+  .legend { position: absolute; left: 492px; bottom: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
   .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .overlay { position: absolute; inset: 0; z-index: 15; background: var(--bg); }
@@ -171,7 +172,7 @@
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
   .sheetwrap.wide { width: min(520px, 60%); }
   .page { grid-column: 2 / -1; }
-  .offline { position: absolute; left: 456px; top: 12px; z-index: 2; color: var(--text); }
+  .offline { position: absolute; left: 492px; top: 16px; z-index: 2; color: var(--text); gap: 10px; padding: 0 20px; }
 
   @media (max-width: 899px) {
     .shell { grid-template-columns: 1fr; grid-template-rows: 1fr 64px; gap: 0; padding: 0; }
@@ -186,11 +187,11 @@
     .mapwrap.hide { display: none; }
     .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: 0; height: 62%; z-index: 4; border-radius: 20px 20px 0 0; }
     .mapwrap.sheet, .mapwrap.wide { --sheet-inset: 0px; }
-    .layers { right: 60px; top: 12px; }
-    .offline { top: 12px; }
+    .layers { right: 76px; top: 16px; }
+    .offline { top: 16px; }
     .lyr.off { display: none; }
-    .legend { left: 12px; bottom: calc(42% + 12px); }
-    .offline { left: 12px; }
+    .legend { left: 16px; bottom: calc(42% + 16px); }
+    .offline { left: 16px; }
     .mapwrap { inset: 0 0 64px 0; grid-column: 1; }
   }
 </style>

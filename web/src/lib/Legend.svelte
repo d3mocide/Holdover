@@ -26,7 +26,7 @@
 </div>
 
 <style>
-  .legend-body { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; padding: 6px 12px 10px; font-size: 12.5px; }
-  .item { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .legend-body { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; padding: 8px 14px 12px; font-size: 12.5px; }
+  .item { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
   .note { grid-column: 1 / -1; font-size: 11.5px; white-space: normal; max-width: 320px; }
 </style>

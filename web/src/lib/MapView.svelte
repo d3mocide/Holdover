@@ -155,7 +155,7 @@
       hasBasemap = withTiles;
       map = new maplibregl.Map({
         container: el, style: baseStyle(withTiles), center: [-122.9, 44.6], zoom: 7.4,
-        attributionControl: { compact: true }, padding: { left: window.innerWidth >= 900 ? 456 : 0 }, maxBounds: [[-125.5, 41.5], [-116, 47]]
+        attributionControl: { compact: true }, padding: { left: window.innerWidth >= 900 ? 492 : 0 }, maxBounds: [[-125.5, 41.5], [-116, 47]]
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       map.on('load', async () => { await addLayers(); ready = true; });
