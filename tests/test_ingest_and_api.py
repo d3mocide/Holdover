@@ -6,7 +6,7 @@ from app.seed import seed_waterbodies
 from app.sources.odfw_stocking import ingest_page
 
 URL = "https://example.test/stocking?page=0"
-AUTH = {"Authorization": "Bearer testtoken"}
+AUTH = {}
 
 
 def client():
@@ -51,7 +51,8 @@ def test_unknown_label_goes_to_review_not_map(session, stocking_html):
     ingest_page(session, URL, 200, html)
     alias = session.scalar(select(WaterbodyAlias).where(WaterbodyAlias.alias_text == "ESTACADO LAKE"))
     assert alias.confirmed == 0 and alias.proposed_confidence and alias.proposed_confidence >= 0.6
-    c = client()
+    from conftest import signed_in_client
+    c = signed_in_client("boss", admin=True)
     assert "Estacada Lake" not in {f["properties"]["name"] for f in c.get("/api/map").json()["features"]}
     queue = c.get("/api/admin/aliases", headers=AUTH).json()
     assert [q["alias_text"] for q in queue] == ["ESTACADO LAKE"]
@@ -73,11 +74,11 @@ def test_snapshots_are_append_only_latest_wins(session, stocking_html):
     assert body["snapshots"] == 2 * len(body["stocking"])
 
 
-def test_admin_requires_token(session):
-    c = client()
-    assert c.get("/api/admin/aliases").status_code == 401
-    assert c.get("/api/admin/aliases", headers={"Authorization": "Bearer nope"}).status_code == 401
-    assert c.get("/api/admin/aliases", headers=AUTH).status_code == 200
+def test_admin_requires_an_admin_account(session):
+    from conftest import anonymous_client, signed_in_client
+    assert anonymous_client().get("/api/admin/aliases").status_code == 401
+    assert signed_in_client("plain").get("/api/admin/aliases").status_code == 403  # signed in, not admin
+    assert signed_in_client("boss", admin=True).get("/api/admin/aliases").status_code == 200
 
 
 def test_unlocated_waterbodies_are_listed_not_pinned(session, stocking_html):

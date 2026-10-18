@@ -81,8 +81,10 @@ def in_fishery(wb: Waterbody, fishery: str, stocking_factor: sc.Factor, species_
     return any(w in species_text for w in SPECIES_WORDS[fishery])
 
 
-def rank(session: Session, day: date, fishery: str) -> list[Spot]:
+def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | None = None) -> list[Spot]:
+    """home overrides the server default (HOME_LAT/HOME_LON): a signed-in user's saved home, or one the browser sent."""
     s = get_settings()
+    home_lat, home_lon = home if home else (s.home_lat, s.home_lon)
     rows = latest_rows(session)
     p90 = zone_p90(rows, day)
     by_wb: dict[int, list[tuple[str, int]]] = {}
@@ -108,7 +110,7 @@ def rank(session: Session, day: date, fishery: str) -> list[Spot]:
         forecast_note = f" (NWS point {near[1]:.0f} km away)" if near and fc.value is not None and near[1] >= 1 else ""
         plain_forecast = fc.detail
         fc.detail += forecast_note
-        km = sc.haversine_km(s.home_lat, s.home_lon, wb.lat, wb.lon) if s.home_lat is not None and s.home_lon is not None else None
+        km = sc.haversine_km(home_lat, home_lon, wb.lat, wb.lon) if home_lat is not None and home_lon is not None else None
         dist = sc.distance_factor(km, s.w_distance)
         factors = [stock, rep, flow, fc, dist]
         score, coverage = sc.combine(factors)

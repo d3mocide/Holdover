@@ -48,7 +48,7 @@ def test_every_update_names_a_seed_row_and_stays_in_oregon_zone():
         assert 43.4 < lat < 46.3 and -123.9 < lon < -121.4, name
 
 
-AUTH = {"Authorization": "Bearer testtoken"}
+AUTH = {}
 
 
 def test_admin_can_place_move_and_clear_a_pin(session):
@@ -57,9 +57,10 @@ def test_admin_can_place_move_and_clear_a_pin(session):
     seed_waterbodies(session)
     w = wb(session, "Haldeman Pond")  # no coordinate in the seed
     assert w.lat is None
-    c = TestClient(app)
+    from conftest import anonymous_client, signed_in_client
+    assert anonymous_client().post(f"/api/admin/waterbodies/{w.id}/coords", json={"lat": 44.0, "lon": -123.0}).status_code == 401
+    c = signed_in_client("boss", admin=True)
     url = f"/api/admin/waterbodies/{w.id}/coords"
-    assert c.post(url, json={"lat": 44.0, "lon": -123.0}).status_code == 401  # needs the token
     assert c.post(url, json={"lat": 44.0, "lon": -123.0}, headers=AUTH).json()["lat"] == 44.0
     session.refresh(w)
     assert (w.lat, w.lon) == (44.0, -123.0)

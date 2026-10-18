@@ -14,12 +14,12 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.auth import require_token
+from app.api.auth import csrf_guard, require_user
 from app.config import get_settings
 from app.db import get_session
-from app.models import Catch, Pin, Trip
+from app.models import Catch, Pin, Trip, User
 
-router = APIRouter(dependencies=[Depends(require_token)])
+router = APIRouter(dependencies=[Depends(csrf_guard), Depends(require_user)])
 _UUID = re.compile(r"^[0-9a-fA-F-]{8,64}$")
 
 
@@ -76,13 +76,16 @@ class Push(BaseModel):
     pins: list[PinIn] = []
 
 
-def _upsert(session: Session, model, row: BaseModel) -> str:
-    """'applied' | 'stale' (existing row is as new or newer: ignore, which also makes a repeat push a no-op)."""
+def _upsert(session: Session, model, row: BaseModel, user: User) -> str:
+    """'applied' | 'stale' (existing row is as new or newer: ignore, which also makes a repeat push a no-op) |
+    'foreign' (the uuid belongs to someone else: never touched)."""
     existing = session.get(model, row.uuid)
     data = row.model_dump()
     if existing is None:
-        session.add(model(**data))
+        session.add(model(**data, owner_id=user.id))
         return "applied"
+    if existing.owner_id != user.id:
+        return "foreign"
     if _norm(existing.updated_at) >= _norm(row.updated_at):
         return "stale"
     for k, v in data.items():
@@ -96,45 +99,58 @@ def _norm(ts: str) -> datetime:
 
 
 @router.post("/sync/push")
-def push(body: Push, session: Session = Depends(get_session)):
+def push(body: Push, user: User = Depends(require_user), session: Session = Depends(get_session)):
     result = {"applied": 0, "stale": 0, "rejected": []}
     for group, model in ((body.trips, Trip), (body.pins, Pin), (body.catches, Catch)):  # trips before catches
         for row in group:
-            if model is Catch and session.get(Trip, row.trip_uuid) is None:
-                result["rejected"].append({"uuid": row.uuid, "reason": "unknown trip_uuid"})
-                continue
-            result[_upsert(session, model, row)] += 1
+            if model is Catch:
+                trip = session.get(Trip, row.trip_uuid)
+                if trip is None:
+                    result["rejected"].append({"uuid": row.uuid, "reason": "unknown trip_uuid"})
+                    continue
+                if trip.owner_id != user.id:
+                    result["rejected"].append({"uuid": row.uuid, "reason": "trip belongs to another account"})
+                    continue
+                if row.photo_path and not row.photo_path.startswith(f"{user.id}-"):
+                    result["rejected"].append({"uuid": row.uuid, "reason": "photo belongs to another account"})
+                    continue
+            outcome = _upsert(session, model, row, user)
+            if outcome == "foreign":
+                result["rejected"].append({"uuid": row.uuid, "reason": "belongs to another account"})
+            else:
+                result[outcome] += 1
         session.flush()
     session.commit()
     result["server_time"] = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
     return result
 
 
-def _dump(session: Session, since: str | None):
+def _dump(session: Session, user: User, since: str | None):
+    """Only the signed-in user's own rows. owner_id is server-side bookkeeping and is never sent."""
     out = {}
     for key, model in (("trips", Trip), ("catches", Catch), ("pins", Pin)):
-        q = select(model)
+        q = select(model).where(model.owner_id == user.id)
         rows = [r for r in session.scalars(q)
                 if since is None or _norm(r.updated_at) > _norm(since)]
-        out[key] = [{c.name: getattr(r, c.name) for c in model.__table__.columns} for r in rows]
+        out[key] = [{c.name: getattr(r, c.name) for c in model.__table__.columns if c.name != "owner_id"} for r in rows]
     return out
 
 
 @router.get("/sync/pull")
-def pull(since: str | None = None, session: Session = Depends(get_session)):
+def pull(since: str | None = None, user: User = Depends(require_user), session: Session = Depends(get_session)):
     if since is not None:
         try:
             _norm(since)
         except ValueError:
             raise HTTPException(422, "since must be ISO-8601")
-    d = _dump(session, since)
+    d = _dump(session, user, since)
     d["server_time"] = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
     return d
 
 
 @router.get("/journal/export")
-def export(format: str = "json", session: Session = Depends(get_session)):
-    d = _dump(session, None)
+def export(format: str = "json", user: User = Depends(require_user), session: Session = Depends(get_session)):
+    d = _dump(session, user, None)
     if format == "json":
         return JSONResponse(d, headers={"Content-Disposition": 'attachment; filename="holdover-journal.json"'})
     if format != "csv":
@@ -166,22 +182,22 @@ def _photo_dir() -> str:
 
 
 @router.post("/journal/photo")
-async def photo(file: UploadFile = File(...)):
+async def photo(file: UploadFile = File(...), user: User = Depends(require_user)):
     ext = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp"}.get(file.content_type or "")
     if ext is None:
         raise HTTPException(415, "jpeg, png or webp only")
     data = await file.read()
     if len(data) > 15 * 1024 * 1024:
         raise HTTPException(413, "photo over 15 MB")
-    name = secrets.token_hex(16) + ext
+    name = f"{user.id}-{secrets.token_hex(16)}{ext}"  # the prefix is the owner: only they can fetch or attach it
     with open(os.path.join(_photo_dir(), name), "wb") as f:
         f.write(data)
     return {"photo_path": name}
 
 
 @router.get("/journal/photo/{name}")
-def get_photo(name: str):
-    if not re.fullmatch(r"[0-9a-f]{32}\.(jpg|png|webp)", name):
+def get_photo(name: str, user: User = Depends(require_user)):
+    if not re.fullmatch(r"\d+-[0-9a-f]{32}\.(jpg|png|webp)", name) or not name.startswith(f"{user.id}-"):
         raise HTTPException(404)
     path = os.path.join(_photo_dir(), name)
     if not os.path.isfile(path):

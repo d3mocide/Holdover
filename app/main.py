@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import scheduler
-from app.api import admin, conditions, journal, planner, reports, stocking
+from app.api import accounts, admin, conditions, journal, planner, reports, stocking
 from app.config import get_settings
 
 log = logging.getLogger("holdover")
@@ -17,8 +17,6 @@ log = logging.getLogger("holdover")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     s = get_settings()
-    if not s.holdover_token:
-        log.warning("HOLDOVER_TOKEN is not set: admin endpoints are locked")
     if s.run_scheduler:
         scheduler.start()
     yield
@@ -32,6 +30,7 @@ app.include_router(reports.router, prefix="/api")
 app.include_router(conditions.router, prefix="/api")
 app.include_router(journal.router, prefix="/api")
 app.include_router(planner.router, prefix="/api")
+app.include_router(accounts.router, prefix="/api")
 app.include_router(admin.router, prefix="/api/admin")
 
 

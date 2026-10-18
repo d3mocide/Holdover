@@ -15,7 +15,7 @@ from app.sources.odfw_report import ParseError, ingest, parse, report_text
 from conftest import FIX
 
 URL = "https://example.test/recreation-report"
-AUTH = {"Authorization": "Bearer testtoken"}
+AUTH = {}
 HTML = (FIX / "odfw_report" / "index.html").read_bytes()
 
 
@@ -153,8 +153,9 @@ def test_review_queue_accept_reject_and_map_effect(session):
         ReportItem(report_id=r.id, waterbody_raw="Junk", rating="unknown", note="n", source_sentence="s2", status="review"),
     ])
     session.commit()
-    c = TestClient(app)
-    assert c.get("/api/admin/review/items").status_code == 401
+    from conftest import anonymous_client, signed_in_client
+    assert anonymous_client().get("/api/admin/review/items").status_code == 401
+    c = signed_in_client("boss", admin=True)
     q = c.get("/api/admin/review/items", headers=AUTH).json()
     assert len(q) == 2
     wb = match_waterbody(session, "North Santiam")

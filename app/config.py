@@ -6,7 +6,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
-    holdover_token: str = ""
     database_url: str = "sqlite:////data/holdover.db"
     data_dir: str = "/data"
     web_dir: str = "web/dist"
@@ -17,6 +16,11 @@ class Settings(BaseSettings):
     home_lon: float | None = None
     user_agent: str = "Holdover/0.1 (set USER_AGENT with a contact address)"
     run_scheduler: bool = True
+    # Accounts. cookie_secure=None means "Secure when the request arrived over HTTPS" (directly or via the
+    # reverse proxy's X-Forwarded-Proto); set true/false to force it.
+    cookie_secure: bool | None = None
+    session_days: int = 90
+    invite_days: int = 7
 
     # Scoring weights (tunable starting points, not validated). Missing-data factors are dropped
     # and the remaining weights renormalised, see app/scoring.py.

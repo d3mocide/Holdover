@@ -15,7 +15,7 @@ class Waterbody(Base):
     zone: Mapped[str | None] = mapped_column(Text)
     species_json: Mapped[str | None] = mapped_column(Text)
     regs_url: Mapped[str | None] = mapped_column(Text)
-    starred: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    starred: Mapped[int] = mapped_column(Integer, default=0, server_default="0")  # legacy: superseded by Favorite
 
 
 class WaterbodyAlias(Base):
@@ -152,6 +152,7 @@ class Trip(Base):
     conditions_source: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[str] = mapped_column(Text)
     deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))  # NULL = pre-accounts row, adopted by the first admin
 
 
 class Catch(Base):
@@ -166,6 +167,7 @@ class Catch(Base):
     photo_path: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[str] = mapped_column(Text)
     deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
 
 
 class Pin(Base):
@@ -177,3 +179,45 @@ class Pin(Base):
     notes: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[str] = mapped_column(Text)
     deleted: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
+
+
+class User(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(Text, unique=True)  # stored lower-case
+    password_hash: Mapped[str] = mapped_column(Text)
+    is_admin: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    disabled: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    home_lat: Mapped[float | None] = mapped_column(Float)
+    home_lon: Mapped[float | None] = mapped_column(Float)
+    created_at: Mapped[str] = mapped_column(Text)
+
+
+class UserSession(Base):
+    """Server-side session. Only a hash of the cookie token is stored, so a database leak is not a login."""
+    __tablename__ = "user_session"
+    token_hash: Mapped[str] = mapped_column(Text, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    created_at: Mapped[str] = mapped_column(Text)
+    last_used_at: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[str] = mapped_column(Text)
+    device: Mapped[str | None] = mapped_column(Text)
+
+
+class Invite(Base):
+    __tablename__ = "invite"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    code_hash: Mapped[str] = mapped_column(Text, unique=True)
+    created_by: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    created_at: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[str] = mapped_column(Text)
+    used_by: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
+    used_at: Mapped[str | None] = mapped_column(Text)
+
+
+class Favorite(Base):
+    __tablename__ = "favorite"
+    __table_args__ = (PrimaryKeyConstraint("user_id", "waterbody_id"),)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    waterbody_id: Mapped[int] = mapped_column(ForeignKey("waterbody.id", ondelete="CASCADE"))

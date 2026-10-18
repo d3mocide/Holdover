@@ -5,14 +5,14 @@ from sqlalchemy import func, select
 
 from app.models import Catch, Trip
 
-AUTH = {"Authorization": "Bearer testtoken"}
+AUTH = {}  # auth is the signed-in session now; kept so the call sites stay readable
 T1 = "11111111-1111-4111-8111-111111111111"
 C1 = "22222222-2222-4222-8222-222222222222"
 
 
 def client():
-    from app.main import app
-    return TestClient(app)
+    from conftest import signed_in_client
+    return signed_in_client()
 
 
 def trip(**kw):
@@ -28,8 +28,9 @@ def catch(**kw):
     return {**d, **kw}
 
 
-def test_requires_token(session):
-    c = client()
+def test_requires_sign_in(session):
+    from conftest import anonymous_client
+    c = anonymous_client()
     assert c.post("/api/sync/push", json={}).status_code == 401
     assert c.get("/api/sync/pull").status_code == 401
     assert c.get("/api/journal/export").status_code == 401
