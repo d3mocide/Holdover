@@ -217,7 +217,7 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 - [ ] NASA FIRMS hotspots: the owner is not sure FIRMS is wanted (it needs a free key)
 - [x] **River flood status** from NOAA NWPS: NOAA's official flood category, stage and forecast on 14 of the 16 USGS gauges (the other two have only reservoir gauges at NWPS), on the sheet's flow rows and the Gauges page. Built 2026-10-18
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
-- [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value
+- [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value. **New (2026-10-18):** the *Angling Zones* (Sport Fishing Regulations zones) are the useful layer, free to use with an ODFW credit, but the server is firewalled from here: see data-source-options 6b
 - [ ] Statewide coverage (more zones: the schedule already supports a zone parameter; needs seed, pins and gauges per zone) and, if SQLite stops being enough, PostGIS
 
 ## Phase 12: Coast and marine

@@ -153,6 +153,30 @@ fire-restrictions map). **Verified live:** 63 protection zones, fields `regusear
   republish staff contact details.
 - **Value:** low. **Effort:** small.
 
+### 6b. ODFW Angling Zones (the Sport Fishing Regulations zones), added 2026-10-18 at the owner's suggestion
+
+- **What it is:** the ArcGIS Online item `2c4418d3424a41f3aa9d46440e02c3b8` ("AnglingZones", owner ODFW_AGO, public, modified
+  2023-12) describes "the zones that are found in the Oregon Sport Fishing Regulations", served as a map service at
+  `nrimp.dfw.state.or.us/arcgis/rest/services/ODFW_Regs/AnglingZones/MapServer`. **Licence note on the item: "None, but please credit
+  ODFW in the use of these data."** This is the regulation-zone map, so (unlike 6) it is the right unit for "which section of the
+  regulations applies here".
+- **Not reachable from here:** that server answers **503 "The requested URL was rejected"** (an F5 firewall) to my client, even for
+  `/robots.txt`, the same behaviour as item 6. No hosted ArcGIS Online copy was found (searched the ODFW org). I did not try to
+  get around the firewall. It may well work from a browser, so one option is for the owner to export the (few, rarely changing)
+  polygons once from the item page and commit them as a static file, with the ODFW credit.
+- **Use if built:** label each waterbody with its regulation zone and link to the matching ODFW regulations page (rule 1: link, never
+  restate), and give statewide coverage a zone list that matches how anglers think. **Value:** medium. **Effort:** small (static
+  GeoJSON plus point-in-polygon, `app/geo.py` already has it).
+- **Not verified:** the layer's field names, zone count and polygon size.
+
+### 6c. oregontails.org Oregon Fishing Guide (reference only)
+
+A third-party blog page (`oregontails.org/oregon-fishing-map-guide/`) with a nine-zone map filterable by species, a species guide
+and per-zone cards. Read 2026-10-18; its robots.txt blocks only WordPress admin and shop paths. **Not a source to ingest:** it is
+a copyrighted editorial guide, it restates bag limits and seasons (which Holdover never does, rule 1, and which it warns can
+change in-season), and it is not authoritative. Worth borrowing as *ideas*, written our own way: a "what's biting where" species
+filter on the map, and per-zone summary cards.
+
 ## 7. River flood status and forecasts (NOAA NWPS), found in Vertex
 
 **Status: built 2026-10-18** (`app/sources/nwps.py`). The response has no USGS site numbers, so the 14 mapped pairs were matched by name
