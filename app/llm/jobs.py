@@ -4,7 +4,7 @@ from sqlalchemy import case, select
 from sqlalchemy.orm import Session
 
 from app.llm.client import LLMClient, LLMUnavailable
-from app.llm.extract import extract_report, extracted
+from app.llm.extract import extract_report, extracted, rematch_items
 from app.models import Report
 
 log = logging.getLogger("holdover.llm")
@@ -35,4 +35,5 @@ def process_pending(session: Session, llm: LLMClient | None = None) -> dict:
             log.warning("LLM output rejected for report %s: %s", r.id, exc)
             out["errors"] += 1
             out["pending"] += 1
+    out["rematched"] = rematch_items(session)
     return out

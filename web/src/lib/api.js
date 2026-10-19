@@ -19,16 +19,17 @@ async function req(path, opts = {}) {
 }
 
 export const api = {
-  map: () => req('/api/map?zone=willamette&layers=stocking,gauges,advisories,reports'),
+  zones: () => req('/api/zones'),
+  map: (zone = 'willamette') => req(`/api/map?zone=${zone}&layers=stocking,gauges,advisories,reports`),
   fireMap: () => req('/api/fire/map'),
-  briefing: () => req('/api/briefing'),
+  briefing: (zone = 'willamette') => req(`/api/briefing?zone=${zone}`),
   reportsAll: (issuedOn = null) => req(`/api/reports/all${issuedOn ? `?issued_on=${issuedOn}` : ''}`),
-  schedule: (start = null, end = null) => req(`/api/schedule${start ? `?start=${start}&end=${end}` : ''}`),
+  schedule: (start = null, end = null, zone = 'willamette') => req(`/api/schedule?zone=${zone}${start ? `&start=${start}&end=${end}` : ''}`),
   waterbodyList: () => req('/api/waterbodies'),
-  gauges: () => req('/api/gauges'),
+  gauges: (zone = 'willamette') => req(`/api/gauges?zone=${zone}`),
   day: (id, date, fishery = 'trout') => req(`/api/day/${id}?date=${date}&fishery=${fishery}`),
-  spots: (date, fishery, home = null) =>
-    req(`/api/spots?date=${date}&fishery=${fishery}${home ? `&home_lat=${home.lat}&home_lon=${home.lon}` : ''}`),
+  spots: (date, fishery, home = null, zone = 'willamette') =>
+    req(`/api/spots?date=${date}&fishery=${fishery}&zone=${zone}${home ? `&home_lat=${home.lat}&home_lon=${home.lon}` : ''}`),
   report: (zone = 'willamette') => req(`/api/reports?zone=${zone}`),
   reviewItems: () => req('/api/admin/review/items', { auth: true }),
   acceptItem: (id, waterbody_id) =>

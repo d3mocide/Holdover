@@ -3,13 +3,13 @@
   import { api, longDate, localDay } from './api.js';
   import { hhmm } from './clock.svelte.js';
   // The weekly ODFW Recreation Report, reposted as ODFW wrote it (nothing generated), one zone at a time.
-  let { onselect = null } = $props();
+  let { zone: appZone = 'willamette' } = $props();
   let data = $state(null);
   let error = $state('');
-  let zone = $state('week');  // 'week' is the briefing; the rest are ODFW's zones
+  let zone = $state('week');  // the tab: 'week' is the briefing; the rest are ODFW's report zones
   let brief = $state(null);
   let briefError = $state('');
-  $effect(() => { api.briefing().then((v) => (brief = v)).catch((e) => (briefError = e.message)); });
+  $effect(() => { const z = appZone; briefError = ''; api.briefing(z).then((v) => (brief = v)).catch((e) => (briefError = e.message)); });
   let issue = $state(null);
   $effect(() => {
     const d = issue;
@@ -23,7 +23,7 @@
   <header>
     <div class="row"><span class="ico"><Icon name="reports" size={26} /></span>
       <div><h1>Weekly <span class="ov">reports</span></h1>
-        <p class="quiet small">{zone === 'week' ? `This week's briefing, from the data Holdover gathers. Week of ${brief?.week_of ? longDate(brief.week_of) : '…'}.` : `ODFW's Recreation Report, in ODFW's own words.${data?.issued_on ? ` Issued ${longDate(data.issued_on)}.` : ''}`}</p></div>
+        <p class="quiet small">{zone === 'week' ? `This week's briefing for the ${brief?.label ?? ''} zone, from the data Holdover gathers. Week of ${brief?.week_of ? longDate(brief.week_of) : '…'}.` : `ODFW's Recreation Report, in ODFW's own words.${data?.issued_on ? ` Issued ${longDate(data.issued_on)}.` : ''}`}</p></div>
     </div>
     {#if zone !== 'week' && data && data.available.length > 1}
       <label class="small" for="issue">Issue</label>

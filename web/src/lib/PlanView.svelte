@@ -4,12 +4,13 @@
   import ReportCard from './ReportCard.svelte';
   import { api, dayLabel, isoDay, localDay, weekLabel, FISHERIES } from './api.js';
   import { homeForRequests } from './auth.svelte.js';
+  import ZonePicker from './ZonePicker.svelte';
   import { hhmm } from './clock.svelte.js';
   import { monthLabel, monthShort, monthRange, weekSummary } from './scheduleText.js';
   import { weekLabelYear } from './stockingGroups.js';
   // Plan: look ahead. "Next 7 days" ranks spots day by day; "Further out" browses ODFW's published stocking schedule
   // (about a year ahead) by month. The Map tab is for "where today?"; this is for "when and where next?".
-  let { data, report, fishery, onfishery, offset, onoffset, selectedId, onselect, onreview, canReview, onreports, error } = $props();
+  let { data, report, zone = 'willamette', zones = [], onzone = () => {}, fishery, onfishery, offset, onoffset, selectedId, onselect, onreview, canReview, onreports, error } = $props();
   let mode = $state('week');
 
   // ---- next 7 days: one ranking per day, fetched together
@@ -18,7 +19,8 @@
   $effect(() => {
     const f = fishery, home = homeForRequests();
     outlookError = '';
-    Promise.all([0, 1, 2, 3, 4, 5, 6].map((o) => api.spots(isoDay(o), f, home))).then((v) => (outlook = v)).catch((e) => (outlookError = e.message));
+    const z = zone;
+    Promise.all([0, 1, 2, 3, 4, 5, 6].map((o) => api.spots(isoDay(o), f, home, z))).then((v) => (outlook = v)).catch((e) => (outlookError = e.message));
   });
   const fresh = $derived(Object.fromEntries((data?.features ?? []).filter((f) => f.properties.layer === 'stocking').map((f) => [f.properties.id, f.properties])));
   const unlocated = $derived(data?.meta.needs_coords ?? []);
@@ -28,15 +30,19 @@
   let month = $state(null);
   let sched = $state(null);
   let schedError = $state('');
+  let monthsFor = null;  // the zone `months` was loaded for
   $effect(() => {
-    if (mode !== 'out' || months.length) return;
-    api.schedule().then((v) => { months = v.months; month = v.months[0]?.month ?? null; }).catch((e) => (schedError = e.message));
+    const z = zone;
+    if (monthsFor !== null && monthsFor !== z) { months = []; month = null; sched = null; }  // a different zone: start over
+    if (mode !== 'out' || (months.length && monthsFor === z)) return;
+    monthsFor = z;
+    api.schedule(null, null, z).then((v) => { months = v.months; month = v.months[0]?.month ?? null; }).catch((e) => (schedError = e.message));
   });
   $effect(() => {
     if (mode !== 'out' || !month) return;
     const [a, b] = monthRange(month);
     schedError = '';
-    api.schedule(a, b).then((v) => (sched = v)).catch((e) => (schedError = e.message));
+    api.schedule(a, b, zone).then((v) => (sched = v)).catch((e) => (schedError = e.message));
   });
   // The schedule is for looking ahead: this week onward (a month's earlier weeks have already happened).
   const mondayIso = isoDay(-((new Date().getDay() + 6) % 7));
@@ -50,7 +56,8 @@
       <h1>Plan <span class="ov">ahead</span></h1>
       <span class="quiet mono small">{data?.meta.as_of ? `Synced ${hhmm(data.meta.as_of)}` : 'Not synced'}</span>
     </div>
-    <p class="quiet small">Willamette zone</p>
+    <ZonePicker {zones} {zone} {onzone} />
+    {#if zones.length < 2}<p class="quiet small">Willamette zone</p>{/if}
     <div class="tabs" role="group" aria-label="Planning range">
       <button class="tab" aria-pressed={mode === 'week'} onclick={() => (mode = 'week')}>Next 7 days</button>
       <button class="tab" aria-pressed={mode === 'out'} onclick={() => (mode = 'out')}>Further out</button>

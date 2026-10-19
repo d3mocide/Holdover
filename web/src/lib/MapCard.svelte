@@ -3,7 +3,8 @@
   import { FISHERIES } from './api.js';
   import { clockText } from './clock.svelte.js';
   // Map: "where should I go today?" A short list of today's best bets over the map. Tap one to fly there and open it.
-  let { spots, fishery, onfishery, selectedId = null, onselect, onplan, error = '' } = $props();
+  import ZonePicker from './ZonePicker.svelte';
+  let { spots, zones = [], zone = 'willamette', onzone = () => {}, fishery, onfishery, selectedId = null, onselect, onplan, error = '' } = $props();
   const narrow = typeof matchMedia === 'function' && matchMedia('(max-width: 899px)').matches;
   let open = $state(!narrow);  // collapsed to a bar on a phone so the map stays clear
   const top = $derived((spots?.spots ?? []).slice(0, 5));
@@ -15,6 +16,7 @@
     <span class="chev" class:up={open}><Icon name="trend_steady" size={16} /></span>
   </button>
   {#if open}
+    <ZonePicker {zones} {zone} {onzone} />
     <div class="chips" role="group" aria-label="Fishery">
       {#each FISHERIES as [k, label]}<button class="chip" aria-pressed={fishery === k} onclick={() => onfishery(k)}>{label}</button>{/each}
     </div>

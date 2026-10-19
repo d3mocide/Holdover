@@ -506,3 +506,32 @@ Owner idea: use the slow model for something genuinely useful, once a week. The 
   at 1920, 1440 and 1100 on Plan or Map with a sheet open (measured); browser suites offline 12/12, accounts 37/37, gear 46/46. Not verified: a
   real phone; the new AI badge on the real map with tiles (only the data and sheet were checked).
 
+### 2026-10-18 · this commit · Phase 11 · Central zone (pilot): the first zone beyond Willamette
+Owner approved Central as the pilot, ODFW polling for more zones, and OpenStreetMap-matched pins shown as unverified.
+- **Waterbodies.** Central's stocking schedule lists 36 labels (122 rows, 4 pages); `app/zones/central.py` turns them into 35 waterbodies
+  (LAVA LAKE B and L are one water). Pins were proposed by `scripts/propose_zone.py` (same-named OpenStreetMap features inside the basemap,
+  narrowed to each label's ODFW district) and chosen by hand: 16 "osm" (unique, same name), 6 "likely" (a choice between candidates, or a
+  park label standing in for a pond), and **13 left without a pin** (East Lake, Fall River, Metolius Pond, ...) rather than guessed. Every pin has a
+  provenance note and `docs/waterbody-pins.md` lists them. The seed only inserts a pin, so a pin a person moves or clears is never re-applied.
+- **Gauges.** Eight, chosen by asking the live USGS API which discharge gauges in the zone reported today (Deschutes at Culver, Madras and Moody;
+  Crooked below Opal Springs; Metolius near Grandview; Hood River; White River; Warm Springs River); sensors whose last reading was in 1991
+  (upper Deschutes) and the John Day (Northeast zone) were left out. No gauge is linked to a stocked water (none is clearly the same water), so
+  they appear on the Gauges page, the map and the briefing but do not move a ranking. Gauges gained a `zone` (migration 0007).
+- **Plumbing.** A zone registry (`app/zones`) and `ENABLED_ZONES` (default willamette,central); the stocking job fetches each enabled zone and a
+  failing zone does not stop the others; ranking, the "typical stocking" baseline, the map layers, gauges, schedule, explanations, pack intros and
+  the weekly briefing are all per zone; `/api/zones`; a **zone picker** (Map card, Plan, Gauges; the choice is remembered) and the map refits to the
+  zone. The Corps reservoirs and NOAA flood status stay Willamette-only; the offline map region is still fixed.
+- **A real matching bug found while checking Central.** Report items were matched to waterbodies across all zones, so a Central "Fall River" was
+  ambiguous with Willamette's Fall Creek and a Northwest "Salmon River" had been matched to a Willamette creek. Matching is now inside the report's own zone;
+  `rematch_items` (run with the extraction job) repairs unreviewed items and picks up items read before their water existed, and never touches accepted items;
+  re-extracting a report replaces the model's unreviewed items instead of duplicating them.
+- Verified: 211 `pytest` (new: seed integrity incl. no duplicate names or labels across zones and "13 unpinned, 22 provenance-recorded"; every one of the 122 real
+  Central rows resolves to a waterbody with none left for review; the job with one zone failing; ranking isolation; endpoint filters; zone-scoped
+  matching, rematching, and re-extraction), 52 frontend tests, axe zero on the Map card, Plan (both modes), Gauges and Reports for Central at desktop and
+  phone, browser suites offline 12/12, accounts 37/37, gear 46/46. **Live in the dev stack**: Central fetched in 4 requests (122 rows), 59,474 readings
+  backfilled with every gauge showing its flow against its own median, 42 forecasts, fire danger for 47 waters; Ornith wrote Central's three paragraphs
+  (Willamette plus Central took about 6 minutes).
+- Found: Central's October "Best bets" is thin (two waters have anything stocked right now; most of the zone stocks in spring and summer 2027): that is the data, not a bug.
+- Not verified: the 22 pins on the ground (OSM matches, not a survey), whether "Metolius Pond" and the other unpinned waters can be found in OpenStreetMap by another
+  name, a real phone, the second zone on the Pi.
+

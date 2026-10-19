@@ -303,3 +303,49 @@ def test_an_unreviewed_reading_from_another_zones_report_never_reaches_the_map_o
     session.query(ReportItem).update({ReportItem.status: "accepted"})  # a person decided it: now it shows
     session.commit()
     assert "Fall Creek Reservoir" in {f["properties"]["name"] for f in c.get("/api/map?layers=stocking,reports").json()["features"] if f["properties"]["layer"] == "report"}
+
+
+def test_report_items_match_only_inside_their_own_zone_and_late_matches_are_picked_up(session):
+    from app.llm.extract import rematch_items
+    seed_waterbodies(session)
+    ingest(session, URL, 200, HTML)
+    # "Fall River" is a Central-zone water; "Fall Creek ..." is Willamette's. Across all zones the key is ambiguous, inside a zone it is not.
+    assert match_waterbody(session, "Fall River") is None
+    central = match_waterbody(session, "Fall River", "central")
+    assert central is not None and session.get(Waterbody, central).name == "Fall River"
+    assert match_waterbody(session, "Fall River", "central") != match_waterbody(session, "Fall River", "willamette")  # each zone resolves on its own
+    rep = session.scalar(select(Report).where(Report.zone == "central"))
+    session.add(ReportItem(report_id=rep.id, waterbody_id=None, waterbody_raw="Fall River", species="trout", rating="excellent", note="n", source_sentence="s", status="review"))
+    session.add(ReportItem(report_id=rep.id, waterbody_id=None, waterbody_raw="Fall River", species="trout", rating="good", note="n", source_sentence="s2", status="rejected"))
+    session.commit()
+    assert rematch_items(session) == 1
+    items = session.scalars(select(ReportItem).order_by(ReportItem.id)).all()
+    assert items[0].waterbody_id == central and items[1].waterbody_id is None  # the rejected one is left alone
+
+
+def test_rematching_corrects_an_old_cross_zone_match_but_never_touches_accepted_items(session):
+    from app.llm.extract import rematch_items
+    seed_waterbodies(session)
+    ingest(session, URL, 200, HTML)
+    nw = session.scalar(select(Report).where(Report.zone == "central"))  # a Central item that was once matched to a Willamette water
+    willamette_wb = session.scalar(select(Waterbody).where(Waterbody.name == "Fall Creek Reservoir"))
+    mistaken = ReportItem(report_id=nw.id, waterbody_id=willamette_wb.id, waterbody_raw="Fall River", species="trout", rating="excellent", note="n", source_sentence="s", status="review")
+    decided = ReportItem(report_id=nw.id, waterbody_id=willamette_wb.id, waterbody_raw="Fall River", species="trout", rating="good", note="n", source_sentence="s2", status="accepted")
+    session.add_all([mistaken, decided])
+    session.commit()
+    assert rematch_items(session) == 1
+    assert session.get(Waterbody, mistaken.waterbody_id).name == "Fall River" and decided.waterbody_id == willamette_wb.id
+    assert rematch_items(session) == 0  # nothing left to change
+
+
+def test_re_extracting_replaces_unreviewed_items_but_keeps_what_a_person_decided(session):
+    r = willamette(session)
+    wb = session.scalar(select(Waterbody).where(Waterbody.name == "Dexter Reservoir"))
+    session.add_all([
+        ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="old", species="x", rating="good", note="n", source_sentence="Coho salmon are moving into the lower parts of the North Santiam.", status="review"),
+        ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="kept", species="x", rating="good", note="n", source_sentence="a", status="accepted"),
+        ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="dismissed", species="x", rating="slow", note="n", source_sentence="b", status="rejected"),
+    ])
+    session.commit()
+    extract_report(session, r, llm_with(lambda req: reply({"items": []})))
+    assert sorted(i.waterbody_raw for i in session.scalars(select(ReportItem))) == ["dismissed", "kept"]  # the unreviewed "old" one is gone

@@ -6,6 +6,7 @@
   import PlanView from './lib/PlanView.svelte';
   import MapCard from './lib/MapCard.svelte';
   import ReportsView from './lib/ReportsView.svelte';
+  import ZonePicker from './lib/ZonePicker.svelte';
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
   import Gauges from './lib/Gauges.svelte';
@@ -47,6 +48,11 @@
   let dayFor = $state(null);
   let offset = $state(0);
   let fishery = $state('trout');
+  // The ODFW zone every view follows (remembered on this device); the list comes from the server.
+  let zones = $state([]);
+  let zone = $state(stored('holdover.zone', 'willamette'));
+  const setZone = (z) => { if (z === zone) return; zone = z; data = null; mapSpots = null; selectedId = null; dayFor = null; try { localStorage.setItem('holdover.zone', z); } catch { /* not remembered */ } };
+  $effect(() => { api.zones().then((r) => { zones = r.zones; if (!r.zones.some((z) => z.key === zone) && r.zones.length) setZone(r.zones[0].key); }).catch(() => { /* one zone: nothing to pick */ }); });
   let mapSpots = $state(null);  // today's ranking, for the Map card
   let mapSpotsError = $state('');
   let showJournal = $state(true);
@@ -89,16 +95,17 @@
   });
 
   async function load() {
-    try { data = await api.map(); error = ''; } catch (e) { error = e.message; }
+    try { data = await api.map(zone); error = ''; } catch (e) { error = e.message; }
   }
   function loadMapSpots() {
     mapSpotsError = '';
     const home = homeForRequests(); // signed in: the server uses the account's home; signed out: this device's
-    api.spots(isoDay(0), fishery, home).then((v) => (mapSpots = v)).catch((e) => (mapSpotsError = e.message));
+    api.spots(isoDay(0), fishery, home, zone).then((v) => (mapSpots = v)).catch((e) => (mapSpotsError = e.message));
   }
-  $effect(() => { fishery; loadMapSpots(); });
+  $effect(() => { fishery; zone; loadMapSpots(); });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
-  $effect(() => { load(); loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
+  $effect(() => { zone; load(); });
+  $effect(() => { loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['reports', 'Reports', 'reports'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
   // Where a waterbody's sheet can open: over the map, which is visible on the Map tab and, on a wide screen, beside the Plan list.
@@ -128,9 +135,9 @@
   <button class="ptoggle" onclick={() => setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={collapsed ? 'Show panel' : 'Hide panel'} title={collapsed ? 'Show panel' : 'Hide panel'}><Icon name="trend_steady" size={18} /></button>
   <main class="planner" bind:clientWidth={panelW} class:gone={collapsed} class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'}>
     {#if view === 'plan'}
-      <PlanView {data} {report} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} onreports={() => go('reports')} />
+      <PlanView {data} {report} {zone} {zones} onzone={setZone} {offset} {fishery} onoffset={(o) => (offset = o)} onfishery={(f) => (fishery = f)} {error} {selectedId} onselect={select} canReview={!!auth.user?.is_admin} onreview={() => (view = 'settings')} onreports={() => go('reports')} />
     {:else if view === 'reports'}
-      <ReportsView />
+      <ReportsView {zone} />
     {:else if view === 'settings'}
       <Settings {theme} {wbList} {invite} {picking} onpick={() => { picking = !picking; if (picking && !wide) view = 'map'; }} oninvitedone={() => (invite = null)} onTheme={(t) => (theme = t)} onChanged={() => { load(); loadReport(); loadMapSpots(); }} />
     {:else if view === 'journal'}
@@ -138,11 +145,11 @@
     {:else if view === 'gear'}
       <Gear {wbList} onitem={(g, browse = false) => { gearBrowse = browse; gearEdit = g; }} onsetup={(st) => (setupEdit = st)} />
     {:else}
-      <Gauges />
+      <Gauges {zone} {zones} onzone={setZone} />
     {/if}
   </main>
   <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap}>
-      <MapView inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
+      <MapView zoneKey={zone} inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
       <div class="layers glass" class:open={layersOpen} role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
         {#if layersOpen}
@@ -164,7 +171,7 @@
       {/if}
       <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
       {#if view === 'map' && !drawerOpen && !(tight && (selectedId || dayFor))}
-        <MapCard spots={mapSpots} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={select} onplan={() => go('plan')} error={mapSpotsError} />
+        <MapCard spots={mapSpots} {zones} {zone} onzone={setZone} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={select} onplan={() => go('plan')} error={mapSpotsError} />
       {/if}
   </div>
     {#if dayFor && onMap}

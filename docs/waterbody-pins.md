@@ -79,3 +79,46 @@ Counts: NO PIN 7, Likely: check 4, Unverified (hand-entered) 12, Snapped to chan
 - **No pin (7):** the OSM data has no usable match. Most are small ponds named by a park or by an old name (Hampton Pond, Wahkeena Lake). Find each on a map and set it with the command above.
 - **Likely (4):** the OSM name differs from ODFW's label, so confirm it is the same water.
 - **Unverified (12):** no OSM match to check against. Most are small ponds, plus the Alton Baker Canal.
+
+
+## Central zone (added 2026-10-18)
+
+From ODFW's Central zone stocking schedule (36 labels, 35 waterbodies) matched to same-named OpenStreetMap features in the basemap, narrowed to each label's ODFW district (`scripts/propose_zone.py`). Nothing was placed from memory. 13 waters have no pin and are listed under "no map location yet" until you place them (same `POST /api/admin/waterbodies/<id>/coords` as above). Pins marked Likely deserve a look.
+
+| Status | Waterbody | Kind | Lat | Lon | How |
+| --- | --- | --- | --- | --- | --- |
+| NO PIN | Baker Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Bikini Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Century Gravel Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Cottonwood Pit | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | East Lake | lake |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Fall River | river |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Metolius Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Middle Fork Pond (Hood River) | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Prineville Fishing Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Redmond Fireman South Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Rock Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Sprague Pit Pond | pond |  |  | no same-named OSM feature in the label's ODFW district |
+| NO PIN | Three Creeks Lake | lake |  |  | no same-named OSM feature in the label's ODFW district |
+| Likely: check | Antelope Flat Reservoir | reservoir | 44.0057 | -120.3800 | two same-named OSM points about 6 km apart; took the one on the water layer |
+| Likely: check | Frog Lake | lake | 45.2187 | -121.6948 | three OSM 'Frog Lake' features in the district; took the one beside Clear Lake (Wasco) |
+| Likely: check | Lava Lake | lake | 43.9211 | -121.7730 | two OSM 'Lava Lake' features; took the Cascade Lakes one (ODFW's Bend district) |
+| Likely: check | Pine Nursery Pond | pond | 44.0911 | -121.2681 | OSM 'Pine Nursery Park' (the pond is in the park) |
+| Likely: check | Shevlin Pond | pond | 44.0886 | -121.3678 | OSM 'Shevlin Park' (the pond is in the park) |
+| Likely: check | Smock Prairie Reservoir | reservoir | 45.1503 | -121.3765 | OSM 'Smock Reservoir', 1 km from 'Smock Prairie' |
+| Verified (OSM name match) | Clear Lake (Wasco) | lake | 45.1826 | -121.7061 | OSM 'Clear Lake', Mt Hood side |
+| Verified (OSM name match) | Cultus Lake | lake | 43.8380 | -121.8625 | OSM 'Cultus Lake' |
+| Verified (OSM name match) | Deer Lake | lake | 43.8199 | -121.8939 | OSM 'Deer Lake', Deschutes side |
+| Verified (OSM name match) | Devils Lake | lake | 44.0349 | -121.7622 | two OSM 'Devils Lake' features; took the Deschutes one on the Cascade Lakes side |
+| Verified (OSM name match) | Hosmer Lake | lake | 43.9676 | -121.7818 | OSM 'Hosmer Lake' |
+| Verified (OSM name match) | Kingsley Reservoir (Upper) | reservoir | 45.6378 | -121.6786 | OSM 'Kingsley Reservoir' (the label says Upper) |
+| Verified (OSM name match) | Laurance Lake | lake | 45.4593 | -121.6659 | OSM 'Laurance Lake' |
+| Verified (OSM name match) | Lost Lake | lake | 45.4893 | -121.8236 | OSM 'Lost Lake', Hood River County |
+| Verified (OSM name match) | Ochoco Reservoir | reservoir | 44.3037 | -120.6967 | OSM 'Ochoco Reservoir' |
+| Verified (OSM name match) | Olallie Lake | lake | 44.8069 | -121.7874 | OSM 'Olallie Lake' |
+| Verified (OSM name match) | Paulina Lake | lake | 43.7194 | -121.2599 | OSM 'Paulina Lake' |
+| Verified (OSM name match) | Pine Hollow Reservoir | reservoir | 45.2477 | -121.2944 | OSM 'Pine Hollow Reservoir' |
+| Verified (OSM name match) | Taylor Lake | lake | 45.6427 | -121.2071 | OSM 'Taylor Lake' |
+| Verified (OSM name match) | Twin Lake, North | lake | 43.7276 | -121.7665 | OSM 'North Twin Lake' |
+| Verified (OSM name match) | Twin Lake, South | lake | 43.7140 | -121.7663 | OSM 'South Twin Lake' |
+| Verified (OSM name match) | Walton Lake | lake | 44.4355 | -120.3355 | OSM 'Walton Lake' |

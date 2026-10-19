@@ -12,7 +12,7 @@
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
+  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, zoneKey = 'willamette', fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -218,6 +218,8 @@
   $effect(() => { if (ready && journal) map.getSource('journal').setData(journal); });
   $effect(() => { if (ready) map.setLayoutProperty('journal-pts', 'visibility', showJournal ? 'visible' : 'none'); });
   let fitted = false;
+  let fittedFor = zoneKey;
+  $effect(() => { if (zoneKey !== fittedFor) { fittedFor = zoneKey; fitted = false; } });  // a different zone: fit the map to its waters again
   $effect(() => {
     if (!ready || !data) return;
     map.getSource('stocking').setData(data);

@@ -3,17 +3,20 @@
   import { asOf } from './clock.svelte.js';
   import Icon from './Icon.svelte';
   import { floodShort, floodElevated } from './floodText.js';
+  import ZonePicker from './ZonePicker.svelte';
   import { SORTS, sortGauges, detailParts, unusual } from './gaugeText.js';
+  let { zone = 'willamette', zones = [], onzone = () => {} } = $props();
   let gauges = $state([]);
   let note = $state('');
   let error = $state('');
   let sort = $state('name');
-  $effect(() => { api.gauges().then((r) => { gauges = r.gauges; note = r.note; }).catch((e) => (error = e.message)); });
+  $effect(() => { const z = zone; error = ''; api.gauges(z).then((r) => { gauges = r.gauges; note = r.note; }).catch((e) => (error = e.message)); });
   const sorted = $derived(sortGauges(gauges, sort));
 </script>
 <div class="page" tabindex="0" role="region" aria-label="Gauges">
   <header><span class="ico"><Icon name="gauge" size={26} /></span><div><h1>Gauges</h1><p class="quiet">{note || 'USGS values are provisional.'}</p></div></header>
   {#if error}<p role="alert">Couldn't load gauges ({error}).</p>{/if}
+  <ZonePicker {zones} {zone} {onzone} />
   <div class="chips" role="group" aria-label="Sort gauges">
     {#each SORTS as [k, label]}<button class="chip" aria-pressed={sort === k} onclick={() => (sort = k)}>{label}</button>{/each}
   </div>
