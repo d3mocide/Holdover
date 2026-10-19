@@ -17,7 +17,7 @@ services:
       HOME_LON: ${HOME_LON:-}
       LLM_BASE_URL: ${LLM_BASE_URL:-}
       LLM_MODEL: ${LLM_MODEL:-}
-      ENABLED_ZONES: ${ENABLED_ZONES:-}   # which ODFW zones to fetch and offer (default: willamette,central)
+      ENABLED_ZONES: ${ENABLED_ZONES:-}   # which ODFW zones to fetch and offer (default: willamette,central,northwest)
       LLM_API_KEY: ${LLM_API_KEY:-}
       LLM_TIMEOUT: ${LLM_TIMEOUT:-}
       LLM_EXTRACT_MODEL: ${LLM_EXTRACT_MODEL:-}   # optional: a slower, stronger model for the weekly report extraction

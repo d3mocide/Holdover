@@ -104,6 +104,11 @@ def page_url(page: int, today: date, zone: int | None = None) -> str:
     return f"{BASE}?{urlencode(q)}"
 
 
+def _zone_value(url: str) -> int | None:
+    m = re.search(r"field_zone_value=(\d+)", url)
+    return int(m.group(1)) if m else get_settings().stocking_zone_value
+
+
 def ingest_page(session: Session, url: str, status: int | None, body: bytes, page: int = 0) -> tuple[int, int]:
     """Store raw, parse, snapshot. Returns (rows_in_page, rows_inserted). Raises nothing:
     parse failures are recorded on the raw_fetch row so the source shows as stale."""
@@ -125,8 +130,11 @@ def ingest_page(session: Session, url: str, status: int | None, body: bytes, pag
         session.commit()
         return 0, 0
     scraped_at = now_iso()
+    from app.zones import BY_STOCKING, alias_source
+    zv = _zone_value(url)
+    source, zone = alias_source(zv), (BY_STOCKING[zv].key if zv in BY_STOCKING else None)
     for r in rows:
-        alias = resolve_alias(session, r.waterbody_raw, SOURCE)
+        alias = resolve_alias(session, r.waterbody_raw, source, zone)
         session.add(StockingSnapshot(
             raw_fetch_id=raw.id, scraped_at=scraped_at, week_of=r.week_of, alias_id=alias.id,
             zone_office=r.zone_office, legals=r.legals, trophy=r.trophy, brood=r.brood,

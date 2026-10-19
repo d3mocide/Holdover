@@ -553,3 +553,17 @@ actually collide: on the Map tab below 1600 px, on Plan below 1820 px; the Legen
 below 1400 px. Measured for overlaps with every other control and the sheet at 1920, 1790, 1600, 1500, 1440, 1420, 1400, 1280, 1100, 1000 and 900 px on both tabs: none.
 Also in this commit series: the stocking schedule and weekly report are fetched once a week (Friday), see the previous entry's commit message and `docs/sources.md`.
 Not verified: the browser suites were not re-run after this CSS-only change.
+
+### 2026-10-18 · this commit · Phase 11 · Northwest zone; per-zone stocking aliases (and a Central bug they exposed); one weekly report per zone
+- **Northwest** (ODFW zone 3): 33 waterbodies from its schedule (117 rows, 4 pages), 22 pins by the same method (13 osm, 9 likely) and 11 left unpinned, 7 live
+  coastal USGS gauges (Nehalem, Wilson, Trask, Nestucca, Siletz, Alsea, Siuslaw). Its first stocking is February 2027, so it ranks nothing today; its report text is the
+  coastal salmon and steelhead report. Enabled by default (`ENABLED_ZONES`); about 19 ODFW requests a week for three zones.
+- **Labels repeat across zones** (LOST LAKE is in Central and the Northwest), so stocking aliases are now per zone (`odfw_stocking:<zone>`; Willamette keeps the original name),
+  with migration 0008, and the fuzzy proposal only looks inside the zone. **This exposed a Central bug:** Central's CLEAR LAKE had collided with Willamette's alias,
+  so its 4 snapshots hung on "Clear Lake (McKenzie)". The earlier "nothing left for review" test could not see it. A guarded repair (`repair_snapshot_aliases`) now
+  re-points a snapshot whose alias is in another zone, using ODFW's own zone column on the row; verified on the dev data (Central 4 rows to Clear Lake (Wasco), Willamette 12 unchanged).
+  The seed also now confirms a proposal the ingest left when the schedule arrived before its water was seeded (it never touches an alias a person confirmed).
+- **Reports tab** is now one view: the selected zone's briefing ending with ODFW's own words; the per-zone tabs were redundant with the zone pill.
+- Verified: 219 `pytest`, axe zero on Northwest's map, Plan (both modes), Gauges and Reports at desktop and phone, browser suites below. Not verified: the Northwest pins on the ground,
+  the report page with more than one stored issue (the issue picker went with the tabs; old issues are still stored and `/api/reports/all` serves them).
+

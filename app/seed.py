@@ -143,7 +143,7 @@ FISHERY_HINTS = {
 }
 
 
-def _seed_zone(session: Session, zone: str, seed, updates: dict, hints: dict) -> int:
+def _seed_zone(session: Session, zone: str, seed, updates: dict, hints: dict, source: str = SOURCE) -> int:
     added = 0
     for name, kind, seed_lat, seed_lon, labels in seed:
         upd = updates.get(name)
@@ -161,20 +161,50 @@ def _seed_zone(session: Session, zone: str, seed, updates: dict, hints: dict) ->
             wb.species_json = json.dumps({"fisheries": hints[name], "source": "seed hint, unverified"})
         for label in labels:
             key = normalize_alias(label)
-            if session.scalar(
-                select(WaterbodyAlias.id).where(WaterbodyAlias.alias_text == key, WaterbodyAlias.source == SOURCE)
-            ) is None:
-                session.add(WaterbodyAlias(alias_text=key, source=SOURCE, waterbody_id=wb.id, confirmed=1))
+            alias = session.scalar(select(WaterbodyAlias).where(WaterbodyAlias.alias_text == key, WaterbodyAlias.source == source))
+            if alias is None:
+                session.add(WaterbodyAlias(alias_text=key, source=source, waterbody_id=wb.id, confirmed=1))
+            elif not alias.confirmed:
+                # the schedule was fetched before this water was seeded, so the ingest left a proposal: the seed's label is authoritative.
+                # An alias a person already confirmed (to this or any other water) is never touched.
+                alias.waterbody_id, alias.confirmed, alias.proposed_confidence = wb.id, 1, None
     return added
+
+
+def repair_snapshot_aliases(session: Session) -> int:
+    """Before stocking aliases were per zone, a label two zones share (Central's CLEAR LAKE and Willamette's) resolved to the first zone's
+    waterbody, so the other zone's snapshots hung on the wrong alias. ODFW's own zone column on each row says which zone it is for: re-point a
+    snapshot whose alias belongs to a different zone to the same label in its own zone's namespace, when that alias exists. Idempotent; a
+    snapshot already on the right alias, or one with no matching alias, is left alone."""
+    from app.models import StockingSnapshot
+    from app.zones import ALL, alias_source
+    by_label = {z.label.lower(): z for z in ALL}
+    fixed = 0
+    rows = session.execute(select(StockingSnapshot, WaterbodyAlias, Waterbody).join(WaterbodyAlias, WaterbodyAlias.id == StockingSnapshot.alias_id)
+                           .join(Waterbody, Waterbody.id == WaterbodyAlias.waterbody_id)).all()
+    cache: dict[tuple[str, str], int | None] = {}
+    for snap, alias, wb in rows:
+        z = by_label.get((snap.zone_office or "").split("/")[0].strip().lower())
+        if z is None or z.key == wb.zone:
+            continue
+        key = (alias.alias_text, alias_source(z.stocking_value))
+        if key not in cache:
+            cache[key] = session.scalar(select(WaterbodyAlias.id).where(WaterbodyAlias.alias_text == key[0], WaterbodyAlias.source == key[1]))
+        if cache[key] is not None and cache[key] != snap.alias_id:
+            snap.alias_id = cache[key]
+            fixed += 1
+    session.commit()
+    return fixed
 
 
 def seed_waterbodies(session: Session) -> int:
     """Idempotent: adds missing waterbodies and their confirmed aliases, for Willamette and every zone module."""
-    from app.zones import MODULES
+    from app.zones import MODULES, alias_source
     added = _seed_zone(session, ZONE, SEED, COORD_UPDATES, FISHERY_HINTS)
     for m in MODULES:
-        added += _seed_zone(session, m.ZONE, m.SEED, {}, m.FISHERY_HINTS)  # a pin set here is only ever inserted, never re-applied over a person's edit
+        added += _seed_zone(session, m.ZONE, m.SEED, {}, m.FISHERY_HINTS, alias_source(m.STOCKING_VALUE))  # a pin set here is only ever inserted, never re-applied over a person's edit
     session.commit()
+    repair_snapshot_aliases(session)
     seed_gauges(session)
     return added
 

@@ -5,7 +5,7 @@ uses for it), SEED (name, kind, lat, lon, [stocking labels]), PINS (name -> how 
 GAUGE_LINKS. A coordinate is never invented: it comes from a same-named OpenStreetMap feature (see PINS) or is left empty."""
 from dataclasses import dataclass
 
-from app.zones import central
+from app.zones import central, northwest
 
 
 @dataclass(frozen=True)
@@ -17,9 +17,17 @@ class ZoneInfo:
 
 
 WILLAMETTE = ZoneInfo("willamette", "Willamette", 6, "willamette")
-MODULES = (central,)
+MODULES = (central, northwest)
 ALL: tuple[ZoneInfo, ...] = (WILLAMETTE,) + tuple(ZoneInfo(m.ZONE, m.LABEL, m.STOCKING_VALUE, m.REPORT_KEY) for m in MODULES)
 BY_KEY = {z.key: z for z in ALL}
+BY_STOCKING = {z.stocking_value: z for z in ALL}
+
+
+def alias_source(stocking_value: int | None) -> str:
+    """The alias namespace for a zone's stocking labels. ODFW labels repeat across zones (there is a LOST LAKE in Central and in the
+    Northwest), so each zone but the first (Willamette, which keeps the original name) has its own."""
+    z = BY_STOCKING.get(stocking_value)
+    return "odfw_stocking" if z is None or z.key == "willamette" else f"odfw_stocking:{z.key}"
 
 
 def enabled(setting: str) -> list[ZoneInfo]:

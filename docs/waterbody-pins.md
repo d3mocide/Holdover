@@ -122,3 +122,44 @@ From ODFW's Central zone stocking schedule (36 labels, 35 waterbodies) matched t
 | Verified (OSM name match) | Twin Lake, North | lake | 43.7276 | -121.7665 | OSM 'North Twin Lake' |
 | Verified (OSM name match) | Twin Lake, South | lake | 43.7140 | -121.7663 | OSM 'South Twin Lake' |
 | Verified (OSM name match) | Walton Lake | lake | 44.4355 | -120.3355 | OSM 'Walton Lake' |
+
+
+## Northwest zone (added 2026-10-18)
+
+From ODFW's Northwest zone stocking schedule (33 labels, 33 waterbodies), same method as Central (`scripts/propose_zone.py`). 11 waters have no pin; the 9 marked Likely are same-named points of interest or a choice between candidates.
+
+| Status | Waterbody | Kind | Lat | Lon | How |
+| --- | --- | --- | --- | --- | --- |
+| NO PIN | Big Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Buck Lake | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Devil South Lake | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Dune Lake | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Loren South Pond | pond |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Nedonna Pond | pond |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Perkins Lake | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Scout Lake | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Spring Lake | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Sunset Lake (North Coast Range) | lake |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| NO PIN | Thissel Pond | pond |  |  | no same-named OSM feature in the label's district (or two far-apart candidates) |
+| Likely: check | Alder Lake | lake | 44.0705 | -124.1039 | OSM point 'Alder Lake' (a point of interest, not a polygon), Newport district |
+| Likely: check | Carter Lake | lake | 43.8527 | -124.1472 | OSM point 'Carter Lake' (point of interest), Newport district |
+| Likely: check | Elbow Lake | lake | 43.7868 | -124.1490 | OSM point 'Elbow Lake' (point of interest), Newport district |
+| Likely: check | Hebo Lake | lake | 45.2310 | -123.7959 | OSM point 'Hebo Lake' (the town 'Hebo' is 5 km away; took the lake) |
+| Likely: check | Lost Lake (Northwest) | lake | 45.8243 | -123.5789 | OSM point 'Lost Lake' in the Tillamook district; there is another Lost Lake in Central |
+| Likely: check | North Lake | lake | 45.2157 | -123.7204 | OSM point 'North Lake'; the schedule gives no district, this one is beside South Lake and Hebo Lake |
+| Likely: check | South Lake | lake | 45.2017 | -123.7216 | OSM point 'South Lake' beside North Lake and Hebo Lake (another 'South Lake' exists 45 km east) |
+| Likely: check | Tahoe Lake | lake | 45.3497 | -123.6013 | OSM point 'Lake Tahoe' in the Tillamook district (the name matches the famous one, so check) |
+| Likely: check | Town Lake | lake | 45.2247 | -123.9559 | OSM point 'Town Lake', Tillamook district |
+| Verified (OSM name match) | Cape Meares Lake | lake | 45.5087 | -123.9481 | OSM water 'Cape Meares Lake' |
+| Verified (OSM name match) | Cleawox Lake | lake | 43.9390 | -124.1184 | OSM water 'Cleawox Lake' |
+| Verified (OSM name match) | Coffenbury Lake | lake | 46.1696 | -123.9602 | OSM water 'Coffenbury Lake' |
+| Verified (OSM name match) | Cullaby Lake | lake | 46.0853 | -123.9044 | OSM water 'Cullaby Lake' |
+| Verified (OSM name match) | Eckman Lake | lake | 44.4121 | -124.0346 | OSM water 'Eckman Lake' |
+| Verified (OSM name match) | Lytle Lake | lake | 45.6235 | -123.9400 | OSM water 'Lake Lytle' |
+| Verified (OSM name match) | Mercer Lake | lake | 44.0552 | -124.0560 | OSM water 'Mercer Lake' |
+| Verified (OSM name match) | Munsel Lake | lake | 44.0086 | -124.0812 | OSM water 'Munsel Lake' |
+| Verified (OSM name match) | Olalla Creek Reservoir | reservoir | 44.6867 | -123.9229 | OSM water 'Olalla Reservoir' |
+| Verified (OSM name match) | Siltcoos Lake | lake | 43.8723 | -124.0938 | OSM water 'Siltcoos Lake' |
+| Verified (OSM name match) | Sutton Lake | lake | 44.0591 | -124.0901 | OSM water 'Sutton Lake' |
+| Verified (OSM name match) | Vernonia Lake | lake | 45.8548 | -123.1737 | OSM water 'Vernonia Lake' |
+| Verified (OSM name match) | Woahink Lake | lake | 43.9183 | -124.0956 | OSM water 'Woahink Lake' |

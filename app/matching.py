@@ -7,7 +7,7 @@ from app.models import Waterbody, WaterbodyAlias
 from app.normalize import normalize_alias
 
 
-def resolve_alias(session: Session, raw_label: str, source: str) -> WaterbodyAlias:
+def resolve_alias(session: Session, raw_label: str, source: str, zone: str | None = None) -> WaterbodyAlias:
     """Find or create the alias row. New aliases are unconfirmed; a fuzzy *proposal* is stored for
     the admin queue, but only confirmed aliases ever produce map pins."""
     key = normalize_alias(raw_label)
@@ -18,7 +18,7 @@ def resolve_alias(session: Session, raw_label: str, source: str) -> WaterbodyAli
         return alias
     alias = WaterbodyAlias(alias_text=key, source=source, confirmed=0)
     best, score = None, 0.0
-    for wb in session.scalars(select(Waterbody)):
+    for wb in session.scalars(select(Waterbody).where(Waterbody.zone == zone) if zone else select(Waterbody)):
         s = SequenceMatcher(None, key, normalize_alias(wb.name)).ratio()
         if s > score:
             best, score = wb, s

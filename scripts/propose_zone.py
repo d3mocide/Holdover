@@ -23,8 +23,9 @@ from app.models import StockingSnapshot, WaterbodyAlias  # noqa: E402
 # lon_min, lat_min, lon_max, lat_max of each ODFW district's area, generous on purpose; used only to pick between same-named features
 DISTRICT = {
     "Bend": (-122.3, 43.3, -119.4, 44.95), "The Dalles": (-122.1, 44.9, -119.9, 45.8), "Clackamas": (-122.2, 44.55, -121.4, 45.3),
+    "Newport": (-124.4, 43.5, -123.0, 45.0), "Tillamook": (-124.2, 44.9, -122.8, 46.3),
 }
-ZONES = {"central": (-122.3, 43.3, -119.4, 45.8)}
+ZONES = {"central": (-122.3, 43.3, -119.4, 45.8), "northwest": (-124.4, 43.5, -122.7, 46.3)}
 WORDS = {"RES": "Reservoir", "LK": "Lake", "CR": "Creek", "R": "River", "PD": "Pond"}
 
 

@@ -86,11 +86,11 @@ def test_a_zone_with_no_data_is_fetched_at_startup_but_a_fetched_one_waits_for_f
     from app.http import store_fetch
     store_fetch(session, "odfw_stocking", f"https://x/?field_zone_value={zones.BY_KEY['willamette'].stocking_value}&field_planned=1&page=0", 200, b"x")  # central has none
     session.commit()
-    missing = odfw_stocking.zones_without_data(session, zones.enabled("willamette,central"))
-    assert [z.key for z in missing] == ["central"]
+    missing = odfw_stocking.zones_without_data(session, zones.enabled("willamette,central,northwest"))
+    assert [z.key for z in missing] == ["central", "northwest"]
     seen = []
     monkeypatch.setattr(odfw_stocking, "run_zones", lambda s, fetch=None, today=None, zones=None: seen.append([z.key for z in zones]) or {"ok": True})
     fake_runs(monkeypatch)
     monkeypatch.setattr(scheduler, "source_status", lambda: {src: {"stale": False} for src, _ in scheduler.CATCH_UP})  # every source fresh: only the missing zone is worked on
     scheduler.catch_up()
-    assert seen == [["central"]]
+    assert seen == [["central", "northwest"]]

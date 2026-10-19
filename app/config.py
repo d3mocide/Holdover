@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     # Willamette zone on the ODFW stocking schedule (field_zone_value); the default for a single-zone fetch
     stocking_zone_value: int = 6
     # Zones the scheduled stocking job fetches and the app offers (keys from app/zones). Each zone is a few pages a day.
-    enabled_zones: str = "willamette,central"
+    enabled_zones: str = "willamette,central,northwest"
 
 
 @lru_cache
