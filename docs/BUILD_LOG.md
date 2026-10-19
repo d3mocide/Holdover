@@ -567,3 +567,22 @@ Not verified: the browser suites were not re-run after this CSS-only change.
 - Verified: 219 `pytest`, axe zero on Northwest's map, Plan (both modes), Gauges and Reports at desktop and phone, browser suites below. Not verified: the Northwest pins on the ground,
   the report page with more than one stored issue (the issue picker went with the tabs; old issues are still stored and `/api/reports/all` serves them).
 
+### 2026-10-18 · this commit · Phase 11 · Southwest, Northeast and Southeast: all six ODFW zones
+Same recipe as Central and the Northwest. Each zone is a module in `app/zones` generated from a reviewed spec; only unambiguous same-name OpenStreetMap
+matches were pinned, and names with several far-apart candidates or no real match were left empty (for example "LOST CREEK RESERVOIR" proposed an unrelated Lost Lake).
+| Zone | Schedule | Waterbodies | Pinned (likely) | Unpinned | Gauges |
+| --- | --- | --- | --- | --- | --- |
+| Southwest | 5 pages, 164 rows | 43 | 22 (7) | 21 | 9 (Rogue, Applegate, Illinois, Chetco, Umpqua) |
+| Northeast | 3 pages, 98 rows | 49 | 9 (3) | 40 | 6 (Grande Ronde, Minam, John Day, Umatilla) |
+| Southeast | 3 pages, 74 rows | 36 | 13 (3) | 23 | 8 (Klamath, Link, Williamson, Sprague, Wood, Owyhee, Malheur, Snake) |
+The Northeast has the most unpinned waters because most of its schedule is small ponds, forest ponds and park ponds that OpenStreetMap does not name. Gauges are Oregon rivers that reported
+discharge on the live USGS API on 2026-10-19. ODFW reuses names (FISH LAKE is in four zones, LOST LAKE in three, TWIN LAKE twice): the per-zone aliases keep them apart and the waterbody names carry a zone
+qualifier where they would clash. The default is now all six zones, about 30 ODFW requests a week.
+- Verified: 222 `pytest` (every real row of each new schedule lands only on its own zone's waterbodies with nothing left for review; pins inside their zone boxes with a provenance note; unpinned counts;
+  gauges per zone), 52 frontend tests, axe zero on each new zone's map, Plan (both modes), Gauges and Reports at desktop and phone, browser suites offline 12/12, accounts 37/37, gear 46/46. **Live**: the three
+  new zones were fetched automatically at startup (336 rows), 54 gauges are backfilled with a week of flow, 88 forecasts, and Ornith wrote the briefings (Southwest 3 paragraphs, Southeast 2, Northeast 1).
+- Found: a manual `run_job(period='P7D')` asks for all three parameters and can overflow the 12-page cap for 54 gauges, leaving some without flow; the scheduled backfill asks for discharge only and fills every gauge.
+  It was my test call, not a product bug, but it shows the cap is close: 90+ gauges would need discharge-only backfills to stay that way.
+- Found: the weekly Recreation Report has no Southwest section (it covers Northwest, Willamette, Central, Northeast and Southeast), so the Southwest page has no ODFW text.
+- Not verified: any pin on the ground (the 13 "likely" ones and every OSM match are suggestions), the zone picker with six entries on a real phone, the Pi.
+

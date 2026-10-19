@@ -163,3 +163,155 @@ From ODFW's Northwest zone stocking schedule (33 labels, 33 waterbodies), same m
 | Verified (OSM name match) | Sutton Lake | lake | 44.0591 | -124.0901 | OSM water 'Sutton Lake' |
 | Verified (OSM name match) | Vernonia Lake | lake | 45.8548 | -123.1737 | OSM water 'Vernonia Lake' |
 | Verified (OSM name match) | Woahink Lake | lake | 43.9183 | -124.0956 | OSM water 'Woahink Lake' |
+
+
+## Southwest zone (added 2026-10-18)
+
+43 waterbodies from ODFW's Southwest stocking schedule, same method as Central. 21 have no pin; 7 are marked Likely. Pins are matches to OpenStreetMap, not a field survey.
+
+| Status | Waterbody | Kind | Lat | Lon | How |
+| --- | --- | --- | --- | --- | --- |
+| NO PIN | Burma Pond (L) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Clearwater Bay | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Cooper Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Empire Lake, Lower | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Expo Pond 1 (Rogue) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Hemlock Lake (Hemlock Meadow Reservoir) | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Johnsons Mill Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Laird Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Lake in the Woods | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Libby Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Lost Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Medco Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Plat I Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Powers Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Red Top Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Reinhart Park Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Rogue River (above Lost Creek) | river |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | SRU Lake (formerly USFS Lake) | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Spalding Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Weaver Road Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Willow Lake (formerly Willow Creek Reservoir) | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| Likely: check | Arizona Pond | pond | 42.6166 | -124.3953 | OSM point 'Arizona Pond' (point of interest) |
+| Likely: check | Bluebill Lake | lake | 43.4471 | -124.2606 | OSM point 'Bluebill Lake' (point of interest) |
+| Likely: check | Bradley Lake | lake | 43.0653 | -124.4272 | OSM point 'Bradley Lake' (point of interest) |
+| Likely: check | Butterfield Lake | lake | 43.5202 | -124.2222 | OSM point 'Butterfield Lake' (point of interest) |
+| Likely: check | Empire Lake, Upper | lake | 43.3960 | -124.2559 | OSM point 'Upper Empire Lake' (point of interest) |
+| Likely: check | Fish Lake (Southwest) | lake | 42.3858 | -122.3350 | three OSM 'Fish Lake' features in the district; took the Jackson County one on the water layer |
+| Likely: check | Lake Marie | lake | 43.6591 | -124.1946 | OSM point 'Lake Marie' (point of interest); another 'Marie Lake' exists in the Cascades |
+| Verified (OSM name match) | Applegate Reservoir | reservoir | 42.0333 | -123.1456 | OSM water 'Applegate Lake' |
+| Verified (OSM name match) | Ben Irving Reservoir | reservoir | 43.0461 | -123.5750 | OSM water 'Ben Irving Reservoir' |
+| Verified (OSM name match) | Eel Lake | lake | 43.6147 | -124.1732 | OSM water 'Eel Lake' |
+| Verified (OSM name match) | Emigrant Reservoir | reservoir | 42.1479 | -122.6155 | OSM water 'Emigrant Lake' (two points 1.4 km apart on the same lake; took the first) |
+| Verified (OSM name match) | Floras Lake | lake | 42.8936 | -124.5043 | OSM water 'Floras Lake' |
+| Verified (OSM name match) | Galesville Reservoir | reservoir | 42.8375 | -123.1581 | OSM water 'Galesville Reservoir' |
+| Verified (OSM name match) | Garrison Lake | lake | 42.7534 | -124.5052 | OSM water 'Garrison Lake' |
+| Verified (OSM name match) | Howard Prairie Reservoir | reservoir | 42.2367 | -122.4059 | OSM water 'Howard Prairie Lake' |
+| Verified (OSM name match) | Hyatt Reservoir | reservoir | 42.1860 | -122.4488 | OSM water 'Hyatt Reservoir' |
+| Verified (OSM name match) | Lake Selmac | lake | 42.2607 | -123.5780 | OSM water 'Lake Selmac' |
+| Verified (OSM name match) | Lemolo Reservoir | reservoir | 43.3113 | -122.1801 | OSM water 'Lemolo Lake' |
+| Verified (OSM name match) | Loon Lake | lake | 43.5872 | -123.8379 | two OSM 'Loon Lake' features; took the water-layer one in the Umpqua basin |
+| Verified (OSM name match) | Saunders Lake | lake | 43.5347 | -124.2189 | OSM water 'Saunders Lake' |
+| Verified (OSM name match) | Tenmile Lake, North | lake | 43.5960 | -124.1179 | OSM water 'North Tenmile Lake' |
+| Verified (OSM name match) | Tenmile Lake, South | lake | 43.5596 | -124.1362 | OSM water 'South Tenmile Lake' |
+
+
+## Northeast zone (added 2026-10-18)
+
+49 waterbodies from ODFW's Northeast stocking schedule, same method as Central. 40 have no pin; 3 are marked Likely. Pins are matches to OpenStreetMap, not a field survey.
+
+| Status | Waterbody | Kind | Lat | Lon | How |
+| --- | --- | --- | --- | --- | --- |
+| NO PIN | Aldrich Ponds | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Anson Wright Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Brandon South Pond (JD Screen Shop Pond) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Cutsforth Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Hog Creek Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Holliday Park Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Honeymoon Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Hunter Pond (Starkey Forest Ponds) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Kinney Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Ladd Peach Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Long Creek Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Lost Lake (Northeast) | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Luger Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Marr Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | McGraw Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | McNary Channel Ponds | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Morrow County OHV Park Pond 1 (Trout Lake) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Morrow County OHV Park Pond 2 (Red Rock) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Morrow County OHV Park Pond 3 (OBrien) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Morrow County OHV Park Pond 4 (Wilson) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Penland Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Roulet Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Rowe Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Salt Creek Summit Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Seventh Street Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Tatone Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Teepee Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Trout Farm Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Twin Ponds | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Umapine Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Umatilla Forest Ponds, North | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Umatilla Forest Ponds, South | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Victor Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Walla Walla Forest Ponds, North | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Walla Walla Forest Ponds, South | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Wallowa Wildlife Pond (Weavers Pond) | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Weston Highway Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Wildcat Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Willow Creek | river |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Willow Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| Likely: check | Bull Prairie Reservoir | reservoir | 44.9744 | -119.6632 | OSM point 'Bull Prairie Lake' (point of interest) |
+| Likely: check | Grande Ronde Lake | lake | 44.9782 | -118.2437 | OSM point 'Grande Ronde Lake' (point of interest) |
+| Likely: check | Hat Rock Pond | pond | 45.9170 | -119.1706 | OSM point 'Hat Rock' (the state park holds the pond) |
+| Verified (OSM name match) | Fish Lake (Northeast) | lake | 45.0468 | -117.0924 | OSM water 'Fish Lake' in the La Grande district |
+| Verified (OSM name match) | Jubilee Lake | lake | 45.8320 | -117.9602 | OSM water 'Jubilee Lake' |
+| Verified (OSM name match) | Magone Lake | lake | 44.5489 | -118.9120 | OSM water 'Magone Lake' |
+| Verified (OSM name match) | Morgan Lake | lake | 45.3015 | -118.1363 | OSM water 'Morgan Lake' |
+| Verified (OSM name match) | Olive Lake | lake | 44.7820 | -118.6029 | two OSM 'Olive Lake' features; took the Grant County one on the water layer |
+| Verified (OSM name match) | Wallowa Lake | lake | 45.3081 | -117.2075 | OSM water 'Wallowa Lake' |
+
+
+## Southeast zone (added 2026-10-18)
+
+36 waterbodies from ODFW's Southeast stocking schedule, same method as Central. 23 have no pin; 3 are marked Likely. Pins are matches to OpenStreetMap, not a field survey.
+
+| Status | Waterbody | Kind | Lat | Lon | How |
+| --- | --- | --- | --- | --- | --- |
+| NO PIN | Anthony Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Balm Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Becker Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Bully Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Burns Gravel Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Campbell Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Deadhorse Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Drews Gap Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Fish Lake (Southeast) | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Haines Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Heart Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Highway 203 Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Holbrook Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Murray Reservoir (formerly Hardy Murray Reservoir) | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | North Powder Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Poison Creek Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Taylor Green Pond | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Thief Valley Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Thompson Valley Reservoir | reservoir |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Tipton Pond, North | pond |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Twin Lake (Southeast) | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Vee Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| NO PIN | Yellow Jacket Lake | lake |  |  | no same-named OSM feature in the label's district, or several far-apart candidates |
+| Likely: check | Ana River | river | 42.9329 | -120.7797 | a point along the OSM line 'Ana River' (it is a short spring-fed river; check) |
+| Likely: check | Miller Lake | lake | 43.2286 | -121.9574 | two OSM 'Miller Lake' features; took the Klamath County one on the water layer |
+| Likely: check | Powder River | river | 44.7358 | -118.2040 | a point along the OSM line 'Powder River' in the La Grande district |
+| Verified (OSM name match) | Ana Reservoir | reservoir | 42.9973 | -120.7575 | OSM water 'Ana Reservoir' |
+| Verified (OSM name match) | Chickahominy Reservoir | reservoir | 43.5603 | -119.6316 | OSM water 'Chickahominy Reservoir' |
+| Verified (OSM name match) | Delintment Lake | lake | 43.8925 | -119.6266 | OSM water 'Delintment Lake' |
+| Verified (OSM name match) | Duncan Reservoir | reservoir | 43.0683 | -120.9459 | OSM water 'Duncan Reservoir' |
+| Verified (OSM name match) | Fourmile Lake | lake | 42.4665 | -122.2526 | OSM water 'Fourmile Lake' |
+| Verified (OSM name match) | Krumbo Reservoir | reservoir | 42.9550 | -118.8070 | OSM water 'Krumbo Reservoir' |
+| Verified (OSM name match) | Lake of the Woods | lake | 42.3661 | -122.2146 | OSM water 'Lake of the Woods' |
+| Verified (OSM name match) | Lofton Reservoir | reservoir | 42.2639 | -120.8184 | OSM water 'Lofton Reservoir' |
+| Verified (OSM name match) | Phillips Reservoir | reservoir | 44.6776 | -118.0504 | OSM water 'Phillips Lake' |
+| Verified (OSM name match) | Priday Reservoir | reservoir | 42.3389 | -119.8961 | OSM water 'Priday Reservoir' |

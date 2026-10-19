@@ -11,7 +11,7 @@ from app.models import Gauge, StockingSnapshot, Waterbody, WaterbodyAlias
 from app.planner import rank
 from app.seed import SEED, seed_waterbodies
 from app.sources import odfw_stocking
-from app.zones import central, northwest
+from app.zones import central, northeast, northwest, southeast, southwest
 
 PAGES = [(FIX / "odfw_stocking" / f"central_p{i}.html").read_bytes() for i in range(4)]
 NW_PAGES = [(FIX / "odfw_stocking" / f"northwest_p{i}.html").read_bytes() for i in range(4)]
@@ -39,7 +39,8 @@ def test_the_zone_seeds_are_consistent_and_never_invent_a_coordinate():
     for zone, sd in allmods:  # a stocking label is unique within its zone; ODFW reuses some across zones (LOST LAKE), which the alias namespace handles
         labels = [l for n in sd for l in n[4]]
         assert len(labels) == len(set(labels)), zone
-    for m, box in ((central, (43.3, 45.8, -122.3, -119.4)), (northwest, (43.5, 46.3, -124.4, -122.7))):
+    for m, box in ((central, (43.3, 45.8, -122.3, -119.4)), (northwest, (43.5, 46.3, -124.4, -122.7)), (southwest, (41.9, 43.95, -124.7, -121.9)),
+                   (northeast, (44.3, 46.1, -120.6, -116.4)), (southeast, (41.9, 44.8, -122.4, -116.4))):
         pinned = {s_[0] for s_ in m.SEED if s_[2] is not None}
         assert pinned == set(m.PINS) and {v[0] for v in m.PINS.values()} <= {"osm", "likely"}, m.ZONE  # every pin says how it was found
         for name, kind, lat, lon, _ in m.SEED:
@@ -47,6 +48,7 @@ def test_the_zone_seeds_are_consistent_and_never_invent_a_coordinate():
                 assert box[0] <= lat <= box[1] and box[2] <= lon <= box[3], name
     assert len(central.SEED) == 35 and sum(1 for s_ in central.SEED if s_[2] is None) == 13
     assert len(northwest.SEED) == 33 and sum(1 for s_ in northwest.SEED if s_[2] is None) == 11
+    assert [(len(m.SEED), sum(1 for s_ in m.SEED if s_[2] is None)) for m in (southwest, northeast, southeast)] == [(43, 21), (49, 40), (36, 23)]
 
 
 def test_seeding_creates_both_zones_idempotently_and_never_overwrites_a_pin_a_person_set(session):
@@ -89,7 +91,7 @@ def test_the_scheduled_job_fetches_each_enabled_zone_and_one_failure_does_not_st
 def test_unknown_zone_keys_are_ignored_and_the_default_is_both_zones():
     assert [z.key for z in zones.enabled("central, nowhere")] == ["central"]
     assert [z.key for z in zones.enabled("willamette,central")] == ["willamette", "central"]
-    assert [z.key for z in zones.enabled(get_settings().enabled_zones)] == ["willamette", "central", "northwest"]
+    assert [z.key for z in zones.enabled(get_settings().enabled_zones)] == ["willamette", "central", "northwest", "southwest", "northeast", "southeast"]
     assert zones.BY_KEY["central"].stocking_value == 1 and zones.BY_KEY["willamette"].stocking_value == 6
 
 
@@ -143,8 +145,8 @@ def test_every_real_northwest_row_resolves_and_a_label_shared_with_another_zone_
     assert session.scalar(select(func.count()).select_from(WaterbodyAlias).where(WaterbodyAlias.confirmed == 0)) == 0  # nothing left for review
     # "LOST LAKE" is on both schedules: two aliases, one per zone, pointing at two different waterbodies
     lost = session.scalars(select(WaterbodyAlias).where(WaterbodyAlias.alias_text == "LOST LAKE")).all()
-    assert {a.source for a in lost} == {"odfw_stocking:central", "odfw_stocking:northwest"}
-    assert {session.get(Waterbody, a.waterbody_id).zone for a in lost} == {"central", "northwest"}
+    assert {a.source for a in lost} == {"odfw_stocking:central", "odfw_stocking:northwest", "odfw_stocking:northeast"}
+    assert {session.get(Waterbody, a.waterbody_id).zone for a in lost} == {"central", "northwest", "northeast"}
     c = client()
     nw = {f["properties"]["name"] for f in c.get("/api/map", params={"zone": "northwest"}).json()["features"] if f["properties"]["layer"] == "stocking"}
     cen = {f["properties"]["name"] for f in c.get("/api/map", params={"zone": "central"}).json()["features"] if f["properties"]["layer"] == "stocking"}
@@ -204,3 +206,25 @@ def test_seeding_confirms_a_proposal_the_ingest_left_but_never_changes_a_confirm
     seed_waterbodies(session)
     assert session.scalar(select(func.count()).select_from(WaterbodyAlias).where(WaterbodyAlias.source == "odfw_stocking:northwest", WaterbodyAlias.confirmed == 0)) == 0
     assert decided.waterbody_id == other.id  # left alone
+
+
+import pytest  # noqa: E402
+
+ROWS = {"southwest": (5, 164, southwest, 5), "northeast": (3, 98, northeast, 2), "southeast": (3, 74, southeast, 4)}
+
+
+@pytest.mark.parametrize("key", list(ROWS))
+def test_every_real_row_of_a_later_zone_resolves_to_one_of_its_own_waterbodies(session, key):
+    pages, rows, mod, value = ROWS[key]
+    seed_waterbodies(session)
+    for i in range(pages):
+        html = (FIX / "odfw_stocking" / f"{key}_p{i}.html").read_bytes()
+        odfw_stocking.ingest_page(session, f"https://example.test/s?field_zone_value={value}&page={i}", 200, html, i)
+    assert session.scalar(select(func.count()).select_from(StockingSnapshot)) == rows
+    assert session.scalar(select(func.count()).select_from(WaterbodyAlias).where(WaterbodyAlias.confirmed == 0)) == 0
+    own = {s_[0] for s_ in mod.SEED}
+    hit = set(session.scalars(select(Waterbody.name).join(WaterbodyAlias, WaterbodyAlias.waterbody_id == Waterbody.id)
+                              .join(StockingSnapshot, StockingSnapshot.alias_id == WaterbodyAlias.id)))
+    assert hit and hit <= own  # every row landed on this zone's waters, none on another zone's
+    z = client().get("/api/zones").json()["zones"]
+    assert next(x for x in z if x["key"] == key)["gauges"] == len(mod.GAUGES) > 0

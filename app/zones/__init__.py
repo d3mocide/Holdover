@@ -5,7 +5,7 @@ uses for it), SEED (name, kind, lat, lon, [stocking labels]), PINS (name -> how 
 GAUGE_LINKS. A coordinate is never invented: it comes from a same-named OpenStreetMap feature (see PINS) or is left empty."""
 from dataclasses import dataclass
 
-from app.zones import central, northwest
+from app.zones import central, northeast, northwest, southeast, southwest
 
 
 @dataclass(frozen=True)
@@ -17,7 +17,7 @@ class ZoneInfo:
 
 
 WILLAMETTE = ZoneInfo("willamette", "Willamette", 6, "willamette")
-MODULES = (central, northwest)
+MODULES = (central, northwest, southwest, northeast, southeast)
 ALL: tuple[ZoneInfo, ...] = (WILLAMETTE,) + tuple(ZoneInfo(m.ZONE, m.LABEL, m.STOCKING_VALUE, m.REPORT_KEY) for m in MODULES)
 BY_KEY = {z.key: z for z in ALL}
 BY_STOCKING = {z.stocking_value: z for z in ALL}

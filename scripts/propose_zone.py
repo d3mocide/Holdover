@@ -24,8 +24,10 @@ from app.models import StockingSnapshot, WaterbodyAlias  # noqa: E402
 DISTRICT = {
     "Bend": (-122.3, 43.3, -119.4, 44.95), "The Dalles": (-122.1, 44.9, -119.9, 45.8), "Clackamas": (-122.2, 44.55, -121.4, 45.3),
     "Newport": (-124.4, 43.5, -123.0, 45.0), "Tillamook": (-124.2, 44.9, -122.8, 46.3),
+    "Charleston": (-124.7, 43.0, -123.4, 43.9), "Gold Beach": (-124.7, 41.9, -123.4, 42.9), "Klamath Falls": (-122.4, 41.9, -121.0, 43.5),
 }
-ZONES = {"central": (-122.3, 43.3, -119.4, 45.8), "northwest": (-124.4, 43.5, -122.7, 46.3)}
+ZONES = {"central": (-122.3, 43.3, -119.4, 45.8), "northwest": (-124.4, 43.5, -122.7, 46.3),
+         "southwest": (-124.7, 41.9, -121.9, 43.95), "northeast": (-120.6, 44.3, -116.4, 46.1), "southeast": (-122.4, 41.9, -116.4, 44.8)}
 WORDS = {"RES": "Reservoir", "LK": "Lake", "CR": "Creek", "R": "River", "PD": "Pond"}
 
 

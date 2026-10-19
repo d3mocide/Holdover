@@ -93,4 +93,4 @@ def test_a_zone_with_no_data_is_fetched_at_startup_but_a_fetched_one_waits_for_f
     fake_runs(monkeypatch)
     monkeypatch.setattr(scheduler, "source_status", lambda: {src: {"stale": False} for src, _ in scheduler.CATCH_UP})  # every source fresh: only the missing zone is worked on
     scheduler.catch_up()
-    assert seen == [["central", "northwest"]]
+    assert seen == [["central", "northwest", "southwest", "northeast", "southeast"]]  # every enabled zone with no stored page (the default is all six)

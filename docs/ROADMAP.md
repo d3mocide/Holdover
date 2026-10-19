@@ -218,7 +218,7 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 - [x] **River flood status** from NOAA NWPS: NOAA's official flood category, stage and forecast on 14 of the 16 USGS gauges (the other two have only reservoir gauges at NWPS), on the sheet's flow rows and the Gauges page. Built 2026-10-18
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
 - [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value. **New (2026-10-18):** the *Angling Zones* (Sport Fishing Regulations zones) are the useful layer, free to use with an ODFW credit, but the server is firewalled from here: see data-source-options 6b
-- [ ] Statewide coverage, one zone at a time: **Central added 2026-10-18** (35 waterbodies, 22 pins from OpenStreetMap, 8 live USGS gauges, zone picker in every view). Northwest, Southwest, Northeast and Southeast follow the same recipe (a module in `app/zones`, `scripts/propose_zone.py`, a gauge check against the USGS API). Open: Corps reservoirs and NOAA flood status are still Willamette-only, and the offline map region is fixed
+- [x] Statewide coverage: all six ODFW zones. Central, Northwest, Southwest, Northeast and Southeast were added 2026-10-18 (see the build log), each a module in `app/zones`, pins from OpenStreetMap (many left unpinned for you to place), live USGS gauges, a zone pill on the map. Still Willamette-only: Corps reservoirs, NOAA flood status, the offline map region.
 
 ## Phase 12: Coast and marine
 
