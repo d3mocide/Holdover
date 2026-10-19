@@ -22,7 +22,7 @@ try {
         const dexter = data.features.find((f) => f.properties.name === 'Dexter Reservoir');
         data.features = [river,
           { ...river, properties: { layer: 'gauge', name: 'Tualatin River at West Linn · test fixture', site_no: '14207500', waterbody_id: riverId, flow_cfs: 221, trend: 'steady', as_of: '2020-01-01T12:00:00Z', stale: false } },
-          { ...river, properties: { layer: 'report', id: dexter.properties.id, rating: 'excellent', reviewed } }
+          { ...river, properties: { layer: 'report', name: 'Dexter Reservoir · test fixture', id: dexter.properties.id, rating: 'excellent', reviewed } }
         ];
       }
       await route.fulfill({ response: res, json: data });
@@ -47,8 +47,26 @@ try {
       const canvas = await p.locator('.maplibregl-canvas').boundingBox();
       const x = canvas.x + canvas.width / 2 + (width >= 900 ? 56 : 0), y = canvas.y + canvas.height / 2;
       await p.mouse.click(x + 7, y - 7);
+      const picker = p.getByRole('group', { name: 'Map items here', exact: true });
+      await picker.waitFor();
+      ok((await picker.getByRole('button').first().textContent()).includes('Report · excellent'), `${theme}/${size}: report is first in the overlap picker`);
+      await p.evaluate(axe);
+      assert.deepEqual(await p.evaluate(async () => (await axe.run()).violations.map((v) => v.id)), []);
+      ok(true, `${theme}/${size}: overlap picker axe has zero violations`);
+      await p.screenshot({ path: `${shots}/${theme}-${size}-overlap.png` });
+      await picker.getByRole('button', { name: /Stream gauge · USGS/ }).click();
+      await p.getByRole('group', { name: 'Stream gauge: Tualatin River at West Linn · test fixture', exact: true }).waitFor();
+      ok(true, `${theme}/${size}: gauge is reachable underneath the report`);
+      await p.getByRole('button', { name: 'Close gauge details', exact: true }).click();
+      await p.mouse.click(x + 7, y - 7);
+      await picker.getByRole('button', { name: /River · open details/ }).click();
+      await p.getByRole('heading', { name: 'Tualatin River', exact: true }).waitFor();
+      ok(true, `${theme}/${size}: river is reachable underneath the report`);
+      await p.getByRole('button', { name: 'Close details', exact: true }).click();
+      await p.waitForTimeout(800); await p.mouse.click(x + 7, y - 7);
+      await picker.getByRole('button', { name: /Report · excellent/ }).click();
       await p.getByRole('heading', { name: 'Dexter Reservoir', exact: true }).waitFor();
-      ok(true, `${theme}/${size}: ${reviewed ? 'Reviewed report' : 'AI report'} wins overlapping river/gauge click`);
+      ok(true, `${theme}/${size}: ${reviewed ? 'Reviewed report' : 'AI report'} opens from overlapping river/gauge picker`);
       await p.getByRole('button', { name: 'Close details', exact: true }).click();
       // Re-focus Tualatin after the report intentionally selected a different waterbody.
       await explore.getByRole('button', { name: 'Explore waters', exact: true }).click();

@@ -8,7 +8,7 @@
   import { registerTileProtocol, basemapAvailable } from './tiles.js';
   import { markers } from './icons.js';
   import { clock } from './clock.svelte.js';
-  import { markerLayers, markerHit, gaugeDetails } from './mapMarkers.js';
+  import { markerLayers, markerChoices, markerPicker, gaugeDetails } from './mapMarkers.js';
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
@@ -17,6 +17,7 @@
   let { waters = [], showRivers = true, journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, zoneKey = 'willamette', fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
   let el;
   let map;
+  let popup;
   let ready = $state(false);
   let hasBasemap = $state(false);
 
@@ -165,21 +166,30 @@
       'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.75, 'icon-offset': [18, -18], 'icon-allow-overlap': true },
       paint: { 'icon-opacity': ['case', ['==', ['get', 'reviewed'], false], 0.75, 1] } });
     for (const id of markerLayers) map.moveLayer(id);
-    map.on('click', (e) => {
-      if (pickMode) { onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); return; }
-      const hit = markerHit(map.queryRenderedFeatures(e.point, { layers: markerLayers }));
-      if (!hit) return;
+    function openMarker(hit, lngLat) {
+      popup?.remove();
       const p = hit.properties;
       if (hit.layer.id === 'journal-pts') {
         const content = document.createElement('div'); content.textContent = p.label;
-        new maplibregl.Popup({ offset: 8 }).setLngLat(e.lngLat).setDOMContent(content).addTo(map);
+        popup = new maplibregl.Popup({ offset: 8 }).setLngLat(lngLat).setDOMContent(content).addTo(map);
       } else if (hit.layer.id === 'gauge-pts') {
         const content = gaugeDetails(p, Date.now(), clock.mode);
-        const pop = new maplibregl.Popup({ offset: 14, maxWidth: '280px', className: 'gauge-popup' })
-          .setLngLat(e.lngLat).setDOMContent(content).addTo(map);
-        pop.getElement().querySelector('.maplibregl-popup-close-button')?.setAttribute('aria-label', 'Close gauge details');
-        content.querySelector('button')?.addEventListener('click', () => { pop.remove(); onselect?.(Number(p.waterbody_id)); });
-      } else if (hit.layer.id !== 'home-pts') onselect?.(p.id);
+        popup = new maplibregl.Popup({ offset: 14, maxWidth: '280px', className: 'gauge-popup' })
+          .setLngLat(lngLat).setDOMContent(content).addTo(map);
+        popup.getElement().querySelector('.maplibregl-popup-close-button')?.setAttribute('aria-label', 'Close gauge details');
+        content.querySelector('button')?.addEventListener('click', () => { popup.remove(); onselect?.(Number(p.waterbody_id)); });
+      } else onselect?.(p.id);
+    }
+    map.on('click', (e) => {
+      if (pickMode) { onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); return; }
+      // A small screen-space area gives compact pins a forgiving tap target and includes nearby overlaps.
+      const choices = markerChoices(map.queryRenderedFeatures([[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]], { layers: markerLayers }));
+      if (!choices.length) return;
+      if (choices.length === 1) { openMarker(choices[0], e.lngLat); return; }
+      popup?.remove();
+      popup = new maplibregl.Popup({ offset: 14, maxWidth: '320px', className: 'marker-popup' })
+        .setLngLat(e.lngLat).setDOMContent(markerPicker(choices, (hit) => openMarker(hit, hit.geometry.coordinates))).addTo(map);
+      popup.getElement().querySelector('.maplibregl-popup-close-button')?.setAttribute('aria-label', 'Close map items');
     });
     for (const l of ['stocking-pts', 'river-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
       map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
@@ -215,6 +225,7 @@
   $effect(() => { if (zoneKey !== fittedFor) { fittedFor = zoneKey; fitted = false; } });  // a different zone: fit the map to its waters again
   $effect(() => {
     if (!ready || !data) return;
+    popup?.remove();
     map.getSource('stocking').setData(data);
     if (!fitted && data.features.length) {
       fitted = true;
@@ -226,6 +237,7 @@
   });
   $effect(() => {
     if (!ready) return;
+    popup?.remove();
     const vis = (on) => (on ? 'visible' : 'none');
     map.setLayoutProperty('stocking-pts', 'visibility', vis(showStocking));
     map.setLayoutProperty('stocking-sel', 'visibility', vis(showStocking));
@@ -239,7 +251,7 @@
     if (!ready) return;
     map.getSource('home')?.setData({ type: 'FeatureCollection', features: home ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: [home.lon, home.lat] }, properties: {} }] : [] });
   });
-  $effect(() => { if (ready) map.getCanvas().style.cursor = pickMode ? 'crosshair' : ''; });
+  $effect(() => { if (ready) { popup?.remove(); map.getCanvas().style.cursor = pickMode ? 'crosshair' : ''; } });
   $effect(() => { const l = inset; if (ready) map.setPadding({ left: l, top: 0, right: 0, bottom: 0 }); });
   $effect(() => {
     if (!ready) return;

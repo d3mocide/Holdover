@@ -1,5 +1,5 @@
 <script>
-  import PageIcon from './PageIcon.svelte';
+  import PageHeader from './PageHeader.svelte';
   import { clock, setClock } from './clock.svelte.js';
   import { api } from './api.js';
   import { auth } from './auth.svelte.js';
@@ -15,7 +15,7 @@
 </script>
 
 <div class="settings">
-  <div class="ttl"><PageIcon name="settings" /><h1>Settings</h1></div>
+  <PageHeader icon="settings" title="Settings" />
 
   <Account {invite} {oninvitedone} />
   <Preferences {wbList} {picking} {onpick} />
@@ -57,12 +57,11 @@
 </div>
 
 <style>
-  .ttl { display: flex; align-items: center; gap: 14px; }
   .settings { padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; height: 100%; }
   fieldset { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); padding: 8px 16px 12px; }
   legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
   .opt { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--text); margin: 0; }
-  h1 { font-size: 24px; letter-spacing: -0.01em; } h2 { margin: 0 0 8px; }
+  h2 { margin: 0 0 8px; }
   .src { display: grid; grid-template-columns: 9px 1fr auto; gap: 12px; align-items: center; min-height: 36px; border-bottom: 1px solid var(--hair); }
   .src:last-of-type { border-bottom: 0; } .nm { font-size: 14px; } .when { font-size: 13px; font-variant-numeric: tabular-nums; }
   .small { font-size: 13px; margin: 0; } .err { padding-left: 21px; }

@@ -1,5 +1,6 @@
 <script>
   import Icon from './Icon.svelte';
+  import PageHeader from './PageHeader.svelte';
   import { api, longDate, localDay } from './api.js';
   import { hhmm } from './clock.svelte.js';
   // This zone's weekly report: a briefing built from the data Holdover gathers, ending with ODFW's own words for the zone.
@@ -11,12 +12,8 @@
 </script>
 
 <section class="panel" aria-label="Weekly report">
-  <header>
-    <div class="row"><span class="ico"><Icon name="reports" size={26} /></span>
-      <div><h1>Weekly <span class="ov">report</span></h1>
-        <p class="quiet small">The {brief?.label ?? ''} zone, week of {brief?.week_of ? longDate(brief.week_of) : '…'}. Built from the data Holdover gathers, ending with ODFW's own words.</p></div>
-    </div>
-  </header>
+  <PageHeader icon="reports" title="Weekly" accent="report"
+    description={`The ${brief?.label ?? ''} zone, week of ${brief?.week_of ? longDate(brief.week_of) : '…'}. Built from the data Holdover gathers, ending with ODFW's own words.`} />
 
   {#if briefError}<p class="notice" role="alert">Couldn't load the report ({briefError}).</p>{/if}
   {#each brief?.sections ?? [] as s (s.key)}
@@ -42,10 +39,6 @@
 
 <style>
   .panel { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; height: 100%; }
-  header { display: flex; flex-direction: column; gap: 6px; }
-  .row { display: flex; gap: 14px; align-items: center; }
-  .ico { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair); flex: none; }
-  h1 { font-size: 24px; letter-spacing: -0.01em; } .ov { color: var(--fresh-1); }
   .small { font-size: 13px; margin: 2px 0 0; }
   article { display: flex; flex-direction: column; gap: 6px; }
   .sec { padding-bottom: 6px; border-bottom: 1px solid var(--hair); } .sec:last-of-type { border-bottom: 0; }

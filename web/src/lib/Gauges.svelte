@@ -1,7 +1,7 @@
 <script>
   import { api, TREND, localDay } from './api.js';
   import { asOf } from './clock.svelte.js';
-  import Icon from './Icon.svelte';
+  import PageHeader from './PageHeader.svelte';
   import { floodShort, floodElevated } from './floodText.js';
   import ZonePicker from './ZonePicker.svelte';
   import { SORTS, sortGauges, medianText, unusual, qualityReadings, readingStale, gaugeStale } from './gaugeText.js';
@@ -14,7 +14,7 @@
   const sorted = $derived(sortGauges(gauges, sort));
 </script>
 <div class="page" tabindex="0" role="region" aria-label="Gauges">
-  <header><span class="ico"><Icon name="gauge" size={26} /></span><div><h1>Gauges</h1><p class="quiet">{note || 'USGS values are provisional.'}</p></div></header>
+  <PageHeader icon="gauge" title="Gauges" color="var(--gauge)" description={note || 'USGS values are provisional.'} />
   {#if error}<p role="alert">Couldn't load gauges ({error}).</p>{/if}
   <ZonePicker {zones} {zone} {onzone} />
   <div class="chips" role="group" aria-label="Sort gauges">
@@ -41,10 +41,7 @@
   </ul>
 </div>
 <style>
-  .page { padding: 20px 16px 28px; height: 100%; overflow-y: auto; }
-  header { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
-  .ico { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; color: var(--gauge); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair); flex: none; }
-  h1 { font-size: 24px; letter-spacing: -0.01em; } header p { margin: 2px 0 0; font-size: 13px; }
+  .page { display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 28px; height: 100%; overflow-y: auto; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .chip { padding: 0 12px; min-height: 44px; font-size: 13px; }
   ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }

@@ -4,6 +4,7 @@
   import { KINDS, KIND_LABEL, FISHERY_LABEL } from './gearCatalog.js';
   import { gearStats } from './gearStats.js';
   import Icon from './Icon.svelte';
+  import PageHeader from './PageHeader.svelte';
   let { wbList = [], onitem, onsetup } = $props();
 
   let tab = $state('items');
@@ -40,11 +41,9 @@
 </script>
 
 <div class="page">
-  <header>
-    <span class="ico"><Icon name="gear" size={26} /></span>
-    <div><h1>Gear</h1><p class="quiet small">{items.length} item{items.length === 1 ? '' : 's'} · {mySetups.length} setup{mySetups.length === 1 ? '' : 's'}</p></div>
+  <PageHeader icon="gear" title="Gear" description={`${items.length} item${items.length === 1 ? '' : 's'} · ${mySetups.length} setup${mySetups.length === 1 ? '' : 's'}`}>
     <button class="primary add" onclick={() => (tab === 'setups' ? onsetup(null) : onitem(null))}>{tab === 'setups' ? 'New setup' : 'Add gear'}</button>
-  </header>
+  </PageHeader>
 
   <div class="tabs" role="group" aria-label="Gear sections">
     {#each [['items', 'Items'], ['setups', 'Setups'], ['stats', 'What works']] as [k, label]}
@@ -130,10 +129,7 @@
 </div>
 
 <style>
-  .page { padding: 20px 16px 28px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-  header { display: flex; gap: 14px; align-items: center; }
-  header > div { flex: 1; min-width: 0; } .ico { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; color: var(--fresh-1); background: var(--glass-fill); box-shadow: inset 0 0 0 1px var(--hair); flex: none; }
-  h1 { font-size: 24px; letter-spacing: -0.01em; } header p { margin: 2px 0 0; } .small { font-size: 13px; margin: 0; }
+  .page { padding: 16px 16px 28px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .add { flex: none; } .tabs, .chips { display: flex; gap: 6px; flex-wrap: wrap; } .chip { border-radius: 999px; padding: 0 14px; font-size: 13px; }
   .search { margin: 2px 0; }
   h2 { margin: 12px 0 2px; } ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }

@@ -27,6 +27,8 @@ try {
         console.log(`PASS axe ${theme}/${size}/${view}`); checks++;
       };
       await scan('settings');
+      await nav(p, 'Reports'); await p.getByRole('heading', { name: 'Weekly report', exact: true }).waitFor(); await scan('reports');
+      await nav(p, 'Gear'); await p.getByRole('heading', { name: 'Gear', exact: true }).waitFor(); await scan('gear');
       await nav(p, 'Map'); await p.getByRole('button', { name: 'Legend', exact: true }).waitFor(); await scan('map');
       await p.getByRole('button', { name: 'Legend', exact: true }).click(); await scan('legend');
       await p.getByRole('button', { name: 'Legend', exact: true }).click();

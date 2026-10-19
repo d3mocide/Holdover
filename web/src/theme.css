@@ -140,6 +140,20 @@ input[type='radio']:checked::after { content: ''; width: 10px; height: 10px; bor
 .gauge-trend { text-transform: capitalize; }
 .gauge-meta { color: var(--text-quiet); font-size: 12px; }
 .gauge-action { margin-top: 6px; width: 100%; }
+.selector-tabs { display: flex; gap: 22px; border-bottom: 1px solid var(--hair); margin-top: 8px; }
+.selector-tab { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; min-height: 44px; padding: 0 2px; margin-bottom: -1px; color: var(--text-quiet); font-weight: 500; }
+.selector-tab[aria-pressed='true'] { color: var(--text); border-bottom-color: var(--accent); }
+.marker-popup .maplibregl-popup-content { width: 320px; max-width: calc(100vw - 32px); padding: 16px !important; box-sizing: border-box; }
+.marker-popup .maplibregl-popup-close-button { top: 4px; right: 4px; width: 44px; height: 44px; min-height: 44px; padding: 0; font-size: 24px; border-radius: 10px; }
+.marker-picker h3 { margin: 0 32px 8px 0; font-size: 15px; line-height: 1.4; }
+.marker-picker p { margin: 0 0 10px; color: var(--text-quiet); font-size: 12px; }
+.marker-choices { display: grid; max-height: min(300px, 38vh); overflow-y: auto; }
+.marker-choices button { width: 100%; min-height: 56px; height: auto; text-align: left; justify-content: flex-start; padding: 10px 0; border: 0; border-top: 1px solid var(--hair); border-radius: 0; background: none; gap: 12px; }
+.marker-choices svg { flex: none; color: var(--fresh-1); }
+.marker-choices svg .a { fill: currentColor; opacity: .28; stroke: none; }
+.marker-choices button > span { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+.marker-choices strong { font-size: 13px; font-weight: 500; }
+.marker-choices button > span > span { color: var(--text-quiet); font-size: 12px; }
 
 input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
 input::placeholder { color: color-mix(in srgb, var(--text-quiet) 75%, transparent); }

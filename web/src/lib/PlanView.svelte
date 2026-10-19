@@ -5,7 +5,7 @@
   import { api, dayLabel, isoDay, localDay, weekLabel, FISHERIES } from './api.js';
   import { homeForRequests } from './auth.svelte.js';
   import ZonePicker from './ZonePicker.svelte';
-  import PageIcon from './PageIcon.svelte';
+  import PageHeader from './PageHeader.svelte';
   import { hhmm } from './clock.svelte.js';
   import { monthLabel, monthShort, monthRange, weekSummary } from './scheduleText.js';
   import { weekLabelYear } from './stockingGroups.js';
@@ -53,15 +53,14 @@
 
 <section class="panel" aria-label="Plan ahead">
   <header>
-    <div class="row">
-      <div class="ttl"><PageIcon name="plan" /><h1>Plan <span class="ov">ahead</span></h1></div>
+    <PageHeader icon="plan" title="Plan" accent="ahead">
       <span class="quiet mono small">{data?.meta.as_of ? `Synced ${hhmm(data.meta.as_of)}` : 'Not synced'}</span>
-    </div>
+    </PageHeader>
     <ZonePicker {zones} {zone} {onzone} />
     {#if zones.length < 2}<p class="quiet small">Willamette zone</p>{/if}
-    <div class="tabs" role="group" aria-label="Planning range">
-      <button class="tab" aria-pressed={mode === 'week'} onclick={() => (mode = 'week')}>Next 7 days</button>
-      <button class="tab" aria-pressed={mode === 'out'} onclick={() => (mode = 'out')}>Further out</button>
+    <div class="selector-tabs" role="group" aria-label="Planning range">
+      <button class="selector-tab" aria-pressed={mode === 'week'} onclick={() => (mode = 'week')}>Next 7 days</button>
+      <button class="selector-tab" aria-pressed={mode === 'out'} onclick={() => (mode = 'out')}>Further out</button>
     </div>
   </header>
 
@@ -144,13 +143,8 @@
 
 <style>
   .panel { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
-  .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .ttl { display: flex; align-items: center; gap: 14px; min-width: 0; }
-  h1 { font-size: 24px; letter-spacing: -0.02em; } .ov { color: var(--fresh-1); } h2 { font-weight: 500; margin: 4px 0 0; }
+  h2 { font-weight: 500; margin: 4px 0 0; }
   .small { font-size: 13px; margin: 0; } .intro { margin: 0; }
-  .tabs { display: flex; gap: 22px; border-bottom: 1px solid var(--hair); margin-top: 8px; }
-  .tab { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; min-height: 44px; padding: 0 2px; margin-bottom: -1px; color: var(--text-quiet); font-weight: 500; }
-  .tab[aria-pressed='true'] { color: var(--text); border-bottom-color: var(--accent); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; } .chips.first { margin-top: 2px; }
   .chip { padding: 0 12px; min-height: 44px; font-size: 13px; flex: none; }
   .months { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; } .months .chip { scroll-snap-align: start; }

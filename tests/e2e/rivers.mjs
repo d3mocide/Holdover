@@ -53,8 +53,10 @@ try {
   await p.waitForTimeout(700);
   const canvas = await p.locator('.maplibregl-canvas').boundingBox();
   await p.mouse.click(canvas.x + canvas.width / 2 + 56, canvas.y + canvas.height / 2);
+  const picker = p.getByRole('group', { name: 'Map items here', exact: true });
+  if (await picker.isVisible()) await picker.getByRole('button', { name: /Tualatin River.*River · open details/ }).click();
   await p.getByRole('heading', { name: 'Tualatin River', exact: true }).waitFor();
-  ok(await p.getByRole('button', { name: 'Open this river', exact: true }).count() === 0, 'river marker click opens details directly even where a gauge overlaps');
+  ok(await p.getByRole('button', { name: 'Open waterbody', exact: true }).count() === 0, 'river marker or overlap choice opens details without a gauge-popup detour');
 
   await ctx.setOffline(true); await p.reload();
   await p.getByRole('button', { name: 'Rivers', exact: true }).click();
