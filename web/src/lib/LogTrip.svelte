@@ -1,6 +1,7 @@
 <script>
   import { gpsMessage } from './gpsHelp.js';
-  import { db, uuid, nowIso, metaGet, metaSet } from './db.js';
+  import { db, uuid, nowIso } from './db.js';
+  import { loadTripDraft, saveTripDraft, clearTripDraft } from './tripDraft.js';
   import { captureConditions } from './conditions.js';
   import { countPending, syncNow } from './sync.svelte.js';
   import { asOf } from './clock.svelte.js';
@@ -64,7 +65,7 @@
   // Draft: restored once, then kept on every edit. (Editing an existing trip never uses the new-trip draft.)
   $effect(() => {
     if (editing) return;
-    metaGet('tripDraft').then((d) => {
+    loadTripDraft().then((d) => {
       if (d && !initialWb) {
         wbId = d.wbId ?? wbId; startedAt = d.startedAt ?? startedAt; endedAt = d.endedAt ?? ''; method = d.method ?? '';
         notes = d.notes ?? ''; gps = d.gps ?? null; setupUuid = d.setupUuid ?? ''; gearSel = d.gearSel ?? [];
@@ -76,7 +77,7 @@
   $effect(() => {
     if (!draftLoaded) return;
     const snap = { wbId, startedAt, endedAt, method, notes, gps, setupUuid, gearSel, species: species.map((s) => ({ name: s.name, count: s.count, gearUuid: s.gearUuid })) };
-    metaSet('tripDraft', snap);
+    saveTripDraft($state.snapshot(snap));
   });
 
   function useGps() {
@@ -142,7 +143,7 @@
         }
       });
       requestPersistence(); // a saved trip is data worth protecting from browser cleanup
-      await metaSet('tripDraft', null);
+      await clearTripDraft();
       await countPending();
       syncNow(); // no-op offline; runs when connectivity returns
       onsaved?.(tripId);

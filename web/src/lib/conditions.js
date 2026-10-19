@@ -1,27 +1,38 @@
-import { api } from './api.js';
+import { api, isoDay } from './api.js';
 import { db } from './db.js';
+
+async function cacheDay(id, date, fishery, payload) {
+  const row = { waterbody_id: id, date, fishery, fetched_at: new Date().toISOString(), payload };
+  await db.days.put(row);
+  if (date === isoDay()) await db.cond.put(row);
+  return row;
+}
 
 /** Day bundle with an IndexedDB copy, so conditions survive going offline. Returns {data, source, as_of}. */
 export async function loadDay(id, dayIso, fishery = 'trout') {
   try {
     const data = await api.day(id, dayIso, fishery);
-    await db.cond.put({ waterbody_id: id, fetched_at: new Date().toISOString(), date: dayIso, payload: data });
-    return { data, source: 'live', as_of: new Date().toISOString() };
+    const row = await cacheDay(id, dayIso, fishery, data);
+    return { data, source: 'live', as_of: row.fetched_at };
   } catch (e) {
-    const c = await db.cond.get(id);
+    let c = await db.days.get([id, dayIso, fishery]);
+    if (!c) {
+      const legacy = await db.cond.get(id);
+      if (legacy?.date === dayIso && legacy.fishery === fishery) c = legacy;
+    }
     if (c) return { data: c.payload, source: 'cached', as_of: c.fetched_at };
-    throw e;
+    throw new Error('No saved day view for this date and fishery. Connect to load it.');
   }
 }
 
 /** What goes in trip.conditions_json. Live if reachable (6 s cap), else the last cached bundle. */
 export async function captureConditions(wbId) {
   if (!wbId) return { json: null, source: null };
-  const day = new Date().toISOString().slice(0, 10);
+  const day = isoDay();
   let res;
   try {
     const data = await Promise.race([api.day(wbId, day), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))]);
-    await db.cond.put({ waterbody_id: wbId, fetched_at: new Date().toISOString(), date: day, payload: data });
+    await cacheDay(wbId, day, 'trout', data);
     res = { data, source: 'live', as_of: new Date().toISOString() };
   } catch {
     const c = await db.cond.get(wbId);

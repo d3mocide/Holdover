@@ -52,7 +52,8 @@ everywhere), and promote or demote other admins. The last active admin cannot be
 
 The journal copy on a device belongs to whoever last signed in there. Switching accounts on the same browser
 clears the previous person's copy, and if it holds entries that never synced it asks first. They are never
-pushed into the next account. On a shared device use **Sign out and clear this device**.
+pushed into the next account. Unfinished trip drafts belong to the same device journal, count as unsynced work in
+the warning, and are removed with it. On a shared device use **Sign out and clear this device**.
 
 Offline, the app remembers who was signed in so logging keeps working, and confirms with the server when the
 connection returns. Favorites and home changes need a connection and say so if you are offline.

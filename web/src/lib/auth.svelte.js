@@ -2,6 +2,7 @@
 // favorites live on this device. Signing in moves them to the account and syncs across devices.
 import { api, setUnauthorizedHandler } from './api.js';
 import { db, metaGet, metaSet } from './db.js';
+import { loadTripDraft, saveTripDraft, hasDraftContent } from './tripDraft.js';
 
 export const auth = $state({ ready: false, user: null, serverHome: null, notice: '', assumed: false });
 // What the UI shows for home/favorites: the account's when signed in, this device's otherwise.
@@ -44,12 +45,14 @@ export async function loadAuth() {
 
 async function localJournalCounts() {
   const tables = [db.trips, db.catches, db.pins, db.gear, db.setups];
-  const dirty = (await Promise.all(tables.map((t) => t.where('dirty').equals(1).count()))).reduce((a, b) => a + b, 0);
+  const dirty = (await Promise.all(tables.map((t) => t.where('dirty').equals(1).count()))).reduce((a, b) => a + b, 0) + Number(hasDraftContent(await loadTripDraft()));
   return { dirty, total: await db.trips.count() };
 }
 
 export async function clearDeviceJournal() {
-  await Promise.all([db.trips.clear(), db.catches.clear(), db.pins.clear(), db.gear.clear(), db.setups.clear(), db.meta.delete('lastPull'), db.meta.delete('syncOwner')]);
+  await db.transaction('rw', db.trips, db.catches, db.pins, db.gear, db.setups, db.meta, async () => {
+    await Promise.all([db.trips.clear(), db.catches.clear(), db.pins.clear(), db.gear.clear(), db.setups.clear(), db.meta.delete('tripDraft'), db.meta.delete('lastPull'), db.meta.delete('syncOwner')]);
+  });
 }
 
 async function onSignedIn(user) {
@@ -64,7 +67,9 @@ async function onSignedIn(user) {
     }
     await clearDeviceJournal();
   }
+  const draft = await loadTripDraft();
   await metaSet('syncOwner', user.id);
+  if (draft) await saveTripDraft(draft); // adopt an anonymous draft with the rest of the device journal
   // Hand over what this device had saved while signed out; the account wins if both have a home.
   let merged = user;
   try { merged = await api.mergeLocal(read(FAV_KEY, []), read(HOME_KEY, null)); write(FAV_KEY, null); write(HOME_KEY, null); } catch { /* keep going: prefs stay local */ }

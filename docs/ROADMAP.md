@@ -25,7 +25,7 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 | 6 | Design system | Done |
 | 7 | Accounts | Done |
 | 8 | Gear | Done |
-| 9 | Hardening and first deployment | Planned |
+| 9 | Hardening and first deployment | In progress |
 | 10 | Journal depth and journal-informed scoring | In progress |
 | 11 | More sources and statewide coverage | In progress |
 | 12 | Coast and marine | Planned |
@@ -174,7 +174,7 @@ full size (no resizing yet); gear is not shown on the waterbody sheet.
 
 ## Phase 9: Hardening and first deployment
 
-**Status:** Planned. **Goal:** the things the sandbox and the laptop could not prove. Best done when the app moves to
+**Status:** In progress. **Goal:** the things the sandbox and the laptop could not prove. Best done when the app moves to
 its server.
 
 **Gate:** installed on a real phone over HTTPS and used offline; a real LLM tried; a backup restored; and the USGS data source migrated before the legacy API is retired.
@@ -184,6 +184,11 @@ its server.
 - [x] Per-address login throttle that works behind a proxy (`TRUSTED_PROXY_HOPS`; tested with spoofed headers)
 - [ ] **Publish the image** (`.github/workflows/`, amd64 + arm64 to ghcr.io) and run it on the owner's Raspberry Pi: workflows written 2026-10-18, **never run**; needs a push to `main`, then a pull on the Pi
 - [x] Separate dev stack (`docker-compose.dev.yml`: reload, Vite, own volumes), built and run 2026-10-18
+- [x] Journal hardening: late offline arrivals reach other devices; drafts are owner-checked and cleared on shared-device removal;
+      offline day bundles match the date and fishery; JSON/CSV export includes the device's unsynced entries
+- [x] Phone Plan title clear of the collapse control; map controls inside a labelled landmark
+- Production observed on 2026-10-19: `holdover.int.d3mo.us` serves 0.6.0 with its scheduler running and ten sources fresh.
+  This does not establish the Pi, image-publishing workflow, Secure-cookie, phone, or day-long scheduler gates below.
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
 - [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction

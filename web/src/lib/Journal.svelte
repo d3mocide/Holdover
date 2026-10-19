@@ -8,6 +8,7 @@
   import { auth } from './auth.svelte.js';
   import Icon from './Icon.svelte';
   import { namesFor } from './gearStats.js';
+  import { journalJson, journalCsv } from './journalExport.js';
 
   let { wbList = [], onlog, onedit } = $props();
   let trips = $state([]), catches = $state([]), gear = $state([]), setups = $state([]);
@@ -34,10 +35,16 @@
   }
 
   async function exportFile(format) {
-    const r = await fetch(`/api/journal/export?format=${format}`, { credentials: 'same-origin', headers: { 'X-Holdover': '1' } });
-    if (!r.ok) { alert(r.status === 401 ? 'Sign in to export your synced journal.' : `Export failed (${r.status}). Export needs a connection.`); return; }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(await r.blob()); a.download = `holdover-journal.${format}`; a.click();
+    try {
+      const tables = { trips: db.trips, catches: db.catches, pins: db.pins, gear: db.gear, setups: db.setups };
+      const snapshot = await db.transaction('r', Object.values(tables), async () =>
+        Object.fromEntries(await Promise.all(Object.entries(tables).map(async ([key, table]) => [key, await table.toArray()]))));
+      const text = format === 'json' ? await journalJson(snapshot) : journalCsv(snapshot);
+      const url = URL.createObjectURL(new Blob([text], { type: format === 'json' ? 'application/json' : 'text/csv' }));
+      const a = document.createElement('a');
+      a.href = url; a.download = `holdover-journal.${format}`; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) { alert(`Export failed: ${e.message}`); }
   }
   const cond = (t) => { try { return JSON.parse(t.conditions_json); } catch { return null; } };
   const statusText = $derived(
@@ -82,6 +89,7 @@
     <button onclick={() => exportFile('json')}>Export JSON</button>
     <button onclick={() => exportFile('csv')}>Export CSV</button>
   </div>
+  <p class="quiet small">Exports include this device's saved entries and changes waiting to sync. JSON includes photos saved on this device; CSV includes text only.</p>
 </div>
 
 <style>

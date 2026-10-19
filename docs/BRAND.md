@@ -169,6 +169,8 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
   (68% tall for pages, 62% for the detail sheet) above a 64 px nav bar plus the safe area.
 - **Breakpoints:** 900 px (phone layout below), 1100 px (zoom buttons and the offline label are hidden below it).
 - **Phone sheets are opaque** (`--bg`, no blur): nothing may ghost through.
+- The full-height phone Plan panel reserves a 52 px control row above its content for the 44 px collapse button;
+  the button must never cover the page title. The map and its controls share a labelled landmark.
 - Page backgrounds carry a soft two-tint gradient from `--glow-1` and `--glow-2`. **No glowing halos on UI elements** (buttons, nav, scores, icons): they read as cheesy; use outlines and fills. Map markers keep their own halos because those encode meaning.
 
 ## 7. Iconography

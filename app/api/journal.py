@@ -237,13 +237,12 @@ def push(body: Push, user: User = Depends(require_user), session: Session = Depe
     return result
 
 
-def _dump(session: Session, user: User, since: str | None):
+def _dump(session: Session, user: User):
     """Only the signed-in user's own rows. owner_id is server-side bookkeeping and is never sent."""
     out = {}
     for key, model in (("trips", Trip), ("catches", Catch), ("pins", Pin), ("gear", GearItem), ("setups", GearSetup)):
         q = select(model).where(model.owner_id == user.id)
-        rows = [r for r in session.scalars(q)
-                if since is None or _norm(r.updated_at) > _norm(since)]
+        rows = session.scalars(q)
         out[key] = [{c.name: getattr(r, c.name) for c in model.__table__.columns if c.name != "owner_id"} for r in rows]
     return out
 
@@ -255,14 +254,17 @@ def pull(since: str | None = None, user: User = Depends(require_user), session: 
             _norm(since)
         except ValueError:
             raise HTTPException(422, "since must be ISO-8601")
-    d = _dump(session, user, since)
+    # Offline writes can arrive long after their client timestamp. A time cursor would permanently miss
+    # them. These small, per-owner journals use a full snapshot (including tombstones) on every pull.
+    # Accept `since` for older clients, but never use it to filter out a late arrival.
+    d = _dump(session, user)
     d["server_time"] = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
     return d
 
 
 @router.get("/journal/export")
 def export(format: str = "json", user: User = Depends(require_user), session: Session = Depends(get_session)):
-    d = _dump(session, user, None)
+    d = _dump(session, user)
     if format == "json":
         return JSONResponse(d, headers={"Content-Disposition": 'attachment; filename="holdover-journal.json"'})
     if format != "csv":

@@ -150,7 +150,7 @@
       <Gauges {zone} {zones} onzone={setZone} />
     {/if}
   </main>
-  <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap}>
+  <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap} role="region" aria-label="Fishing map and controls">
       <MapView zoneKey={zone} inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking || !!pin.target} onpick={async (p) => { if (pin.target) { try { await api.setCoords(pin.target.id, p.lat, p.lon); pinSaved(); load(); api.waterbodyList().then((v) => (wbList = v)).catch(() => {}); } catch (e) { error = e.message; } return; } picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
       <div class="layers glass" class:open={layersOpen} role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
@@ -316,7 +316,7 @@
     .ptoggle :global(svg) { transform: rotate(90deg); } .shell.collapsed .ptoggle :global(svg) { transform: rotate(-90deg); }
     .shell.collapsed .mapwrap.hide { display: block; }  /* Plan hides the map on a phone: hiding the panel brings it back */
     .planner { grid-column: 1; z-index: 3; align-self: end; height: 42%; border-radius: 20px 20px 0 0; }
-    .planner.full { height: 100%; border-radius: 0; }
+    .planner.full { height: 100%; border-radius: 0; padding-top: 52px; }
     .planner.tall { height: 68%; }
     .mapwrap.hide { display: none; }
     .sheetwrap, .sheetwrap.wide { width: 100%; top: auto; right: 0; bottom: var(--nav-h); height: calc(62% - var(--nav-h)); z-index: 6; border-radius: 20px 20px 0 0; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }

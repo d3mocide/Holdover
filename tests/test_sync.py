@@ -64,7 +64,32 @@ def test_soft_delete_syncs_and_is_pulled(session):
     c.post("/api/sync/push", json={"trips": [trip(deleted=1, updated_at="2026-10-17T15:00:00.000Z")]}, headers=AUTH)
     pulled = c.get("/api/sync/pull", params={"since": "2026-10-17T14:30:00.000Z"}, headers=AUTH).json()
     assert [t["deleted"] for t in pulled["trips"]] == [1]
-    assert c.get("/api/sync/pull", params={"since": "2026-10-17T16:00:00.000Z"}, headers=AUTH).json()["trips"] == []
+    # Old clients may still send a time cursor. They must receive late-arriving changes too.
+    assert c.get("/api/sync/pull", params={"since": "2026-10-17T16:00:00.000Z"}, headers=AUTH).json()["trips"][0]["deleted"] == 1
+
+
+def test_late_offline_writes_are_pulled_in_every_personal_table(session):
+    from conftest import signed_in_client
+    c = client()
+    other = signed_in_client("other-angler")
+    cursor = c.get("/api/sync/pull").json()["server_time"]
+    stamp = "2020-01-01T00:00:00Z"  # created offline well before the other device's last pull
+    gear_id, setup_id, pin_id = "a" * 32, "b" * 32, "c" * 32
+    body = {"trips": [trip(updated_at=stamp)], "catches": [catch(updated_at=stamp)],
+            "gear": [{"uuid": gear_id, "kind": "lure", "name": "Offline lure", "updated_at": stamp}],
+            "setups": [{"uuid": setup_id, "name": "Offline setup", "item_uuids_json": json.dumps([gear_id]), "updated_at": stamp}],
+            "pins": [{"uuid": pin_id, "lat": 44, "lon": -123, "updated_at": stamp}]}
+    assert c.post("/api/sync/push", json=body).json()["applied"] == 5
+    for key in body:
+        assert len(c.get("/api/sync/pull", params={"since": cursor}).json()[key]) == 1
+        assert other.get("/api/sync/pull", params={"since": cursor}).json()[key] == []
+    # Delayed edits and tombstones must propagate as well as creates.
+    for key in body:
+        body[key][0].update(updated_at="2020-01-02T00:00:00Z", deleted=1)
+    assert c.post("/api/sync/push", json=body).json()["applied"] == 5
+    pulled = c.get("/api/sync/pull", params={"since": cursor}).json()
+    assert all(pulled[key][0]["deleted"] == 1 for key in body)
+    assert c.get("/api/sync/pull?since=not-a-date").status_code == 422
 
 
 def test_catch_without_trip_is_rejected_not_fatal(session):

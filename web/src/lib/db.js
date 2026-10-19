@@ -24,6 +24,9 @@ db.version(2).stores({
   setups: 'uuid, dirty, updated_at'
 });
 
+// Keep each planned day and fishery separately; `cond` remains the latest observed conditions for logging.
+db.version(3).stores({ days: '[waterbody_id+date+fishery]' });
+
 export { uuid } from './uuid.js';
 export const nowIso = () => new Date().toISOString();
 

@@ -21,8 +21,10 @@
     return () => { removeEventListener('online', up); removeEventListener('offline', down); };
   });
   $effect(() => {
+    let active = true;
     d = null; error = '';
-    loadDay(id, isoDay(offset), fishery).then((v) => { d = v.data; source = v.source; asof = v.as_of; }).catch((e) => (error = e.message));
+    loadDay(id, isoDay(offset), fishery).then((v) => { if (active) { d = v.data; source = v.source; asof = v.as_of; } }).catch((e) => { if (active) error = e.message; });
+    return () => { active = false; };
   });
   const c = $derived(d?.conditions);
   const pack = $derived(d?.pack);

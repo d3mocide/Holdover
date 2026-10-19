@@ -35,6 +35,11 @@ The easy way is the dev stack (API with reload on :8020, Vite on :5173, its own 
     cd web && npm test                                                # frontend unit tests
     # airplane-mode E2E: tests/e2e/README.md
 
+Open [localhost:5173](http://localhost:5173) for local feedback; source edits reload automatically. After package
+metadata or dependency changes, rebuild with `docker compose -f docker-compose.dev.yml up -d --build`.
+The installable/offline app is verified against a production frontend build on a disposable test instance, as described
+in [the browser-test guide](tests/e2e/README.md); Vite is for live development.
+
 ## Documentation
 
 | Read | For |

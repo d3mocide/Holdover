@@ -1,14 +1,17 @@
 # Browser tests
 
-Three Playwright scripts drive the real app in headless Chromium. They are not part of `pytest`. Run them when
+Playwright scripts drive the real app in headless Chromium. They are not part of `pytest`. Run them when
 sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 
 | Script | Covers | Checks |
 | --- | --- | --- |
-| `offline.mjs` | Airplane-mode journal: service worker, offline tiles, trip logged offline, sync after reconnect, no duplicates | 11 |
+| `offline.mjs` | Airplane-mode journal: service worker, offline tiles, trip logged offline, sync after reconnect, no duplicates | 12 |
 | `accounts.mjs` | Sign-in, cookie flags, invites, a second user, isolation, merging local favorites, two people on one browser | 37 |
-| `pins.mjs` | An admin places a pin from the map (Settings, Place pins): signed-out users do not see it, the map switches zone and asks for a tap, the tap is saved and the item leaves the list, cancelling changes nothing. Run after `setup.sh accounts` | 11 |
+| `pins.mjs` | An admin places a pin from the map (Settings, Place pins): signed-out users do not see it, the map switches zone and asks for a tap, the tap is saved and the item leaves the list, cancelling changes nothing. Run after `setup.sh accounts` | 10 |
 | `gear.mjs` | Starter catalog, items, setups, the trip picker, stats, trip editing, your history on the sheet, the pack list, sync, offline create, cross-account isolation, axe on every gear view | 46 |
+| `hardening.mjs` | Offline anonymous JSON/CSV export, shared-device draft clearing and cancellation, account-switch draft isolation, late offline arrival on a second device, exact-date day cache | 14 |
+| `day-cache.mjs` | Vite modules: v2 journal upgrade preserved, separate dates and fisheries, no future-day substitution, no guessing legacy fishery, Oregon evening date, cached trip capture | 10 |
+| `accessibility.mjs` | Full axe (including landmarks) and screenshots of Settings, Map, Plan, Day, Journal and Log trip in three themes at phone, tablet and desktop widths; phone title bounds | 54 scans |
 
 ## One-time setup
 
@@ -28,6 +31,19 @@ They use a **throwaway instance** with its own database in `/tmp/holdover-e2e`, 
 `setup.sh` refuses to start if the port is busy, so a stale server can never answer for the new one (`PORT=...` to
 change it). The accounts test registers "sam" itself, so run `setup.sh accounts` (not `gear`) before it. Each run
 needs a fresh `setup.sh`: the tests create data.
+
+For the hardening suite, use a separate fresh fixture instance (never the personal dev database):
+
+    task_e2e_dir=$(mktemp -d /tmp/holdover-hardening-XXXXXX)
+    E2E_DIR="$task_e2e_dir" PORT=8031 tests/e2e/setup.sh gear
+    BASE_URL=http://localhost:8031/ node tests/e2e/hardening.mjs
+    BASE_URL=http://localhost:8031/ node tests/e2e/accessibility.mjs
+    kill "$(cat "$task_e2e_dir/server.pid")"
+
+`day-cache.mjs` imports the real frontend modules from Vite (`DEV_URL=http://localhost:5173` by default), in a fresh
+isolated browser. Day responses are explicit test fixtures intercepted in the browser; it never changes server data.
+Run `node tests/e2e/day-cache.mjs` while the dev stack is up. The new scripts save screenshots under `/tmp` by default
+(`SHOTS` overrides the directory). Do not reset a fixture server while another suite is using it.
 
 ## offline.mjs
 

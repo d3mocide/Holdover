@@ -1,4 +1,4 @@
-import { db, metaGet, metaSet } from './db.js';
+import { db } from './db.js';
 import { auth, loadAuth } from './auth.svelte.js';
 
 export const syncState = $state({ status: 'idle', pending: 0, lastSync: null, error: '' });
@@ -55,16 +55,15 @@ export async function push() {
 }
 
 export async function pull() {
-  const since = await metaGet('lastPull');
-  const res = await authed(`/api/sync/pull${since ? `?since=${encodeURIComponent(since)}` : ''}`);
-  for (const [key, table] of tables()) {
-    for (const row of res[key] ?? []) {
-      const local = await table.get(row.uuid);
-      if (!local || (!local.dirty && local.updated_at < row.updated_at)) await table.put({ ...local, ...row, dirty: 0 });
+  const res = await authed('/api/sync/pull');
+  await db.transaction('rw', tables().map(([, table]) => table), async () => {
+    for (const [key, table] of tables()) {
+      for (const row of res[key] ?? []) {
+        const local = await table.get(row.uuid);
+        if (!local || (!local.dirty && Date.parse(local.updated_at) <= Date.parse(row.updated_at))) await table.put({ ...local, ...row, dirty: 0 });
+      }
     }
-  }
-  const t = new Date(new Date(res.server_time).getTime() - 2000).toISOString(); // overlap: never miss a same-ms write
-  await metaSet('lastPull', t);
+  });
 }
 
 let timer = null, failures = 0, running = false;
