@@ -546,3 +546,10 @@ Owner feedback: the zone picker crowded the fish chips, belongs on the map, and 
 - Verified: rail-to-card/panel gaps measured at 16 px at 1920, 1440 and 1100 in every state (Map, Plan, panel hidden, sheet open); no overlaps between pill, Legend, Layers
   and the sheet; axe zero; 211 `pytest`, 52 frontend tests; browser suites offline 12/12, accounts 37/37, gear 46/46. Not verified: a real phone.
 
+
+### 2026-10-18 · this commit · Phase 5 · Zone pill and Legend stay at the top when there is room
+With a waterbody open they dropped to the bottom-left on every screen width, which looked odd on a wide screen. They now drop only when the top row would
+actually collide: on the Map tab below 1600 px, on Plan below 1820 px; the Legend hides while a sheet is open below 1420 px on Plan and below 1100 px anywhere, and the zone pill hides
+below 1400 px. Measured for overlaps with every other control and the sheet at 1920, 1790, 1600, 1500, 1440, 1420, 1400, 1280, 1100, 1000 and 900 px on both tabs: none.
+Also in this commit series: the stocking schedule and weekly report are fetched once a week (Friday), see the previous entry's commit message and `docs/sources.md`.
+Not verified: the browser suites were not re-run after this CSS-only change.

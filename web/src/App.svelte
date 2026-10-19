@@ -249,9 +249,7 @@
     /* While a form drawer is open the map's left-hand controls (Legend) slide over to clear it. */
     .shell.drawer { --drawer-shift: calc(min(520px, calc(100% - 128px - var(--panel-w, 0px))) + 16px); }
     /* With a sheet open the top row is full (panel or card, Legend, Layers, zoom): Legend drops to the bottom-left, its list opening upward. */
-    .shell.sheetopen .legend { top: auto; bottom: 16px; flex-direction: column-reverse; }
-    .shell.sheetopen .zonepill { top: auto; bottom: 16px; }
-    .shell.sheetopen .lgl { display: none; }  /* icon only, so the pill and Legend fit between the panel and the sheet */
+    .shell.sheetopen .legend, .shell.sheetopen .zonepill { top: 16px; bottom: auto; }  /* roomy: they stay at the top, beside the panel or card */
     /* On the Map tab the Best bets card sits where the side panel does, and Legend moves to its right. */
     .shell.nopanel { --base: calc(96px + min(380px, calc(100% - 144px)) + 16px); }
     .shell.nopanel.drawer { --base: calc(96px + var(--drawer-shift, 0px)); }
@@ -262,7 +260,21 @@
     .overlay { inset: 16px auto 16px calc(96px + var(--panel-w, 0px) + var(--panel-gap, 16px)); width: min(520px, calc(100% - 128px - var(--panel-w, 0px))); border-radius: 20px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
       border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   }
-  @media (min-width: 900px) and (max-width: 1279px) {
+  /* Only when the top row would collide (panel or card, pill, Legend, Layers, zoom, sheet) do the pill and Legend drop to the bottom-left,
+     Legend as an icon. A Plan panel is wider than the Map card, so it needs more room. */
+  @media (min-width: 900px) and (max-width: 1819px) {
+    .shell.sheetopen:not(.nopanel) .legend { top: auto; bottom: 16px; flex-direction: column-reverse; }
+    .shell.sheetopen:not(.nopanel) .zonepill { top: auto; bottom: 16px; }
+    .shell.sheetopen:not(.nopanel) .lgl { display: none; }
+  }
+  @media (min-width: 900px) and (max-width: 1599px) {
+    .shell.sheetopen.nopanel .legend { top: auto; bottom: 16px; flex-direction: column-reverse; }
+    .shell.sheetopen.nopanel .zonepill { top: auto; bottom: 16px; }
+    .shell.sheetopen.nopanel .lgl { display: none; }
+  }
+  @media (min-width: 900px) and (max-width: 1419px) { .shell.sheetopen:not(.nopanel) .legend { display: none; } }
+  @media (min-width: 900px) and (max-width: 1099px) { .shell.sheetopen .legend { display: none; } }
+  @media (min-width: 900px) and (max-width: 1399px) {
     .shell.sheetopen .zonepill { display: none; }  /* no room beside a sheet on a tight window; it returns when the sheet closes */
     .shell.sheetopen { --zp-w: 0px; }
   }
