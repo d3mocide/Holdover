@@ -210,6 +210,20 @@ whole phase (new fisheries, species, regulations to link to, a different map), n
 Fish passage counts (Willamette Falls, Bonneville) for steelhead and salmon timing; US Forest Service alerts and closure
 orders; TripCheck road conditions (needs a key). Listed so they are not forgotten; none are verified.
 
+## 10. Rivers: the Tualatin pilot and what else exists (researched 2026-10-18)
+
+**Built for the Tualatin River** (added as a waterbody, `app/passage.py` maps rivers to counts): three live USGS gauges (Dilley, Highway 219, West Linn) with flow against their own median, and
+for Dilley temperature, dissolved oxygen, pH, turbidity and conductance (new USGS parameters, units checked); NOAA flood status for Dilley and West Linn; and **adult fish passage at Willamette Falls** from DART
+(the Tualatin joins the Willamette above the falls). A gauge on the map now opens its river.
+
+**Researched, not built:**
+- **StreamNet** (regional fish data: abundance trends, dam counts, hatchery returns, CAP records): it has an API (its own page reports 533K requests) but I found no endpoint documentation or terms, and its `/data/` page is navigation only.
+  Mostly annual and historical, so it would add context (long-term trends), not "what is happening this week". Next step: read `/resources/exchange-tools/` and `/resources/citing-sn/`, or email project@streamnet.org.
+- **ODFW fish counts at Willamette Falls** are published only as monthly PDFs on myodfw.com (several near-duplicate files per month); DART is the machine-readable route to the same counts.
+- **OWRD streamflow** (Oregon Water Resources Department): the station catalog is queryable (`gis.wrd.state.or.us`), but I found no documented readings API; USGS already carries the main Tualatin and Willamette gauges. OWRD also runs Tualatin gauges USGS does not (Lee Falls, Gaston, Rood Bridge, Farmington). NOAA's NWPS republishes several of them (flood status only).
+- **Oregon DEQ and Clean Water Services** (Tualatin water quality, temperature): the portals respond but I did not look at their data or terms.
+- Not looked at: ODFW's regulation zones for the Tualatin (the regulations page is linked from every sheet).
+
 ## Recommended order
 
 1. ~~USGS migration~~ **done 2026-10-18**.

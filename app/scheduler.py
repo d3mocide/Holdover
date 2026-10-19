@@ -8,7 +8,7 @@ from app.config import get_settings
 from app.db import session_factory
 from app.http import now_iso
 from app.models import RawFetch
-from app.sources import corps, nifc, nwps, nws, odf_fire, odfw_report, odfw_stocking, oha, usgs
+from app.sources import corps, dart, nifc, nwps, nws, odf_fire, odfw_report, odfw_stocking, oha, usgs
 
 log = logging.getLogger("holdover.scheduler")
 scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
@@ -16,7 +16,8 @@ scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 # source -> expected cadence, used to flag a source stale when nothing succeeded recently
 CADENCE = {odfw_stocking.SOURCE: timedelta(days=7), odfw_report.SOURCE: timedelta(days=8),
            usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2),
-           corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3), nwps.SOURCE: timedelta(hours=2)}
+           corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3), nwps.SOURCE: timedelta(hours=2),
+           dart.SOURCE: timedelta(days=1)}
 # Sources that only run for things the owner opts into (nws needs starred waterbodies)
 OPTIONAL: set[str] = set()
 
@@ -118,6 +119,10 @@ def run_briefing() -> dict:
             return {"ok": False, "error": "job crashed, see logs"}
 
 
+def run_dart() -> dict:
+    return _run("dart", dart)
+
+
 def run_oha() -> dict:
     return _run("oha", oha)
 
@@ -155,7 +160,7 @@ def run_llm_retry() -> None:
 
 # Order matters: NWS forecasts are fetched for stocked waterbodies, so stocking goes first.
 CATCH_UP = [(odfw_stocking.SOURCE, "run_stocking"), (oha.SOURCE, "run_oha"), (usgs.SOURCE, "run_usgs"), (corps.SOURCE, "run_corps"),
-            (odf_fire.SOURCE, "run_odf_fire"), (nifc.SOURCE, "run_nifc"), (nwps.SOURCE, "run_nwps"), (nws.SOURCE, "run_nws"),
+            (odf_fire.SOURCE, "run_odf_fire"), (nifc.SOURCE, "run_nifc"), (nwps.SOURCE, "run_nwps"), (dart.SOURCE, "run_dart"), (nws.SOURCE, "run_nws"),
             (odfw_report.SOURCE, "run_reports")]
 
 
@@ -217,6 +222,8 @@ def start() -> None:
     scheduler.add_job(run_corps, "interval", hours=1, id="corps", replace_existing=True, coalesce=True)
     scheduler.add_job(run_odf_fire, "interval", hours=6, id="odf_fire", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nifc, "interval", hours=1, id="nifc", replace_existing=True, coalesce=True)
+    # Fish counts: ODFW posts on weekdays, so one polite request each morning is plenty (about 6 KB).
+    scheduler.add_job(run_dart, "cron", hour=8, minute=30, id="dart", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nwps, "interval", minutes=60, id="nwps", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
     scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)

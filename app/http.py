@@ -21,11 +21,14 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def http_fetch(url: str, *, retries: int = 3, timeout: float = 30, extra_ca: str | None = None) -> tuple[int | None, bytes]:
-    """extra_ca: a PEM file added to the trust store for hosts that send an incomplete certificate chain.
+def http_fetch(url: str, *, retries: int = 3, timeout: float = 30, extra_ca: str | None = None, system_trust: bool = False) -> tuple[int | None, bytes]:
+    """extra_ca: a PEM file added to the trust store for hosts that omit an intermediate certificate from their chain.
+    system_trust: use the operating system's store, for a host whose (newer) root the bundled store lacks.
     Verification is never switched off."""
     verify: bool | ssl.SSLContext = True
-    if extra_ca:
+    if system_trust:  # the operating system's certificate store (kept current by OS updates) instead of the bundled one; verification stays on
+        verify = ssl.create_default_context()
+    elif extra_ca:
         verify = ssl.create_default_context(cafile=certifi.where())
         verify.load_verify_locations(extra_ca)
     headers = {"User-Agent": get_settings().user_agent}

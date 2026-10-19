@@ -23,7 +23,7 @@ PAGE = "https://water.noaa.gov/gauges/{lid}"
 LIDS = {
     "14166000": "HARO3", "14174000": "ALBO3", "14191000": "SLMO3", "14152000": "JASO3", "14157500": "GOSO3",
     "14162500": "VIDO3", "14163150": "MKLO3", "14165500": "MRGO3", "14178000": "BCKO3", "14179000": "BRBO3",
-    "14181500": "BCLO3", "14183000": "MEHO3", "14185900": "QCCO3", "14210000": "ESTO3",
+    "14181500": "BCLO3", "14203500": "DLLO3", "14207500": "WSLO3", "14183000": "MEHO3", "14185900": "QCCO3", "14210000": "ESTO3",
 }
 LABELS = {"no_flooding": "No flooding", "action": "Action stage (near flood stage)", "minor": "Minor flooding",
           "moderate": "Moderate flooding", "major": "Major flooding"}

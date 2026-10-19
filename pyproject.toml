@@ -25,5 +25,8 @@ postgres = ["psycopg[binary]>=3.2"]  # optional: run on Postgres instead of SQLi
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+[tool.setuptools.package-data]
+app = ["certs/*.pem"]  # the bundled intermediate certificate for the Army Corps host travels with the package
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

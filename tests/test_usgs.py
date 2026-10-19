@@ -166,3 +166,32 @@ def test_legacy_fallback_still_works_until_usgs_retires_it(session, monkeypatch)
     ts["values"][0]["value"][0]["value"] = "-999999"; ts["values"][0]["value"][1]["value"] = "Ice"
     assert len(usgs.parse_legacy(json.dumps(body))) == len(usgs.parse_legacy(LEGACY)) - 2
     monkeypatch.delenv("USGS_API"); get_settings.cache_clear()
+
+
+# ---- water quality (the Tualatin at Dilley reports temperature, dissolved oxygen, pH, turbidity and conductance) -----------------
+TUALATIN = (FIX / "usgs" / "tualatin_latest.json").read_bytes()
+
+
+def test_real_tualatin_response_yields_flow_stage_temperature_and_the_four_quality_readings():
+    rows = usgs.parse(TUALATIN)
+    dilley = {r["parameter"]: r["value"] for r in rows if r["site_no"] == "14203500"}
+    assert {"discharge_cfs", "gage_height_ft", "water_temp_c", "dissolved_oxygen_mgl", "ph", "turbidity_fnu", "conductance_uscm"} <= set(dilley)
+    assert 0 < dilley["dissolved_oxygen_mgl"] < 20 and 5 < dilley["ph"] < 10 and dilley["conductance_uscm"] > 0
+    west_linn = {r["parameter"] for r in rows if r["site_no"] == "14207500"}
+    assert west_linn == {"discharge_cfs", "gage_height_ft"}  # a gauge without quality sensors simply has none
+    assert not any(r["parameter"] in ("ph",) and r["site_no"] == "14207500" for r in rows)
+
+
+def test_a_quality_reading_in_an_unexpected_unit_is_skipped_not_reinterpreted():
+    body = json.dumps({"type": "FeatureCollection", "features": [
+        feature(parameter_code="00300", unit_of_measure="mg/l", value="9.5"),
+        feature(parameter_code="00300", unit_of_measure="percent", value="95"),      # percent saturation: not the same thing
+        feature(parameter_code="00400", unit_of_measure="pH Units", value="7.5"),
+        feature(parameter_code="63680", unit_of_measure="_FNU", value="2.3"),
+        feature(parameter_code="00095", unit_of_measure="mS/cm", value="0.073")]}).encode()  # milli- not micro-siemens
+    got = {(r["parameter"], r["value"]) for r in usgs.parse(body)}
+    assert got == {("dissolved_oxygen_mgl", 9.5), ("ph", 7.5), ("turbidity_fnu", 2.3)}
+
+
+def test_the_legacy_fallback_is_still_asked_only_for_the_original_three_parameters():
+    assert "parameterCd=00060,00065,00010&" in usgs.url_for_legacy(["14203500"])

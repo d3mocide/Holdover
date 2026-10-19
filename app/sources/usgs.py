@@ -23,9 +23,12 @@ from app.models import Gauge, GaugeReading, RawFetch
 SOURCE = "usgs"
 BASE = "https://api.waterdata.usgs.gov/ogcapi/v1/collections"
 LEGACY_BASE = "https://waterservices.usgs.gov/nwis/iv/"
-PARAMS = {"00060": "discharge_cfs", "00065": "gage_height_ft", "00010": "water_temp_c"}
+CORE = ("00060", "00065", "00010")  # what the legacy endpoint is asked for
+PARAMS = {"00060": "discharge_cfs", "00065": "gage_height_ft", "00010": "water_temp_c",
+          # water quality, reported by only some gauges (the Tualatin at Dilley has all four); a gauge without them simply returns nothing
+          "00300": "dissolved_oxygen_mgl", "00400": "ph", "63680": "turbidity_fnu", "00095": "conductance_uscm"}
 # The unit each parameter must arrive in. A reading in any other unit is skipped, never silently reinterpreted.
-UNITS = {"00060": "ft^3/s", "00065": "ft", "00010": "degC"}
+UNITS = {"00060": "ft^3/s", "00065": "ft", "00010": "degC", "00300": "mg/l", "00400": "pH Units", "63680": "_FNU", "00095": "uS/cm"}
 # USGS qualifiers for readings that are not real measurements (ice, equipment malfunction, maintenance, seasonal/discontinued).
 UNRELIABLE = {"ice", "eqp", "mnt", "ssn", "dis", "fld"}
 PAGE_LIMIT = 10000
@@ -170,7 +173,7 @@ def run_job(session: Session, fetch: Fetcher = http_fetch, period: str | None = 
 # ---- legacy waterservices (deprecated: delete after USGS retires it, early 2027) ----------------------------------------
 
 def url_for_legacy(site_nos: list[str], period: str = "PT6H") -> str:
-    return f"{LEGACY_BASE}?format=json&sites={','.join(sorted(site_nos))}&parameterCd={','.join(PARAMS)}&period={period}&siteStatus=all"
+    return f"{LEGACY_BASE}?format=json&sites={','.join(sorted(site_nos))}&parameterCd={','.join(CORE)}&period={period}&siteStatus=all"
 
 
 def parse_legacy(body: bytes | str) -> list[dict]:
@@ -183,7 +186,7 @@ def parse_legacy(body: bytes | str) -> list[dict]:
     for ts in series:
         site = ts["sourceInfo"]["siteCode"][0]["value"]
         code = ts["variable"]["variableCode"][0]["value"]
-        if code not in PARAMS:
+        if code not in CORE:
             continue
         nodata = float(ts["variable"].get("noDataValue", -999999))
         for block in ts["values"]:

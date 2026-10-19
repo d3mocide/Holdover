@@ -10,7 +10,7 @@ from app.db import get_session
 from app.freshness import freshness
 from app.sources import oha
 from app.conditions import conditions, latest_gauge, report_items
-from app.models import Gauge, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias
+from app.models import Gauge, WaterbodyGauge, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias
 
 router = APIRouter()
 
@@ -84,8 +84,9 @@ def _extra_layers(session: Session, wanted: set[str], zone: str, today: date) ->
                 continue
             lg = latest_gauge(session, g)
             q = lg["values"].get("discharge_cfs")
+            wb_id = session.scalar(select(WaterbodyGauge.waterbody_id).where(WaterbodyGauge.gauge_id == g.id).order_by(WaterbodyGauge.waterbody_id).limit(1))
             out.append({"type": "Feature", "geometry": pt(g.lon, g.lat), "properties": {
-                "layer": "gauge", "id": g.id, "name": g.name, "site_no": g.site_no,
+                "layer": "gauge", "id": g.id, "waterbody_id": wb_id, "name": g.name, "site_no": g.site_no,
                 "flow_cfs": q["value"] if q else None, "trend": lg["trend"], "as_of": lg["as_of"],
                 "stale": lg["stale"], "provisional": True}})
     if "advisories" in wanted:

@@ -30,3 +30,13 @@ test('the NOAA note is short and mentions a forecast only when it is not quiet',
   assert.equal(floodShort({ label: 'No flooding', forecast: { category: 'minor', label: 'Minor flooding' } }), 'NOAA: no flooding, forecast minor flooding');
   assert.equal(floodShort(null), null);
 });
+
+import { qualityParts } from './gaugeText.js';
+test('water quality shows what the gauge reports, in plain units, and drops a stale sensor', () => {
+  const now = Date.parse('2026-10-19T03:00:00Z');
+  const g = { values: { dissolved_oxygen_mgl: { value: 9.5, observed_at: '2026-10-19T02:30:00+00:00' }, ph: { value: 7.46, observed_at: '2026-10-19T02:30:00+00:00' },
+    turbidity_fnu: { value: 2.3, observed_at: '2026-10-19T02:30:00+00:00' }, conductance_uscm: { value: 73, observed_at: '2026-10-17T15:00:00+00:00' } } };
+  assert.deepEqual(qualityParts(g, now), ['dissolved oxygen 9.5 mg/L', 'pH 7.5', 'turbidity 2.3 FNU']);  // conductance is two days old
+  assert.deepEqual(qualityParts({ values: {} }, now), []);
+  assert.equal(qualityParts({ values: { turbidity_fnu: { value: 41.7, observed_at: '2026-10-19T02:30:00+00:00' } } }, now)[0], 'turbidity 42 FNU');
+});

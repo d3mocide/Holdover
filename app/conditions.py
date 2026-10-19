@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.astro import daylight, moon_phase
 from app.freshness import freshness
 from app.models import Gauge, GaugeReading, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias, WaterbodyGauge
+from app import passage
 from app.sources import corps, nifc, nwps, nws, odf_fire, oha
 
 GAUGE_STALE_H = 3
@@ -36,7 +37,7 @@ def flow_vs_median(session: Session, gauge_id: int) -> tuple[float | None, float
 def latest_gauge(session: Session, g: Gauge) -> dict:
     out = {"id": g.id, "site_no": g.site_no, "name": g.name, "lat": g.lat, "lon": g.lon, "provisional": True,
            "values": {}, "as_of": None, "stale": True, "trend": None, "flood": nwps.for_site(session, g.site_no)}
-    for param in ("discharge_cfs", "gage_height_ft", "water_temp_c"):
+    for param in ("discharge_cfs", "gage_height_ft", "water_temp_c", "dissolved_oxygen_mgl", "ph", "turbidity_fnu", "conductance_uscm"):
         r = session.scalar(select(GaugeReading).where(GaugeReading.gauge_id == g.id, GaugeReading.parameter == param)
                            .order_by(GaugeReading.observed_at.desc()).limit(1))
         if r is None:
@@ -110,6 +111,7 @@ def conditions(session: Session, wb: Waterbody, day: date, today: date | None = 
     out["moon"] = moon_phase(day)
 
     out["reservoir"] = corps.for_waterbody(session, wb)
+    out["passage"] = passage.for_waterbody(session, wb.name)
     out["fire"] = {"danger": odf_fire.current(session, wb.id), "nearby": nifc.current(session, wb.id)}
 
     out["advisories"] = [{"kind": a.kind, "text": a.text, "issued": a.observed_at} for a in oha.current(session, wb.id)]

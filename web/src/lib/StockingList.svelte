@@ -10,6 +10,7 @@
   const fish = (s) => [s.legals && `${s.legals.toLocaleString()} legals`, s.trophy && `${s.trophy.toLocaleString()} trophy`].filter(Boolean).join(' + ') || `${s.total.toLocaleString()} fish`;
 </script>
 
+{#if stocking.length}
 <svelte:element this={`h${level}`} class="eyebrow head"><Icon name="stocking" size={14} /> Stocking</svelte:element>
 {#each sections as sec (sec.key)}
   {@const { shown, rest } = split(sec.items)}
@@ -33,6 +34,7 @@
   <p class="quiet small">No stocking in the last two weeks or scheduled.</p>
 {/each}
 <p class="quiet small note">Weeks, not days. The schedule can change without notice.{asOfIso ? ` As of ${hhmm(asOfIso)}.` : ''}</p>
+{/if}  <!-- a river that has never been on ODFW's schedule gets no Stocking section at all -->
 
 <style>
   .head { display: flex; align-items: center; gap: 6px; margin-top: 14px; } .head :global(svg) { color: var(--fresh-2); }

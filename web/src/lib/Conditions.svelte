@@ -5,12 +5,16 @@
   import { asOf, clockText } from './clock.svelte.js';
   import { floodText, floodElevated } from './floodText.js';
   import { dangerText, fireLine } from './fireText.js';
+  import { qualityParts } from './gaugeText.js';
+  import { rangeText, speciesLine, shownSpecies } from './passageText.js';
   // level: the heading level for this block's section titles. A sheet titles itself with an h2, the day view with an h1,
   // so each passes the level that keeps the outline in order (no skipped levels).
   let { c, level = 3 } = $props();
   const w = $derived(c.weather?.day);
   const flowGauge = $derived(c.gauges.find((g) => g.values.discharge_cfs));
   const r = $derived(c.reservoir);
+  const ps = $derived(c.passage);
+  const passed = $derived(shownSpecies(ps));
   const fd = $derived(c.fire?.danger);
   const fn = $derived(c.fire?.nearby);
   const fires = $derived(fn?.fires ?? []);
@@ -52,9 +56,20 @@
       <span class="mono">{g.values.discharge_cfs ? `${Math.round(g.values.discharge_cfs.value).toLocaleString()} cfs` : '—'}
         {#if g.values.gage_height_ft}· {g.values.gage_height_ft.value} ft{/if}</span>
       <span class="quiet small full">{g.trend ? TREND[g.trend] + ' (3 h) · ' : ''}Provisional USGS data, {asOf(g.as_of)} {#if g.stale}<b class="stale">Stale</b>{/if}</span>
+      {#if qualityParts(g).length}<span class="quiet small full">Water quality: {qualityParts(g).join(' · ')} (USGS, provisional)</span>{/if}
       {#if g.flood}<span class="quiet small full" class:warn={floodElevated(g.flood)}>{floodText(g.flood)} · {asOf(g.flood.as_of)} {#if g.flood.stale}<b class="stale">Stale</b>{/if} · <a href={g.flood.page} target="_blank" rel="noopener">NOAA</a></span>{/if}
     </div>
   {/each}
+{/if}
+
+{#if ps && passed.length}
+  <svelte:element this={`h${level}`} class="eyebrow head"><Icon name="fish" size={14} /> Fish passage</svelte:element>
+  <div class="g">
+    <span class="grow">{ps.project} fishway, {rangeText(ps)}</span>
+    {#each passed as s}<span class="full small">{speciesLine(s)}</span>{/each}
+    <span class="quiet small full">{ps.note}</span>
+    <span class="quiet small full">ODFW counts, via <a href={ps.page} target="_blank" rel="noopener">Columbia River DART</a></span>
+  </div>
 {/if}
 
 {#if fires.length || fdNotable}

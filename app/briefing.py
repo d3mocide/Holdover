@@ -14,7 +14,7 @@ from app.api.reports import latest_report
 from app.api.stocking import latest_rows
 from app.models import FireNearby, Gauge, GaugeReading, RawFetch, Waterbody
 from app.planner import FISHERIES, rank
-from app.sources import corps, nifc, nwps, oha
+from app.sources import corps, dart, nifc, nwps, oha
 from app.sources.odfw_report import parse as parse_report
 from app.zones import BY_KEY
 
@@ -83,6 +83,20 @@ def _flow_line(session: Session, g: Gauge) -> str | None:
     return f"{g.name}: {text} (USGS, provisional)."
 
 
+def passage_facts(session: Session, today: date, zone: str) -> Section:
+    s = Section("passage", "Fish passage", hint="Say which species are moving past Willamette Falls now and how this week compares with the ten-year average. Do not say how many reach any river.")
+    if zone != "willamette":
+        return s
+    d = dart.summary(session)
+    if d is None:
+        return s
+    for sp in ("coho", "chinook", "steelhead"):
+        x = d["species"].get(sp)
+        if x:
+            s.facts.append(f"{x['label']}: {x['count']:,} counted at the Willamette Falls fishway in the {d['days_reported']} days reported through {date.fromisoformat(d['through']):%b} {date.fromisoformat(d['through']).day}; the ten-year average for the same days is {x['avg10']:,} (ODFW counts, via Columbia River DART).")
+    return s
+
+
 def water(session: Session, today: date, zone: str) -> Section:
     s = Section("water", "Rivers and reservoirs", hint="Mention only what stands out: rivers far from their usual flow and big reservoir changes. Say the rest is near normal if it is.")
     for g in session.scalars(select(Gauge).where(Gauge.zone == zone).order_by(Gauge.name)):
@@ -130,4 +144,4 @@ def build(session: Session, today: date | None = None, zone: str = "willamette")
     """Sections in reading order, for one zone. Empty sections are dropped."""
     today = today or date.today()
     # watch-outs lead: safety and conditions before opportunities
-    return [s for s in (watchouts(session, today, zone), where(session, today, zone), stocking(session, today, zone), water(session, today, zone), odfw(session, today, zone)) if s.facts]
+    return [s for s in (watchouts(session, today, zone), where(session, today, zone), stocking(session, today, zone), passage_facts(session, today, zone), water(session, today, zone), odfw(session, today, zone)) if s.facts]

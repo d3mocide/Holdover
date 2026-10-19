@@ -186,7 +186,10 @@
       const t = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; el.appendChild(d); };
       t(p.name); t(p.flow_cfs != null ? `${Math.round(p.flow_cfs).toLocaleString()} cfs${p.trend ? ' · ' + p.trend : ''}` : 'No flow data', 'mono');
       t(`USGS ${p.site_no} · provisional${p.stale === true || p.stale === 'true' ? ' · STALE' : ''}`);
-      new maplibregl.Popup({ offset: 12 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
+      const pop = new maplibregl.Popup({ offset: 12 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
+      if (p.waterbody_id != null && p.waterbody_id !== 'null') {  // a gauge on a waterbody we track: offer its sheet
+        const btn = document.createElement('button'); btn.className = 'pill'; btn.textContent = 'Open this river'; btn.onclick = () => { pop.remove(); onselect?.(Number(p.waterbody_id)); }; el.appendChild(btn);
+      }
     });
     for (const l of ['stocking-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
       map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));

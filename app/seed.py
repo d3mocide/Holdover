@@ -21,6 +21,8 @@ ZONE = "willamette"
 # (canonical name, kind, lat, lon, [stocking-schedule labels])
 SEED: list[tuple[str, str, float | None, float | None, list[str]]] = [
     ("Alton Baker Canal", "river", 44.0535, -123.0650, ["ALTON BAKER CANAL"]),
+    # Not on ODFW's stocking schedule: added as a river for its gauges, flood status and fish passage. Pinned at NOAA's "Tualatin River at Tualatin" gauge (TUAO3).
+    ("Tualatin River", "river", 45.38722, -122.76250, []),
     ("Benson Lake", "lake", 45.594, -122.090, ["BENSON LK"]),
     ("Bethany Pond", "pond", 45.559, -122.845, ["BETHANY PD"]),
     ("Blue Lake", "lake", 45.540, -122.444, ["BLUE LK"]),
@@ -139,7 +141,7 @@ FISHERY_HINTS = {
     "Santiam River, North Fork": ["steelhead"], "McKenzie River (below Leaburg Dam)": ["steelhead"],
     "McKenzie River (above Leaburg Dam)": ["steelhead"],
     "Henry Hagg Lake": ["warmwater"], "Dorena Reservoir": ["warmwater"], "Cottage Grove Reservoir": ["warmwater"],
-    "Foster Reservoir": ["warmwater"], "Blue Lake": ["warmwater"],
+    "Foster Reservoir": ["warmwater"], "Blue Lake": ["warmwater"], "Tualatin River": ["steelhead", "warmwater"],
 }
 
 
@@ -228,6 +230,9 @@ GAUGES = [
     ("14183000", "North Santiam River at Mehama", 44.78925, -122.61881),
     ("14185900", "Quartzville Creek near Cascadia", 44.54012, -122.43592),
     ("14210000", "Clackamas River at Estacada", 45.29984, -122.35397),
+    ("14203500", "Tualatin River near Dilley", 45.47484, -123.12427),
+    ("14206241", "Tualatin River at Highway 219 near Hillsboro", 45.50039, -122.99094),
+    ("14207500", "Tualatin River at West Linn", 45.35068, -122.67620),
 ]
 
 # waterbody name -> gauge site numbers that represent it. Only links that are clearly the same water.
@@ -243,6 +248,7 @@ GAUGE_LINKS = {
     "Leaburg Lake": ["14163150"],
     "Cottage Grove Reservoir": ["14153500"],
     "Estacada Lake": ["14210000"],
+    "Tualatin River": ["14203500", "14206241", "14207500"],
 }
 
 

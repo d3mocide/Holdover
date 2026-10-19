@@ -1,0 +1,64 @@
+Project,Date,Chinook Run,Chin,Chin10Yr,JChin,JChin10Yr,Stlhd,Stlhd10Yr,WStlhd,WStlhd10Yr,Sock,Sock10Yr,Coho,Coho10Yr,JCoho,JCoho10Yr,Shad,Shad10Yr,LmpryDay,LmpryDay10Yr,BTrout,BTrout10Yr,Chum,Chum10Yr,Pink,TempC
+Willamette Falls,2026-09-01,Fa,35,35,6,6,3,5,,,,,1,9,,2,,,,,,,,,,
+Willamette Falls,2026-09-02,Fa,13,31,11,6,11,7,,,,,1,18,3,2,,,,,,,,,,
+Willamette Falls,2026-09-03,Fa,40,38,6,8,41,11,,,,,3,12,5,3,,,,,,,,,,
+Willamette Falls,2026-09-04,Fa,46,49,4,11,66,10,,,,,10,8,2,2,,,,,,,,,,
+Willamette Falls,2026-09-05,Fa,72,32,2,5,76,7,,,,,14,19,11,5,,,,,,,,,,
+Willamette Falls,2026-09-06,Fa,39,33,2,8,56,7,,,,,9,31,3,10,,,,,,,,,,
+Willamette Falls,2026-09-07,Fa,50,39,7,5,45,11,,,,,14,73,28,16,,,,,,,,,,
+Willamette Falls,2026-09-08,Fa,41,31,3,7,58,8,,,,,106,120,115,25,,,,,,,,,,
+Willamette Falls,2026-09-09,Fa,37,35,3,5,53,9,,,,,235,114,189,36,,,,,,,,,,
+Willamette Falls,2026-09-10,Fa,34,62,1,11,20,6,,,,,152,107,149,29,,,,,,,,,,
+Willamette Falls,2026-09-11,Fa,41,31,5,7,13,6,,,,,165,158,112,54,,,,,,,,,,
+Willamette Falls,2026-09-12,Fa,33,30,1,7,7,7,,,,,169,139,120,55,,,,,,,,,,
+Willamette Falls,2026-09-13,Fa,17,37,3,6,6,9,,,,,106,185,92,57,,,,,,,,,,
+Willamette Falls,2026-09-14,Fa,27,55,4,11,11,7,,,,,119,209,127,66,,,,,,,,,,
+Willamette Falls,2026-09-15,Fa,20,66,,12,6,5,,,,,169,231,158,68,,,,,,,,,,
+Willamette Falls,2026-09-16,Fa,15,50,1,11,6,7,,,,,141,407,149,97,,,,,,,,,,
+Willamette Falls,2026-09-17,Fa,8,43,1,6,8,7,,,,,244,435,207,132,,,,,,,,,,
+Willamette Falls,2026-09-18,Fa,6,58,2,9,5,8,,,,,251,424,254,141,,,,,,,,,,
+Willamette Falls,2026-09-19,Fa,13,74,,9,6,8,,,,,225,440,187,141,,,,,,,,,,
+Willamette Falls,2026-09-20,Fa,6,35,,8,2,7,,,,,299,509,275,161,,,,,,,,,,
+Willamette Falls,2026-09-21,Fa,15,62,2,14,3,6,,,,,446,589,418,195,,,,,,,,,,
+Willamette Falls,2026-09-22,Fa,10,52,,6,1,5,,,,,349,637,260,218,,,,,,,,,,
+Willamette Falls,2026-09-23,Fa,5,55,1,10,6,5,,,,,316,644,187,193,,,,,,,,,,
+Willamette Falls,2026-09-24,Fa,20,48,2,10,10,6,,,,,361,573,206,169,,,,,,,,,,
+Willamette Falls,2026-09-25,Fa,14,47,,8,5,4,,,,,382,480,296,161,,,,,,,,,,
+Willamette Falls,2026-09-26,Fa,14,45,1,7,5,4,,,,,339,677,214,179,,,,,,,,,,
+Willamette Falls,2026-09-27,Fa,4,29,1,4,9,3,,,,,398,661,173,160,,,,,,,,,,
+Willamette Falls,2026-09-28,Fa,5,35,,5,9,4,,,,,296,632,117,164,,,,,,,,,,
+Willamette Falls,2026-09-29,Fa,7,37,,5,11,4,,,,,188,570,88,133,,,,,,,,,,
+Willamette Falls,2026-09-30,Fa,4,30,2,3,7,3,,,,,168,540,70,123,,,,,,,,,,
+Willamette Falls,2026-10-01,Fa,3,25,2,3,1,4,,,,,175,481,105,118,,,,,,,,,,
+Willamette Falls,2026-10-02,Fa,2,22,1,2,6,5,,,,,151,495,82,133,,,,,,,,,,
+Willamette Falls,2026-10-03,Fa,12,13,1,1,2,3,,,,,164,457,77,107,,,,,,,,,,
+Willamette Falls,2026-10-04,Fa,4,19,,4,4,3,,,,,157,427,49,120,,,,,,,,,,
+Willamette Falls,2026-10-05,Fa,2,16,,2,3,2,,,,,144,376,92,99,,,,,,,,,,
+Willamette Falls,2026-10-06,Fa,6,119,,36,4,11,,,,,124,647,46,179,,,,,,,,,,
+Willamette Falls,2026-10-07,Fa,3,79,,28,10,10,,,,,118,531,48,141,,,,,,,,,,
+Willamette Falls,2026-10-08,Fa,6,24,1,6,4,7,,,,,103,323,35,90,,,,,,,,,,
+Willamette Falls,2026-10-09,Fa,1,18,,4,1,6,,,,,67,256,27,81,,,,,,,,,,
+Willamette Falls,2026-10-10,Fa,5,16,,3,4,4,,,,,86,282,13,89,,,,,,,,,,
+Willamette Falls,2026-10-11,Fa,5,10,,1,5,4,,,,,97,248,22,78,,,,,,,,,,
+Willamette Falls,2026-10-12,Fa,2,14,,2,5,3,,,,,72,296,32,75,,,,,,,,,,
+Willamette Falls,2026-10-13,Fa,1,25,,3,2,6,,,,,86,258,17,75,,,,,,,,,,
+Willamette Falls,2026-10-14,Fa,,24,,6,,5,,,,,100,233,25,54,,,,,,,,,,
+Willamette Falls,2026-10-15,Fa,3,9,,2,3,3,,,,,123,190,25,44,,,,,,,,,,
+Willamette Falls,2026-10-16,,,6,,,,3,,,,,,150,,29,,,,,,,,,,
+Willamette Falls,2026-10-17,,,4,,1,,5,,,,,,131,,23,,,,,,,,,,
+Willamette Falls,2026-10-18,,,6,,,,2,,,,,,120,,18,,,,,,,,,,
+Willamette Falls,2026-10-19,,,6,,1,,4,,,,,,129,,26,,,,,,,,,,
+Notes:
+Columbia River DART
+2026 Adult Passage Daily Counts at Willamette Falls
+with 10 Year Daily Averages (2016 - 2025)
+2026-09-01 to 2026-10-17
+Generated 18 Oct 2026 21:01:34 PDT. DART Adult Passage Daily Counts www.cbr.washington.edu/dart/query/adult_daily.
+Last Date 2026-10-17. Last possible Data Date is 2026-10-17.
+Data Courtesy of Oregon Department of Fish & Wildlife.
+Willamette Falls Video Counting: Fish counting through Willamette Falls fishway occurs at the main viewing window. Video cameras and time lapsed video recorders are used to record fish passage 24 hrs/day; 365 days/year. The ODFW schedule for reviewing the tapes is Monday through Friday. It takes most of the day to accurately review one day of fish passage on tape when the counts are high.
+Temperature (TempC) is reported in degrees Celsius. Source of temperature  data varies by project. At most projects; it is scrollcase or water quality temperature data. At Wells; it is the Fishway Attraction Flow temperature which is pumped from tailrace.
+Calculating the 10 year averages: The ten year averages are calculated by DART for each calendar day of data at each project. For the current year and any given project/month/day; the data is summed from the previous 10 years and divided by the number of non-null data points available during that 10 year span.
+Steelhead Counts: The Steelhead parameter includes both hatchery and wild counts. Prior to 1995 wild steelhead data was not published on a daily basis. The Steelhead-Wild parameter is a subset of the total steelhead and may include unmarked hatchery fish.
+Chinook Run Dates: Chinook runs (referring to the season when adults migrate upstream) are based on run schedules by project as reported by the U.S. Army Corps of Engineers; Yakima Klickitat Fisheries Project and Oregon Department of Fish and Wildlife.
+"DART Data Citation. Columbia River DART, Columbia Basin Research, University of Washington. (2026). Adult Passage Daily Counts. Available from https://www.cbr.washington.edu/dart/query/adult_daily."

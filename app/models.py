@@ -141,6 +141,17 @@ class FireNearby(Base):
     raw_fetch_id: Mapped[int | None] = mapped_column(Integer, index=True)
 
 
+class FishCount(Base):
+    __tablename__ = "fish_count"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project: Mapped[str] = mapped_column(Text)  # DART project code, e.g. WFF (Willamette Falls)
+    observed_on: Mapped[str] = mapped_column(Text, index=True)  # the day the fish passed, YYYY-MM-DD
+    species: Mapped[str] = mapped_column(Text)
+    count: Mapped[float] = mapped_column(Float)
+    avg10: Mapped[float | None] = mapped_column(Float)  # DART's ten-year average for that calendar day
+    raw_fetch_id: Mapped[int | None] = mapped_column(Integer)
+
+
 class RiverStatus(Base):
     __tablename__ = "river_status"
     id: Mapped[int] = mapped_column(primary_key=True)

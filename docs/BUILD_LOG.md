@@ -601,3 +601,20 @@ was migrated and seeded by this version: it ended at migration 0008 with all 100
 waterbody in another zone. Final checks before the tag: 223 `pytest`, 52 frontend tests, browser suites offline 12/12, accounts 37/37, gear 46/46, pins 11/11.
 Not verified: the GitHub Actions workflow (never run: it builds the multi-arch image and publishes on the tag), the Pi, and the real-phone checks still open in the roadmap.
 
+### 2026-10-18 · this commit · Phase 11 · Rivers pilot: the Tualatin (gauges, water quality, flood status, fish passage)
+Owner asked what we know about rivers like the Tualatin and what other sources could add. Researched live (see `docs/data-source-options.md` section 10), then built the Tualatin end to end.
+- **The river**: "Tualatin River" is a waterbody (pinned at NOAA's Tualatin gauge; steelhead and warmwater fishery hints, labelled unverified like the others), linked to three live USGS gauges (Dilley, Highway 219, West Linn),
+  NOAA flood status for two of them, and shown with flow against its own median. It ranks in the steelhead and warmwater lists and opens from its gauge on the map ("Open this river"). A river that has never been on ODFW's schedule shows no Stocking section.
+- **Water quality**: USGS dissolved oxygen, pH, turbidity and conductance are now parameters (units checked, anything else skipped); the Dilley gauge reports all four plus temperature, shown on the flow row for readings under 36 hours old.
+  No thresholds are stated: values only, with the source.
+- **Fish passage (new source, DART)**: ODFW's adult counts at the Willamette Falls fishway, which fish bound for the Tualatin pass first, from Columbia River DART as CSV (`app/sources/dart.py`, table `fish_count`, migration 0009,
+  one request a day). Coho 631 against a ten-year average of 1,763 for the same seven days (Oct 9 to 15; counts lag about four days), Chinook 17, steelhead 20. A revised count is a new row and the newest wins. The card says what the numbers are
+  and are not: counts for the whole upper Willamette, not for the Tualatin, and nothing about when to fish. A "Fish passage" section also joins the Willamette zone's weekly briefing.
+- **Found and fixed on the way**: DART pads every year to 366 rows (a "02-29" in a non-leap year) which made the whole download fail to parse; a blank cell is ambiguous (zero or not reported), so a day with nothing is dropped, not zeroed.
+  DART's TLS root is not in certifi: instead of bundling a root, the DART fetch uses the **operating system's trust store** (verified in the production image; the OS store has the root). The Army Corps host still needs its bundled **intermediate**
+  (DigiCert, a CA with path length 0, not a root); verified in a freshly built production image run as the server runs it (OS store and certifi both fail, the bundled intermediate gives 200), and the file now ships in the installed package too.
+- Researched, not built: StreamNet (API exists, no docs or terms found), OWRD streamflow (catalog only; USGS carries the main gauges), DEQ and Clean Water Services (not examined), ODFW's own counts (monthly PDFs; DART is the machine-readable route).
+- Verified: 235 `pytest` (new: real-data USGS water quality and unit rejection, DART parse of the real CSV, blanks, leap-day padding, revisions, failure, summary, system trust), 56 frontend tests, axe zero on the Tualatin sheet in all three themes at desktop and phone,
+  browser suites offline 12/12, accounts 37/37, gear 46/46, pins 11/11 on a fresh instance. Live in the dev stack: the DART job added 3,444 rows, Dilley's quality readings arrived on the next poll.
+- Not verified: the Tualatin's pin or fishery hints on the ground; how the fish counts relate to what anglers find on the river; DART's terms beyond the citation request; the Pi.
+

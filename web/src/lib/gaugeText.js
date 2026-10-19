@@ -20,3 +20,11 @@ export function detailParts(g) {
   const v = g.values ?? {};
   return [medianText(g.vs_median_pct), v.gage_height_ft ? `${v.gage_height_ft.value} ft` : null, v.water_temp_f ? `${Math.round(v.water_temp_f.value)}°F` : null].filter(Boolean);
 }
+
+const QUALITY = [['dissolved_oxygen_mgl', (v) => `dissolved oxygen ${v.toFixed(1)} mg/L`], ['ph', (v) => `pH ${v.toFixed(1)}`],
+  ['turbidity_fnu', (v) => `turbidity ${v < 10 ? v.toFixed(1) : Math.round(v)} FNU`], ['conductance_uscm', (v) => `conductance ${Math.round(v)} µS/cm`]];
+/** The water-quality readings a gauge has, newest day only (a sensor that stopped reporting a day ago is not shown as current). */
+export function qualityParts(g, now = Date.now()) {
+  const v = g.values ?? {};
+  return QUALITY.filter(([k]) => v[k] && now - new Date(v[k].observed_at).getTime() < 36 * 3600 * 1000).map(([k, f]) => f(v[k].value));
+}

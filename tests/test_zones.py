@@ -130,7 +130,7 @@ def test_gauges_belong_to_a_zone_and_the_endpoint_filters_by_it(session):
     c = client()
     wil = c.get("/api/gauges").json()["gauges"]
     cen = c.get("/api/gauges", params={"zone": "central"}).json()["gauges"]
-    assert len(wil) == 16 and len(cen) == 8 and len(c.get("/api/gauges", params={"zone": "northwest"}).json()["gauges"]) == 7
+    assert len(wil) == 19 and len(cen) == 8 and len(c.get("/api/gauges", params={"zone": "northwest"}).json()["gauges"]) == 7
     assert {g["site_no"] for g in cen} == {g[0] for g in central.GAUGES} and not ({g["site_no"] for g in wil} & {g["site_no"] for g in cen})
     assert session.scalar(select(func.count()).select_from(Gauge).where(Gauge.zone.is_(None))) == 0
 
