@@ -2,7 +2,7 @@
 
 Generated 2026-10-18 from `app/seed.py`. Coordinates marked Verified were matched to a same-named lake, pond or reservoir in the OpenStreetMap data inside the basemap (`scripts/check_coords.py`); Snapped means the nearest point on the same-named river or creek line. **This is a cross-check against OSM, not a field survey**: OSM label points sit inside the water but not necessarily where you fish.
 
-Fix or place any pin without a code change. It needs an admin session (there is no token any more), so sign in with a cookie jar first:
+**Easiest:** sign in as an admin, open Settings, and use **Place pins**: it lists every waterbody with no pin and every pin that deserves a check (with how it was found), you press *Place on map*, the map jumps to that zone, and you tap the spot. Or, without the UI, fix or place any pin without a code change. It needs an admin session (there is no token any more), so sign in with a cookie jar first:
 
     curl -c jar -X POST localhost:8010/api/auth/login -H 'X-Holdover: 1' -H 'content-type: application/json' \
       -d '{"username": "YOU", "password": "..."}'

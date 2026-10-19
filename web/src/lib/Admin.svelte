@@ -1,6 +1,7 @@
 <script>
   import { api } from './api.js';
   import { auth } from './auth.svelte.js';
+  import { pin, startPin } from './pinTool.svelte.js';
   let { onChanged } = $props();
 
   let users = $state([]);
@@ -11,6 +12,11 @@
   let items = $state([]);
   let itemChoice = $state({});
   let wbs = $state([]);
+  let pins = $state([]);
+  let pinZone = $state('all');
+  const pinZones = $derived([...new Set(pins.map((p) => p.zone))]);
+  const shownPins = $derived(pins.filter((p) => pinZone === 'all' || p.zone === pinZone));
+  $effect(() => { pin.version; api.pinsToPlace().then((v) => (pins = v)).catch(() => {}); });
   let choice = $state({});
   let msg = $state('');
 
@@ -95,6 +101,21 @@
 </section>
 
 <section class="card">
+  <h2 class="eyebrow">Place pins ({pins.length})</h2>
+  <p class="quiet small">Waterbodies with no map pin, and pins placed from a same-named point that deserve a check. Choose one, then tap its spot on the map.</p>
+  {#if pinZones.length > 1}
+    <select aria-label="Zone" bind:value={pinZone}><option value="all">All zones</option>{#each pinZones as z}<option value={z}>{z}</option>{/each}</select>
+  {/if}
+  <ul class="pins">
+    {#each shownPins as p (p.id)}
+      <li><div><strong>{p.name}</strong> <span class="quiet small">· {p.zone} · {p.status === 'none' ? 'no pin' : 'check this pin'}</span>
+        {#if p.status === 'likely'}<p class="quiet small">{p.note}</p>{/if}</div>
+        <button onclick={() => startPin(p)}>{p.status === 'none' ? 'Place on map' : 'Move on map'}</button></li>
+    {:else}<li class="quiet small">Every waterbody has a pin you have not been asked to check.</li>{/each}
+  </ul>
+</section>
+
+<section class="card">
   <h2 class="eyebrow">Data</h2>
   <div class="row"><button onclick={runNow}>Fetch stocking now</button><button onclick={runReports}>Fetch report now</button></div>
 
@@ -137,6 +158,7 @@
   h2 { margin: 0 0 8px; } h3 { font-size: 14px; margin: 14px 0 4px; } .small { font-size: 13px; margin: 2px 0; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
   ul { list-style: none; padding: 0; margin: 0; }
+  .pins li { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--hair); } .pins li:last-child { border-bottom: 0; } .pins p { margin: 2px 0 0; }
   .users li { padding: 10px 0; border-bottom: 1px solid var(--hair); } .users li:last-child { border-bottom: 0; } .users li.off { opacity: 0.6; }
   .top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .chip-sm { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fresh-1); border: 1px solid color-mix(in srgb, var(--fresh-1) 45%, transparent); border-radius: 999px; padding: 1px 8px; }

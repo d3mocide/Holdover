@@ -228,3 +228,23 @@ def test_every_real_row_of_a_later_zone_resolves_to_one_of_its_own_waterbodies(s
     assert hit and hit <= own  # every row landed on this zone's waters, none on another zone's
     z = client().get("/api/zones").json()["zones"]
     assert next(x for x in z if x["key"] == key)["gauges"] == len(mod.GAUGES) > 0
+
+
+def test_the_pin_list_names_unpinned_and_likely_waters_and_drops_one_once_a_person_moves_it(session):
+    from conftest import signed_in_client
+    seed_waterbodies(session)
+    c = signed_in_client("boss", admin=True)
+    items = c.get("/api/admin/pins").json()
+    by = {i["name"]: i for i in items}
+    assert by["East Lake"]["status"] == "none" and by["East Lake"]["zone"] == "central"
+    assert by["Hebo Lake"]["status"] == "likely" and "point of interest" in by["Hebo Lake"]["note"] or "Hebo" in by["Hebo Lake"]["note"]
+    assert "Hosmer Lake" not in by  # a clean OSM match is not a guess
+    assert sum(1 for i in items if i["zone"] == "central" and i["status"] == "none") == 13
+    hh = by["Hebo Lake"]["id"]
+    assert c.post(f"/api/admin/waterbodies/{hh}/coords", json={"lat": 45.24, "lon": -123.8}, headers={"X-Holdover": "1"}).status_code == 200
+    assert "Hebo Lake" not in {i["name"] for i in c.get("/api/admin/pins").json()}  # moved on purpose: no longer a guess
+    el = by["East Lake"]["id"]
+    c.post(f"/api/admin/waterbodies/{el}/coords", json={"lat": 43.72, "lon": -121.2}, headers={"X-Holdover": "1"})
+    assert "East Lake" not in {i["name"] for i in c.get("/api/admin/pins").json()}
+    seed_waterbodies(session)  # a re-seed never undoes a placed pin
+    assert session.get(Waterbody, el).lat == 43.72

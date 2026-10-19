@@ -7,6 +7,7 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | --- | --- | --- |
 | `offline.mjs` | Airplane-mode journal: service worker, offline tiles, trip logged offline, sync after reconnect, no duplicates | 11 |
 | `accounts.mjs` | Sign-in, cookie flags, invites, a second user, isolation, merging local favorites, two people on one browser | 37 |
+| `pins.mjs` | An admin places a pin from the map (Settings, Place pins): signed-out users do not see it, the map switches zone and asks for a tap, the tap is saved and the item leaves the list, cancelling changes nothing. Run after `setup.sh accounts` | 11 |
 | `gear.mjs` | Starter catalog, items, setups, the trip picker, stats, trip editing, your history on the sheet, the pack list, sync, offline create, cross-account isolation, axe on every gear view | 46 |
 
 ## One-time setup

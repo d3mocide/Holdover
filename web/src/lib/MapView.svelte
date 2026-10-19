@@ -227,7 +227,7 @@
       fitted = true;
       const b = new maplibregl.LngLatBounds();
       data.features.filter((f) => f.properties.layer === 'stocking').forEach((f) => b.extend(f.geometry.coordinates));
-      map.fitBounds(b, { padding: 60, maxZoom: 9, duration: 0 });
+      if (!b.isEmpty()) map.fitBounds(b, { padding: 60, maxZoom: 9, duration: 0 });  // a zone with nothing pinned yet keeps the current view
     }
   });
   $effect(() => {

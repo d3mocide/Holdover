@@ -586,3 +586,12 @@ qualifier where they would clash. The default is now all six zones, about 30 ODF
 - Found: the weekly Recreation Report has no Southwest section (it covers Northwest, Willamette, Central, Northeast and Southeast), so the Southwest page has no ODFW text.
 - Not verified: any pin on the ground (the 13 "likely" ones and every OSM match are suggestions), the zone picker with six entries on a real phone, the Pi.
 
+### 2026-10-18 · this commit · Phase 11 · Place pins from the map
+Most zones have unpinned waters (143 waterbodies in all need a pin or a check). Settings, for an admin, has a **Place pins** card: every waterbody with no pin and every pin that was a
+guess ("likely": a same-named point of interest or a choice between candidates), each with how it was found; *Place on map* switches the map to that zone and asks for a tap, and the tap is saved
+through the existing coordinate endpoint. A pin an admin has placed is no longer a guess and leaves the list; a re-seed never undoes it. New `GET /api/admin/pins`. Found and fixed on the way: fitting the map
+to a zone with nothing pinned yet threw a page error (an empty bounding box).
+- Verified: `pytest` (the pin list names unpinned and likely waters, drops one once moved, and a re-seed keeps a placed pin), a new browser test `tests/e2e/pins.mjs` (11 checks: hidden when signed out, listed, zone switch,
+  tap saved, prompt gone, removed from the list, cancel does nothing), axe zero on Settings with the card in all three themes at desktop and phone.
+- Not verified: placing a pin on a real basemap by tapping a real water body (the throwaway instance has no tiles), and on a phone.
+

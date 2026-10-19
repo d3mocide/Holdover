@@ -53,6 +53,26 @@ def waterbodies(session: Session = Depends(get_session)):
     return [{"id": w.id, "name": w.name} for w in session.scalars(select(Waterbody).order_by(Waterbody.name))]
 
 
+@router.get("/pins")
+def pins_to_place(session: Session = Depends(get_session)):
+    """Waterbodies whose pin needs a person: those with none, and those placed from a same-named OpenStreetMap point of interest or a choice
+    between candidates ("likely"), each with how its pin was found. A pin an admin has since moved is no longer a guess, so it drops off."""
+    from app.zones import MODULES
+    notes = {}
+    for m in MODULES:
+        for name, (kind, why) in m.PINS.items():
+            if kind == "likely":
+                seed = next((s for s in m.SEED if s[0] == name), None)
+                notes[name] = (why, seed[2], seed[3]) if seed else None
+    out = []
+    for w in session.scalars(select(Waterbody).order_by(Waterbody.zone, Waterbody.name)):
+        if w.lat is None or w.lon is None:
+            out.append({"id": w.id, "name": w.name, "kind": w.kind, "zone": w.zone, "status": "none", "note": "no pin yet", "lat": None, "lon": None})
+        elif notes.get(w.name) and abs(w.lat - notes[w.name][1]) < 1e-6 and abs(w.lon - notes[w.name][2]) < 1e-6:
+            out.append({"id": w.id, "name": w.name, "kind": w.kind, "zone": w.zone, "status": "likely", "note": notes[w.name][0], "lat": w.lat, "lon": w.lon})
+    return out
+
+
 @router.post("/jobs/stocking/run")
 def run_now():
     return run_stocking()

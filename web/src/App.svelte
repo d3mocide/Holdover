@@ -7,6 +7,7 @@
   import MapCard from './lib/MapCard.svelte';
   import ReportsView from './lib/ReportsView.svelte';
   import ZonePicker from './lib/ZonePicker.svelte';
+  import { pin, cancelPin, pinSaved } from './lib/pinTool.svelte.js';
   import Sheet from './lib/Sheet.svelte';
   import Settings from './lib/Settings.svelte';
   import Gauges from './lib/Gauges.svelte';
@@ -105,6 +106,7 @@
   $effect(() => { fishery; zone; loadMapSpots(); });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }
   $effect(() => { zone; load(); });
+  $effect(() => { if (pin.target) { if (pin.target.zone !== zone) setZone(pin.target.zone); if (!wide) view = 'map'; else if (view === 'settings') view = 'map'; } });
   $effect(() => { loadReport(); api.fireMap().then((v) => (fireData = v)).catch(() => { /* the layer just stays empty */ }); });
 
   const tabs = [['map', 'Map', 'map'], ['plan', 'Plan', 'plan'], ['reports', 'Reports', 'reports'], ['journal', 'Journal', 'journal'], ['gear', 'Gear', 'gear'], ['gauges', 'Gauges', 'gauge']];
@@ -149,7 +151,7 @@
     {/if}
   </main>
   <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap}>
-      <MapView zoneKey={zone} inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking} onpick={async (p) => { picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
+      <MapView zoneKey={zone} inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking || !!pin.target} onpick={async (p) => { if (pin.target) { try { await api.setCoords(pin.target.id, p.lat, p.lon); pinSaved(); load(); api.waterbodyList().then((v) => (wbList = v)).catch(() => {}); } catch (e) { error = e.message; } return; } picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
       <div class="layers glass" class:open={layersOpen} role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
         {#if layersOpen}
@@ -169,7 +171,9 @@
         {#if legendOpen}<Legend {theme} />
         {/if}
       </div>
-      {#if picking}
+      {#if pin.target}
+        <div class="pickbar glass" role="status">Tap the map to place {pin.target.name} <button class="pill" onclick={cancelPin}>Cancel</button></div>
+      {:else if picking}
         <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
       {/if}
       <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>

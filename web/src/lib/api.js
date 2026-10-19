@@ -40,6 +40,8 @@ export const api = {
   health: () => req('/healthz'),
   aliases: () => req('/api/admin/aliases?status=unconfirmed', { auth: true }),
   waterbodies: () => req('/api/admin/waterbodies', { auth: true }),
+  pinsToPlace: () => req('/api/admin/pins', { auth: true }),
+  setCoords: (id, lat, lon) => req(`/api/admin/waterbodies/${id}/coords`, { method: 'POST', auth: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lat, lon }) }),
   confirm: (id, waterbody_id) =>
     req(`/api/admin/aliases/${id}/confirm`, {
       method: 'POST', auth: true, headers: { 'Content-Type': 'application/json' },
