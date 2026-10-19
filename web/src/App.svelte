@@ -238,8 +238,8 @@
      first and Legend follows it; with the panel hidden (collapsed or the Map tab) there is no panel gap. */
   .shell { --panel-gap: 16px; --zp-w: 0px; --base: calc(96px + var(--panel-w, 0px) + var(--panel-gap) + var(--drawer-shift, 0px)); }
   .shell.collapsed, .shell.nopanel { --panel-gap: 0px; }
-  .shell.haszones { --zp-w: 156px; }
-  .zonepill { position: absolute; left: var(--base); transition: left 0.25s ease; top: 16px; z-index: 2; border-radius: 14px; width: 148px; padding: 0; display: none; }
+  .shell.haszones { --zp-w: 164px; }
+  .zonepill { position: absolute; left: var(--base); transition: left 0.25s ease; top: 16px; z-index: 2; border-radius: 14px; width: 156px; padding: 6px; display: none; }
   .legend { position: absolute; left: calc(var(--base) + var(--zp-w)); transition: left 0.25s ease; top: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
   .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
