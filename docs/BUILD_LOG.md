@@ -484,3 +484,25 @@ Owner idea: use the slow model for something genuinely useful, once a week. The 
   remain a separate paragraph from Stocking (they overlap); the offline e2e (not re-run after the final edit, which only touched
   dates and the briefing).
 
+### 2026-10-18 · this commit · Phase 2 · AI ratings on the map; Gauges redesign; layout fixes
+- **AI-read ratings on the map and the sheet.** The fish badge with 1 to 4 pips (slow, fair, good, excellent) now also shows the model's own
+  reading of ODFW's report, drawn fainter and labelled "AI-read, unreviewed" in the Legend and "AI-read, not yet reviewed" in the sheet and
+  Day view, instead of only items a person accepted. **Scores still use only accepted items** (tested: an unreviewed item never moves a
+  ranking), rejected items never show, and "unknown" draws nothing. **A safeguard found by checking live data:** the dev map briefly
+  showed "Fall Creek Reservoir: excellent trout", a false match of the Central zone's "Fall River". An unreviewed reading now shows only
+  when the report's zone is the waterbody's zone (accepted items, which a person decided, are unaffected). Tested.
+- **9B extraction again** with the fixed prompt: 4 of 5 zones extracted; one zone's reply was malformed JSON (a real failure; it stays pending and retries).
+  No Willamette-zone waterbody matched this time, so the map layer has no AI badge on the dev data yet (verified on a throwaway database
+  with clearly fake items).
+- **Gauges page.** Each card now leads with the flow (the unit no longer runs into the number), shows how it compares with the gauge's own
+  median ("-21% vs median", highlighted at 20% or more; hidden when there is under two days of history), then height and
+  temperature, one short NOAA line, and the as-of time with a Stale tag only when stale. The repeated "USGS site, provisional" line is
+  gone (the header says it once; the site number is a tooltip). Sort chips: Name (the default, which groups the rivers), Most unusual,
+  Highest flow. The "everything is stale" report was the dev stack: its scheduler was off, so data aged past 3 hours; the dev
+  scheduler is now on by default (`DEV_RUN_SCHEDULER=false` to stop it).
+- **Layout.** With a waterbody open, the Legend drops to the bottom-left (it collided with Layers at 1440 on Plan), and on tight windows
+  the Best bets card hides while a waterbody is open. Briefing caption shortened to one line.
+- Verified: 200 `pytest`, 52 frontend tests; axe zero on Gauges in all three themes at desktop and phone; Legend and Layers never overlap
+  at 1920, 1440 and 1100 on Plan or Map with a sheet open (measured); browser suites offline 12/12, accounts 37/37, gear 46/46. Not verified: a
+  real phone; the new AI badge on the real map with tiles (only the data and sheet were checked).
+

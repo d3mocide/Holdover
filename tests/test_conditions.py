@@ -119,3 +119,27 @@ def test_day_endpoint_survives_nws_down(session, monkeypatch):
 def test_nws_never_fetched_is_stale(session):
     from app.scheduler import source_status
     assert source_status()["nws"]["stale"] is True
+
+
+def test_gauge_reports_flow_against_its_own_median_and_stays_quiet_without_history(session):
+    from datetime import datetime, timedelta, timezone
+
+    from app.conditions import latest_gauge
+    from app.models import Gauge, GaugeReading
+    from app.seed import seed_waterbodies
+    seed_waterbodies(session)
+    g = session.scalar(select(Gauge).where(Gauge.site_no == "14150000"))
+    assert latest_gauge(session, g)["vs_median_pct"] is None  # no readings
+    now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
+    for i in range(300):  # three days of 15-minute readings at 1,000 cfs...
+        session.add(GaugeReading(gauge_id=g.id, parameter="discharge_cfs", value=1000.0, observed_at=(now - timedelta(minutes=15 * i)).isoformat(timespec="minutes")))
+    session.commit()
+    assert latest_gauge(session, g)["vs_median_pct"] == 0 and latest_gauge(session, g)["median_cfs"] == 1000.0
+    session.add(GaugeReading(gauge_id=g.id, parameter="discharge_cfs", value=1300.0, observed_at=(now + timedelta(minutes=15)).isoformat(timespec="minutes")))
+    session.commit()  # ...then a rise
+    assert latest_gauge(session, g)["vs_median_pct"] == 30
+    short = session.scalar(select(Gauge).where(Gauge.site_no == "14152000"))
+    for i in range(30):  # 30 readings but only 7 hours: not enough to mean anything
+        session.add(GaugeReading(gauge_id=short.id, parameter="discharge_cfs", value=500.0, observed_at=(now - timedelta(minutes=15 * i)).isoformat(timespec="minutes")))
+    session.commit()
+    assert latest_gauge(session, short)["vs_median_pct"] is None

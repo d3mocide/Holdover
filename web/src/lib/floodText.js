@@ -10,3 +10,10 @@ export function floodText(f) {
   return s;
 }
 export const floodElevated = (f) => !!f && (f.elevated || (!!f.forecast && f.forecast.category !== 'no_flooding'));
+
+/** The one-line NOAA note for a gauge card: the category, and a forecast only when it is not "no flooding". */
+export function floodShort(f) {
+  if (!f) return null;
+  const fc = f.forecast && f.forecast.category !== 'no_flooding' ? `, forecast ${f.forecast.label.toLowerCase()}` : '';
+  return `NOAA: ${f.label.toLowerCase()}${fc}`;
+}

@@ -155,7 +155,8 @@
     map.addLayer({ id: 'advisory-ring', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
       'icon-image': 'advisory-icon', 'icon-size': 0.9, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
-      'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.52, 'icon-offset': [20, -20], 'icon-allow-overlap': true } });
+      'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.52, 'icon-offset': [20, -20], 'icon-allow-overlap': true },
+      paint: { 'icon-opacity': ['case', ['==', ['get', 'reviewed'], false], 0.6, 1] } });  // the model's unreviewed reading is drawn fainter
     const fishN = ['coalesce', ['get', 'last_total'], ['get', 'next_total'], 0];
     const rad = ['interpolate', ['linear'], ['sqrt', fishN], 0, 6, 30, 8, 60, 11, 100, 14];
     map.addLayer({ id: 'stocking-halo', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {

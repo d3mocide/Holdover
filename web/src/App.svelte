@@ -111,7 +111,7 @@
   const select = (id) => { selectedId = id; dayFor = null; if (!onMap) view = 'map'; };
 </script>
 
-<div class="shell" class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && tight && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
+<div class="shell" class:sheetopen={onMap && !!(selectedId || dayFor)} class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && tight && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
   <nav class="rail" aria-label="Main">
     <span class="logo"><Logo /></span>
     {#each tabs as [k, label, icon]}
@@ -163,7 +163,7 @@
         <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
       {/if}
       <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
-      {#if view === 'map' && !drawerOpen}
+      {#if view === 'map' && !drawerOpen && !(tight && (selectedId || dayFor))}
         <MapCard spots={mapSpots} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={select} onplan={() => go('plan')} error={mapSpotsError} />
       {/if}
   </div>
@@ -232,6 +232,8 @@
   @media (min-width: 900px) {
     /* While a form drawer is open the map's left-hand controls (Legend) slide over to clear it. */
     .shell.drawer { --drawer-shift: calc(min(520px, calc(100% - 128px - var(--panel-w, 0px))) + 16px); }
+    /* With a sheet open the top row is full (panel or card, Legend, Layers, zoom): Legend drops to the bottom-left, its list opening upward. */
+    .shell.sheetopen .legend { top: auto; bottom: 16px; flex-direction: column-reverse; }
     /* On the Map tab the Best bets card sits where the side panel does, and Legend moves to its right. */
     .shell.nopanel .legend { left: calc(112px + min(380px, calc(100% - 144px)) + 16px); }
     .shell.nopanel.drawer .legend { left: calc(112px + var(--panel-w, 0px) + var(--drawer-shift, 0px)); }

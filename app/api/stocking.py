@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.db import get_session
 from app.freshness import freshness
 from app.sources import oha
-from app.conditions import conditions, latest_gauge
+from app.conditions import conditions, latest_gauge, report_items
 from app.models import Gauge, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias
 
 router = APIRouter()
@@ -97,14 +97,17 @@ def _extra_layers(session: Session, wanted: set[str], zone: str, today: date) ->
                     "issued": a.observed_at}})
     if "reports" in wanted:
         rows = session.execute(select(ReportItem, Report).join(Report, Report.id == ReportItem.report_id)
-                               .where(ReportItem.status == "accepted", ReportItem.waterbody_id.is_not(None))
-                               .order_by(Report.issued_on, ReportItem.id)).all()
-        latest = {i.waterbody_id: (i, r) for i, r in rows}  # newest accepted item per waterbody wins
+                               .where(ReportItem.status.in_(("accepted", "review")), ReportItem.waterbody_id.is_not(None))
+                               .order_by(Report.issued_on, ReportItem.status.desc(), ReportItem.id)).all()
+        # the newest issue wins; within one issue an accepted item beats the model's unreviewed reading
+        latest = {i.waterbody_id: (i, r) for i, r in rows}
         for wb_id, (i, r) in latest.items():
             wb = session.get(Waterbody, wb_id)
-            if wb and wb.lat is not None and i.rating != "unknown":
+            # an unreviewed reading is trusted only inside its own report zone (a Central-zone "Fall River" must not paint Fall Creek Reservoir)
+            if wb and wb.lat is not None and i.rating != "unknown" and (i.status == "accepted" or r.zone == wb.zone):
                 out.append({"type": "Feature", "geometry": pt(wb.lon, wb.lat), "properties": {
-                    "layer": "report", "id": wb.id, "name": wb.name, "rating": i.rating, "issued_on": r.issued_on}})
+                    "layer": "report", "id": wb.id, "name": wb.name, "rating": i.rating, "issued_on": r.issued_on,
+                    "species": i.species, "reviewed": i.status == "accepted"}})
     return out
 
 
@@ -142,12 +145,5 @@ def waterbody(wb_id: int, session: Session = Depends(get_session)):
         ],
         "snapshots": len(rows),
         "conditions": conditions(session, wb, today, today),
-        "report_items": [
-            {"issued_on": r.issued_on, "species": i.species, "rating": i.rating, "note": i.note,
-             "source_sentence": i.source_sentence}
-            for i, r in session.execute(
-                select(ReportItem, Report).join(Report, Report.id == ReportItem.report_id)
-                .where(ReportItem.waterbody_id == wb_id, ReportItem.status == "accepted")
-                .order_by(Report.issued_on.desc()).limit(5))
-        ],
+        "report_items": report_items(session, wb_id, 5),
     }

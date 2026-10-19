@@ -50,7 +50,7 @@
       <h3 class="eyebrow">From the weekly report</h3>
       {#each wb.report_items as r}
         <blockquote>
-          <p class="small">{r.note}{r.rating !== 'unknown' ? ` (${r.rating})` : ''}</p>
+          <p class="small">{r.note}{r.rating !== 'unknown' ? ` (${r.rating})` : ''}{#if r.reviewed === false} <span class="aitag">AI-read, not yet reviewed</span>{/if}</p>
           <p class="quiet small">ODFW, {longDate(r.issued_on)}: “{r.source_sentence}”</p>
         </blockquote>
       {/each}
@@ -91,6 +91,7 @@
   .small { font-size: 13px; margin: 0; } .err { color: var(--accent); }
   ul { list-style: none; margin: 0; padding: 0; }
   .grow { flex: 1; }
+  .aitag { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-quiet); border: 1px solid var(--hair); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
   blockquote { margin: 0; padding: 4px 0 4px 12px; border-left: 2px solid var(--fresh-2); background: linear-gradient(90deg, var(--glow-1), transparent 70%); border-radius: 2px; }
   blockquote p { margin: 2px 0; }
   .best { display: flex; flex-direction: column; gap: 2px; margin: 4px 0; } .best strong { font-weight: 500; }

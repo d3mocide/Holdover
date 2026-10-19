@@ -9,7 +9,7 @@ from app.llm.client import LLMClient, LLMUnavailable
 from app.llm.extract import extract_report, match_waterbody
 from app.llm.jobs import process_pending
 from app.llm.grounding import ungrounded_terms
-from app.models import Generation, Report, ReportItem
+from app.models import Generation, Report, ReportItem, Waterbody
 from app.seed import seed_waterbodies
 from app.sources.odfw_report import ParseError, ingest, parse, report_text
 from conftest import FIX
@@ -253,3 +253,53 @@ def test_extraction_can_use_its_own_model_and_a_longer_timeout(monkeypatch):
         assert LLMClient.for_extraction().model == "fast"  # unset: same model as everything else
     finally:
         get_settings.cache_clear()
+
+
+def test_the_map_shows_unreviewed_ai_ratings_flagged_and_accepted_ones_win_a_tie(session):
+    from app.main import app
+    r = willamette(session)
+    wb = session.scalar(select(Waterbody).where(Waterbody.name == "Dexter Reservoir"))
+    other = session.scalar(select(Waterbody).where(Waterbody.name == "Detroit Reservoir"))
+    session.add_all([
+        ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="Dexter", species="trout", rating="good", note="n", source_sentence="s1", status="review"),
+        ReportItem(report_id=r.id, waterbody_id=other.id, waterbody_raw="Detroit", species="kokanee", rating="fair", note="n", source_sentence="s2", status="review"),
+        ReportItem(report_id=r.id, waterbody_id=other.id, waterbody_raw="Detroit", species="kokanee", rating="excellent", note="n", source_sentence="s3", status="accepted"),
+        ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="x", species="y", rating="excellent", note="n", source_sentence="s4", status="rejected"),
+    ])
+    session.commit()
+    feats = {f["properties"]["name"]: f["properties"] for f in TestClient(app).get("/api/map?layers=stocking,reports").json()["features"] if f["properties"]["layer"] == "report"}
+    assert feats["Dexter Reservoir"]["rating"] == "good" and feats["Dexter Reservoir"]["reviewed"] is False  # rejected never shows
+    assert feats["Detroit Reservoir"]["rating"] == "excellent" and feats["Detroit Reservoir"]["reviewed"] is True  # accepted beats review
+
+
+def test_unknown_ratings_are_not_drawn_and_unreviewed_items_never_move_a_score(session):
+    from datetime import date
+
+    from app.main import app
+    from app.planner import _report_inputs
+    r = willamette(session)
+    wb = session.scalar(select(Waterbody).where(Waterbody.name == "Dexter Reservoir"))
+    session.add(ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="Dexter", species="trout", rating="unknown", note="n", source_sentence="s", status="review"))
+    session.add(ReportItem(report_id=r.id, waterbody_id=wb.id, waterbody_raw="Dexter", species="trout", rating="excellent", note="n", source_sentence="s", status="review"))
+    session.commit()
+    names = {f["properties"]["name"] for f in TestClient(app).get("/api/map?layers=stocking,reports").json()["features"] if f["properties"]["layer"] == "report"}
+    assert names == {"Dexter Reservoir"}  # drawn once, from the excellent one; the unknown one draws nothing
+    assert _report_inputs(session, wb.id)[0] is None  # nothing accepted: the ranking ignores the model's reading
+    body = TestClient(app).get(f"/api/waterbodies/{wb.id}").json()
+    assert [i["reviewed"] for i in body["report_items"]] == [False, False]
+
+
+def test_an_unreviewed_reading_from_another_zones_report_never_reaches_the_map_or_the_sheet(session):
+    from app.main import app
+    willamette(session)
+    central = session.scalar(select(Report).where(Report.zone == "central"))
+    wb = session.scalar(select(Waterbody).where(Waterbody.name == "Fall Creek Reservoir"))  # a Willamette-zone water
+    session.add(ReportItem(report_id=central.id, waterbody_id=wb.id, waterbody_raw="Fall River", species="trout", rating="excellent",
+                           note="n", source_sentence="s", status="review"))
+    session.commit()
+    c = TestClient(app)
+    drawn = {f["properties"]["name"] for f in c.get("/api/map?layers=stocking,reports").json()["features"] if f["properties"]["layer"] == "report"}
+    assert "Fall Creek Reservoir" not in drawn and c.get(f"/api/waterbodies/{wb.id}").json()["report_items"] == []
+    session.query(ReportItem).update({ReportItem.status: "accepted"})  # a person decided it: now it shows
+    session.commit()
+    assert "Fall Creek Reservoir" in {f["properties"]["name"] for f in c.get("/api/map?layers=stocking,reports").json()["features"] if f["properties"]["layer"] == "report"}

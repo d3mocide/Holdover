@@ -14,13 +14,13 @@
   const items = $derived(c ? [
     ['stocking', c.f1, 'Stocked this week'], ['stocking', c.f2, 'Last 2 weeks'], ['stocking', c.f3, 'Older'],
     ['stocking_scheduled', c.f1, 'Scheduled'], ['gauge', c.gauge, 'Stream gauge'], ['advisory', c.accent, 'Algae advisory'],
-    ['report', c.f1, 'Report rating', 4], ['journal', c.text, 'My trips & pins']
+    ['report', c.f1, 'Report rating', 4], ['report', c.f1, 'AI-read, unreviewed', 4, true], ['journal', c.text, 'My trips & pins']
   ] : []);
 </script>
 
 <div class="legend-body">
-  {#each items as [name, col, label, extra]}
-    <span class="item"><svg width="24" height="24" viewBox="0 0 40 40" aria-hidden="true">{@html mk(name, col, extra)}</svg>{label}</span>
+  {#each items as [name, col, label, extra, faded]}
+    <span class="item"><svg width="24" height="24" viewBox="0 0 40 40" aria-hidden="true" style:opacity={faded ? 0.6 : 1}>{@html mk(name, col, extra)}</svg>{label}</span>
   {/each}
   <span class="item"><span class="sw zone" aria-hidden="true"></span>High fire danger</span>
   <span class="item"><span class="sw perim" aria-hidden="true"></span>Wildfire perimeter</span>

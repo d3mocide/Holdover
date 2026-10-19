@@ -62,7 +62,7 @@
       <h2 class="eyebrow head">From the weekly report</h2>
       <ul class="facts">
         {#each c.report_items as r}
-          <li>{r.note} <span class="quiet small">ODFW report, {longDate(r.issued_on)}: “{r.source_sentence}”</span></li>
+          <li>{r.note}{#if r.reviewed === false} <span class="aitag">AI-read, not yet reviewed</span>{/if} <span class="quiet small">ODFW report, {longDate(r.issued_on)}: “{r.source_sentence}”</span></li>
         {/each}
       </ul>
     {/if}
@@ -100,6 +100,7 @@
   h1 { font-size: 20px; } .small { font-size: 13px; margin: 0; } .zone { text-transform: capitalize; }
   .badge { border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .aitag { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-quiet); border: 1px solid var(--hair); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
   .facts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
   .pk { border: 0; padding: 0; margin: 0; } .pk legend { padding: 0; }
   .ck { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text); margin: 0; font-size: 14px; }

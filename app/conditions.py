@@ -1,5 +1,6 @@
 """Everything the sheet and day-of view show, with an 'as of' time on each source and a stale flag.
 Numbers come from the database; nothing here is generated text."""
+import statistics
 from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import select
@@ -16,6 +17,20 @@ FORECAST_STALE_H = 6
 
 def _age_h(iso: str) -> float:
     return (datetime.now(timezone.utc) - datetime.fromisoformat(iso)).total_seconds() / 3600
+
+
+def flow_vs_median(session: Session, gauge_id: int) -> tuple[float | None, float | None]:
+    """The gauge's median flow over its recent history and how far the latest reading is from it (percent). Needs at least 24
+    readings spanning two days, the same rule the planner uses, so a new gauge says nothing instead of something silly."""
+    rows = session.scalars(select(GaugeReading).where(GaugeReading.gauge_id == gauge_id, GaugeReading.parameter == "discharge_cfs")
+                           .order_by(GaugeReading.observed_at.desc()).limit(7 * 96)).all()
+    if len(rows) < 24:
+        return None, None
+    span = (datetime.fromisoformat(rows[0].observed_at) - datetime.fromisoformat(rows[-1].observed_at)).total_seconds() / 3600
+    med = statistics.median(r.value for r in rows)
+    if span < 48 or med <= 0:
+        return None, None
+    return round(med, 1), round((rows[0].value - med) / med * 100)
 
 
 def latest_gauge(session: Session, g: Gauge) -> dict:
@@ -43,6 +58,7 @@ def latest_gauge(session: Session, g: Gauge) -> dict:
             change = (q["value"] - earlier.value) / earlier.value
             out["trend"] = "rising" if change > 0.03 else "falling" if change < -0.03 else "steady"
     out["stale"] = out["as_of"] is None or _age_h(out["as_of"]) > GAUGE_STALE_H
+    out["median_cfs"], out["vs_median_pct"] = flow_vs_median(session, g.id)
     return out
 
 
@@ -54,6 +70,19 @@ def pick_weather(payload: dict, day: date) -> dict | None:
     if p is None:
         return None
     return {k: p.get(k) for k in ("name", "temp_f", "precip_pct", "wind", "wind_dir", "short")}
+
+
+def report_items(session: Session, wb_id: int, limit: int) -> list[dict]:
+    """Items read from ODFW's weekly report for a waterbody: the ones a person accepted, and the model's own reading of the
+    report that has not been reviewed yet (flagged `reviewed: False`, shown as such). Rejected items never appear. Only accepted
+    items feed scores."""
+    zone = session.scalar(select(Waterbody.zone).where(Waterbody.id == wb_id))
+    rows = session.execute(select(ReportItem, Report).join(Report, Report.id == ReportItem.report_id)
+                           .where(ReportItem.waterbody_id == wb_id, ReportItem.status.in_(("accepted", "review")))
+                           .order_by(Report.issued_on.desc(), ReportItem.status.asc(), ReportItem.id.desc())).all()  # "accepted" sorts before "review"
+    # an unreviewed reading is trusted only inside its own report zone
+    return [{"issued_on": r.issued_on, "note": i.note, "rating": i.rating, "species": i.species, "source_sentence": i.source_sentence,
+             "reviewed": i.status == "accepted"} for i, r in rows if i.status == "accepted" or r.zone == zone][:limit]
 
 
 def conditions(session: Session, wb: Waterbody, day: date, today: date | None = None) -> dict:
@@ -95,10 +124,5 @@ def conditions(session: Session, wb: Waterbody, day: date, today: date | None = 
                         "freshness": freshness(w, today)} for w, s in sorted(newest.items())
                        if freshness(w, today) in ("this_week", "recent", "upcoming")]
 
-    out["report_items"] = [
-        {"issued_on": r.issued_on, "note": i.note, "rating": i.rating, "species": i.species,
-         "source_sentence": i.source_sentence}
-        for i, r in session.execute(select(ReportItem, Report).join(Report, Report.id == ReportItem.report_id)
-                                    .where(ReportItem.waterbody_id == wb.id, ReportItem.status == "accepted")
-                                    .order_by(Report.issued_on.desc()).limit(3))]
+    out["report_items"] = report_items(session, wb.id, 3)
     return out

@@ -49,8 +49,8 @@
         <h2 class="eyebrow">{s.title}</h2>
         {#if s.narrated}
           <p class="para">{s.text}</p>
-          <p class="quiet small">Written by a local model ({s.model}) {hhmm(s.as_of)} on {localDay(s.as_of)}, from the facts below and checked against them. Numbers come from the data.</p>
-          <details><summary class="small">The facts behind this</summary>
+          <details><summary class="small cap">AI-written {hhmm(s.as_of)}, {localDay(s.as_of)} · the facts behind it</summary>
+            <p class="quiet small">Written by {s.model} from these facts only and checked against them.</p>
             <ul class="facts">{#each s.facts as f}<li>{f}</li>{/each}</ul></details>
         {:else if s.key === 'report'}
           {#each s.facts as f}<p class="bullet">{f}</p>{/each}
@@ -93,6 +93,7 @@
   .sec { padding-bottom: 6px; border-bottom: 1px solid var(--hair); } .sec:last-of-type { border-bottom: 0; }
   .para { margin: 0; font-size: 15.5px; line-height: 1.6; }
   .facts { list-style: disc; margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.5; }
+  .cap { font-size: 12.5px; }
   details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: var(--text-quiet); }
   article h2 { margin: 6px 0 2px; }
   .bullet { margin: 0; padding: 12px 14px; background: var(--glass-fill); border: 1px solid var(--hair); border-radius: 14px; line-height: 1.5; }
