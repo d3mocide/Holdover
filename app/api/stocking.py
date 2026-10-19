@@ -79,7 +79,7 @@ def _extra_layers(session: Session, wanted: set[str], zone: str, today: date) ->
     out = []
     pt = lambda lon, lat: {"type": "Point", "coordinates": [lon, lat]}
     if "gauges" in wanted:
-        for g in session.scalars(select(Gauge)):
+        for g in session.scalars(select(Gauge).where(Gauge.zone == zone)):
             if g.lat is None:
                 continue
             lg = latest_gauge(session, g)
@@ -104,7 +104,7 @@ def _extra_layers(session: Session, wanted: set[str], zone: str, today: date) ->
         for wb_id, (i, r) in latest.items():
             wb = session.get(Waterbody, wb_id)
             # an unreviewed reading is trusted only inside its own report zone (a Central-zone "Fall River" must not paint Fall Creek Reservoir)
-            if wb and wb.lat is not None and i.rating != "unknown" and (i.status == "accepted" or r.zone == wb.zone):
+            if wb and wb.lat is not None and wb.zone == zone and i.rating != "unknown" and (i.status == "accepted" or r.zone == wb.zone):
                 out.append({"type": "Feature", "geometry": pt(wb.lon, wb.lat), "properties": {
                     "layer": "report", "id": wb.id, "name": wb.name, "rating": i.rating, "issued_on": r.issued_on,
                     "species": i.species, "reviewed": i.status == "accepted"}})

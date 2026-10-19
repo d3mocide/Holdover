@@ -58,12 +58,12 @@ def generate(session: Session, llm: LLMClient, kind: str, key: str, version: str
     return out
 
 
-def generate_explanations(session: Session, llm: LLMClient, day, fishery: str, limit: int = 15) -> dict:
+def generate_explanations(session: Session, llm: LLMClient, day, fishery: str, limit: int = 15, zone: str = "willamette") -> dict:
     from app.planner import facts_text, rank
     out = {"generated": 0, "rejected": 0, "llm": "ok"}
     if not llm.configured:
         return {**out, "llm": "not_configured"}
-    for spot in rank(session, day, fishery)[:limit]:
+    for spot in rank(session, day, fishery, zone=zone)[:limit]:
         facts = facts_text(spot.facts)
         try:
             text = generate(session, llm, "explain", explain_key(spot.wb.id, day.isoformat(), fishery, facts),
@@ -75,7 +75,7 @@ def generate_explanations(session: Session, llm: LLMClient, day, fishery: str, l
     return out
 
 
-def generate_pack_intros(session: Session, llm: LLMClient, day, fishery: str, limit: int = 10) -> dict:
+def generate_pack_intros(session: Session, llm: LLMClient, day, fishery: str, limit: int = 10, zone: str = "willamette") -> dict:
     """LLM rewording of the pack-list intro only. The checklist itself is always the template."""
     from app.conditions import conditions
     from app.packlist import pack_list
@@ -83,7 +83,7 @@ def generate_pack_intros(session: Session, llm: LLMClient, day, fishery: str, li
     out = {"generated": 0, "rejected": 0}
     if not llm.configured:
         return out
-    for spot in rank(session, day, fishery)[:limit]:
+    for spot in rank(session, day, fishery, zone=zone)[:limit]:
         w = (conditions(session, spot.wb, day)["weather"] or {}).get("day") or {}
         base = pack_list(day, fishery, w.get("temp_f"), w.get("precip_pct"), wind_mph(w.get("wind")), spot.wb.kind)["intro"]
         try:

@@ -81,18 +81,20 @@ def in_fishery(wb: Waterbody, fishery: str, stocking_factor: sc.Factor, species_
     return any(w in species_text for w in SPECIES_WORDS[fishery])
 
 
-def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | None = None) -> list[Spot]:
-    """home overrides the server default (HOME_LAT/HOME_LON): a signed-in user's saved home, or one the browser sent."""
+def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | None = None, zone: str = "willamette") -> list[Spot]:
+    """home overrides the server default (HOME_LAT/HOME_LON): a signed-in user's saved home, or one the browser sent. Only the zone's
+    waterbodies are ranked, and "a big stocking" is judged against that zone's own recent stockings."""
     s = get_settings()
     home_lat, home_lon = home if home else (s.home_lat, s.home_lon)
-    rows = latest_rows(session)
+    zone_ids = set(session.scalars(select(Waterbody.id).where(Waterbody.zone == zone)))
+    rows = [(snap, alias) for snap, alias in latest_rows(session) if alias.waterbody_id in zone_ids]
     p90 = zone_p90(rows, day)
     by_wb: dict[int, list[tuple[str, int]]] = {}
     for snap, alias in rows:
         if alias.confirmed and alias.waterbody_id:
             by_wb.setdefault(alias.waterbody_id, []).append((snap.week_of, snap.total or 0))
     spots = []
-    for wb in session.scalars(select(Waterbody)):
+    for wb in session.scalars(select(Waterbody).where(Waterbody.zone == zone)):
         if wb.lat is None or wb.lon is None:
             continue
         stock = sc.stocking_factor(by_wb.get(wb.id, []), day, p90, s.w_stocking) if fishery == "trout" else \

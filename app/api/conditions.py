@@ -47,9 +47,9 @@ def day(wb_id: int, date_: date | None = Query(None, alias="date"), fishery: str
 
 
 @router.get("/gauges")
-def gauges(session: Session = Depends(get_session)):
+def gauges(zone: str = "willamette", session: Session = Depends(get_session)):
     out = []
-    for g in session.scalars(select(Gauge).order_by(Gauge.name)):
+    for g in session.scalars(select(Gauge).where(Gauge.zone == zone).order_by(Gauge.name)):
         item = latest_gauge(session, g)
         item["waterbody_ids"] = [r for r in session.scalars(select(WaterbodyGauge.waterbody_id).where(WaterbodyGauge.gauge_id == g.id))]
         out.append(item)

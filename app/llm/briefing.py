@@ -21,8 +21,8 @@ from app.models import Generation
 log = logging.getLogger("holdover.llm")
 
 
-def key_for(week: date, section: str) -> str:
-    return f"{week.isoformat()}:{section}"
+def key_for(week: date, zone: str, section: str) -> str:
+    return f"{week.isoformat()}:{zone}:{section}"
 
 
 def write(llm: LLMClient, section: Section) -> str:
@@ -40,14 +40,14 @@ def write(llm: LLMClient, section: Section) -> str:
     return text
 
 
-def generate(session: Session, llm: LLMClient, today: date | None = None) -> dict:
+def generate(session: Session, llm: LLMClient, today: date | None = None, zone: str = "willamette") -> dict:
     today = today or date.today()
     week = monday(today)
     out = {"written": 0, "rejected": 0, "llm": "ok"}
     if not llm.configured:
         out["llm"] = "not_configured"
         return out
-    for sec in build(session, today):
+    for sec in build(session, today, zone):
         if not sec.narrate:
             continue
         try:
@@ -60,7 +60,7 @@ def generate(session: Session, llm: LLMClient, today: date | None = None) -> dic
             log.warning("briefing: %s paragraph discarded: %s", sec.key, exc)
             out["rejected"] += 1
             continue
-        key = key_for(week, sec.key)
+        key = key_for(week, zone, sec.key)
         session.execute(delete(Generation).where(Generation.kind == "briefing", Generation.key == key))
         session.add(Generation(kind="briefing", key=key, prompt_version=BRIEFING_VERSION, model=llm.model, generated_at=now_iso(),
                                text=json.dumps({"text": text, "facts": sec.facts})))
@@ -69,11 +69,11 @@ def generate(session: Session, llm: LLMClient, today: date | None = None) -> dic
     return out
 
 
-def stored(session: Session, week: date) -> dict[str, dict]:
-    """The paragraphs written for this week, by section key, each with the facts it was written from."""
+def stored(session: Session, week: date, zone: str = "willamette") -> dict[str, dict]:
+    """The paragraphs written for this week and zone, by section key, each with the facts it was written from."""
     out = {}
-    for g in session.scalars(select(Generation).where(Generation.kind == "briefing", Generation.key.like(f"{week.isoformat()}:%"),
+    for g in session.scalars(select(Generation).where(Generation.kind == "briefing", Generation.key.like(f"{week.isoformat()}:{zone}:%"),
                                                       Generation.prompt_version == BRIEFING_VERSION)):
         d = json.loads(g.text)
-        out[g.key.split(":", 1)[1]] = {"text": d["text"], "facts": d["facts"], "as_of": g.generated_at, "model": g.model}
+        out[g.key.split(":", 2)[2]] = {"text": d["text"], "facts": d["facts"], "as_of": g.generated_at, "model": g.model}
     return out

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy import func, select
 
+from app.config import get_settings
 from app.db import session_factory
 from app.http import now_iso
 from app.models import RawFetch
@@ -23,7 +24,7 @@ OPTIONAL: set[str] = set()
 def run_stocking() -> dict:
     with session_factory()() as s:
         try:
-            return _logged("stocking", odfw_stocking.run_job(s))
+            return _logged("stocking", odfw_stocking.run_zones(s))
         except Exception:  # keep the scheduler alive; the failure shows in /healthz
             log.exception("stocking job crashed")
             s.rollback()
@@ -92,9 +93,13 @@ def run_briefing() -> dict:
     """Write the week's briefing paragraphs (slow model, runs in the background; the facts are available without it)."""
     from app.llm.briefing import generate
     from app.llm.client import LLMClient
+    from app.zones import enabled
     with session_factory()() as s:
         try:
-            return _logged("briefing", generate(s, LLMClient.for_extraction()))
+            llm, out = LLMClient.for_extraction(), {}
+            for z in enabled(get_settings().enabled_zones):
+                out[z.key] = _logged(f"briefing {z.key}", generate(s, llm, zone=z.key))
+            return out
         except Exception:
             log.exception("briefing job crashed")
             s.rollback()
@@ -114,10 +119,12 @@ def run_explain(days: int = 2) -> dict:
     llm, out = LLMClient(), {}
     with session_factory()() as s:
         try:
-            for off in range(days):
-                for f in FISHERIES:
-                    d = date.today() + timedelta(days=off)
-                    out[f"{f}+{off}"] = {**generate_explanations(s, llm, d, f), "pack": generate_pack_intros(s, llm, d, f)}
+            from app.zones import enabled
+            for z in enabled(get_settings().enabled_zones):
+                for off in range(days):
+                    for f in FISHERIES:
+                        d = date.today() + timedelta(days=off)
+                        out[f"{z.key}:{f}+{off}"] = {**generate_explanations(s, llm, d, f, zone=z.key), "pack": generate_pack_intros(s, llm, d, f, zone=z.key)}
         except Exception:
             log.exception("explain job crashed")
             s.rollback()
@@ -163,7 +170,7 @@ def catch_up() -> list[str]:
         from app.llm.briefing import stored
         from app.llm.client import LLMClient
         from datetime import date
-        if LLMClient.for_extraction().configured and not stored(session_factory()(), monday(date.today())):
+        if LLMClient.for_extraction().configured and not stored(session_factory()(), monday(date.today())):  # willamette stands in for "any"
             log.info("catch-up: no briefing paragraphs for this week, writing them now")
             run_briefing()
             ran.append("briefing")

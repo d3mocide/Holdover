@@ -137,12 +137,12 @@ def ingest_page(session: Session, url: str, status: int | None, body: bytes, pag
     return len(rows), len(rows)
 
 
-def run_job(session: Session, fetch: Fetcher = http_fetch, today: date | None = None) -> dict:
-    """Walk result pages (50 rows each) until an empty page. One raw_fetch row per page."""
+def run_job(session: Session, fetch: Fetcher = http_fetch, today: date | None = None, zone: int | None = None) -> dict:
+    """Walk one zone's result pages (50 rows each) until an empty page. One raw_fetch row per page."""
     today = today or datetime.now(timezone.utc).date()
     out = {"pages": 0, "rows_seen": 0, "rows_inserted": 0, "ok": True}
     for page in range(MAX_PAGES):
-        url = page_url(page, today)
+        url = page_url(page, today, zone)
         status, body = fetch(url)
         n, inserted = ingest_page(session, url, status, body, page)
         out["pages"] += 1
@@ -155,4 +155,21 @@ def run_job(session: Session, fetch: Fetcher = http_fetch, today: date | None = 
         out["rows_seen"] += max(n, 0)
         if fetch is http_fetch:
             time.sleep(PAGE_DELAY_S)
+    return out
+
+
+def run_zones(session: Session, fetch: Fetcher = http_fetch, today: date | None = None, zones=None) -> dict:
+    """The scheduled job: every enabled zone, one after another with the usual pause between pages. A zone that fails does not stop the
+    others; the result says which. Each zone is its own run of pages, so an unchanged zone costs the same few requests."""
+    from app.zones import enabled
+    zones = zones if zones is not None else enabled(get_settings().enabled_zones)
+    out = {"pages": 0, "rows_seen": 0, "rows_inserted": 0, "ok": True, "zones": {}}
+    for i, z in enumerate(zones):
+        if i and fetch is http_fetch:
+            time.sleep(PAGE_DELAY_S)
+        r = run_job(session, fetch, today, zone=z.stocking_value)
+        out["zones"][z.key] = {k: r[k] for k in ("pages", "rows_seen", "rows_inserted", "ok")}
+        for k in ("pages", "rows_seen", "rows_inserted"):
+            out[k] += r[k]
+        out["ok"] = out["ok"] and r["ok"]
     return out

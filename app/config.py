@@ -41,8 +41,10 @@ class Settings(BaseSettings):
     w_forecast: float = 0.15
     w_distance: float = 0.10
 
-    # Willamette zone on the ODFW stocking schedule (field_zone_value)
+    # Willamette zone on the ODFW stocking schedule (field_zone_value); the default for a single-zone fetch
     stocking_zone_value: int = 6
+    # Zones the scheduled stocking job fetches and the app offers (keys from app/zones). Each zone is a few pages a day.
+    enabled_zones: str = "willamette,central"
 
 
 @lru_cache

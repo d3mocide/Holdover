@@ -90,6 +90,7 @@ class Gauge(Base):
     name: Mapped[str | None] = mapped_column(Text)
     lat: Mapped[float | None] = mapped_column(Float)
     lon: Mapped[float | None] = mapped_column(Float)
+    zone: Mapped[str | None] = mapped_column(Text)  # which ODFW zone it belongs to (Gauges page, briefing)
 
 
 class WaterbodyGauge(Base):

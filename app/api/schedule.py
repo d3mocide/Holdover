@@ -20,12 +20,12 @@ def _today() -> date:
 
 
 @router.get("/schedule")
-def schedule(start: date | None = Query(None), end: date | None = Query(None), session: Session = Depends(get_session)):
+def schedule(start: date | None = Query(None), end: date | None = Query(None), zone: str = "willamette", session: Session = Depends(get_session)):
     today = _today()
     this_monday = today - timedelta(days=today.weekday())
     start = start or this_monday
     end = end or (start + timedelta(days=28))
-    names = {w.id: w for w in session.scalars(select(Waterbody))}
+    names = {w.id: w for w in session.scalars(select(Waterbody).where(Waterbody.zone == zone))}
     weeks: dict[str, list[dict]] = defaultdict(list)
     months: dict[str, dict] = {}
     for snap, alias in latest_rows(session):

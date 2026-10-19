@@ -40,7 +40,7 @@ def test_grounded_paragraphs_are_stored_with_the_facts_they_came_from(session, s
     loaded(session, stocking_html)
     # the fixture schedule is for October 2026: pin the briefing to that week
     import app.llm.briefing as lb
-    monkeypatch.setattr(lb, "build", lambda s, t=None: __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)))
+    monkeypatch.setattr(lb, "build", lambda s, t=None, z="willamette": __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)))
     out = generate(session, llm_with(lambda r: reply("Alton Baker Canal gets 750 legals this week.")), date(2026, 10, 14))
     assert out["llm"] == "ok" and out["written"] >= 1
     kept = stored(session, monday(date(2026, 10, 14)))
@@ -51,7 +51,7 @@ def test_grounded_paragraphs_are_stored_with_the_facts_they_came_from(session, s
 def test_an_ungrounded_paragraph_gets_one_retry_then_the_better_text_is_kept(session, stocking_html, monkeypatch):
     loaded(session, stocking_html)
     import app.llm.briefing as lb
-    monkeypatch.setattr(lb, "build", lambda s, t=None: [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
+    monkeypatch.setattr(lb, "build", lambda s, t=None, z="willamette": [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
     calls = []
 
     def handler(req):
@@ -67,7 +67,7 @@ def test_an_ungrounded_paragraph_gets_one_retry_then_the_better_text_is_kept(ses
 def test_text_that_never_grounds_is_dropped_and_nothing_is_stored(session, stocking_html, monkeypatch):
     loaded(session, stocking_html)
     import app.llm.briefing as lb
-    monkeypatch.setattr(lb, "build", lambda s, t=None: [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
+    monkeypatch.setattr(lb, "build", lambda s, t=None, z="willamette": [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
     out = generate(session, llm_with(lambda r: reply("Expect 42 coho at Detroit Lake.")), date(2026, 10, 14))
     assert out["written"] == 0 and out["rejected"] == 1
     assert session.scalar(select(func.count()).select_from(Generation).where(Generation.kind == "briefing")) == 0
@@ -76,7 +76,7 @@ def test_text_that_never_grounds_is_dropped_and_nothing_is_stored(session, stock
 def test_regenerating_replaces_the_paragraph(session, stocking_html, monkeypatch):
     loaded(session, stocking_html)
     import app.llm.briefing as lb
-    monkeypatch.setattr(lb, "build", lambda s, t=None: [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
+    monkeypatch.setattr(lb, "build", lambda s, t=None, z="willamette": [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
     generate(session, llm_with(lambda r: reply("Alton Baker Canal gets 750 legals.")), date(2026, 10, 14))
     generate(session, llm_with(lambda r: reply("Canby Pond gets 300 legals.")), date(2026, 10, 14))
     assert session.scalar(select(func.count()).select_from(Generation).where(Generation.kind == "briefing")) == 1
@@ -98,7 +98,7 @@ def test_the_api_serves_facts_alone_and_then_the_paragraph_with_its_facts(sessio
     loaded(session, stocking_html)
     import app.api.briefing as ab
     import app.llm.briefing as lb
-    pinned = lambda s, t=None: __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14))
+    pinned = lambda s, t=None, z="willamette": __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14))
     monkeypatch.setattr(lb, "build", pinned)
     monkeypatch.setattr(ab, "build", pinned)
 
@@ -126,7 +126,7 @@ def test_the_api_serves_facts_alone_and_then_the_paragraph_with_its_facts(sessio
 def test_a_sections_editorial_hint_reaches_the_model_but_is_not_a_fact(session, stocking_html, monkeypatch):
     loaded(session, stocking_html)
     import app.llm.briefing as lb
-    monkeypatch.setattr(lb, "build", lambda s, t=None: [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
+    monkeypatch.setattr(lb, "build", lambda s, t=None, z="willamette": [x for x in __import__("app.briefing", fromlist=["x"]).build(s, date(2026, 10, 14)) if x.key == "stocking"])
     seen = []
 
     def handler(req):

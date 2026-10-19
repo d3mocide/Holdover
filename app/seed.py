@@ -143,29 +143,37 @@ FISHERY_HINTS = {
 }
 
 
-def seed_waterbodies(session: Session) -> int:
-    """Idempotent: adds missing waterbodies and their confirmed aliases."""
+def _seed_zone(session: Session, zone: str, seed, updates: dict, hints: dict) -> int:
     added = 0
-    for name, kind, seed_lat, seed_lon, labels in SEED:
-        upd = COORD_UPDATES.get(name)
+    for name, kind, seed_lat, seed_lon, labels in seed:
+        upd = updates.get(name)
         lat, lon = (upd[0], upd[1]) if upd else (seed_lat, seed_lon)
         wb = session.scalar(select(Waterbody).where(Waterbody.name == name))
         if wb is None:
-            wb = Waterbody(name=name, kind=kind, lat=lat, lon=lon, zone=ZONE, regs_url=REGS_URL)
+            wb = Waterbody(name=name, kind=kind, lat=lat, lon=lon, zone=zone, regs_url=REGS_URL)
             session.add(wb)
             session.flush()
             added += 1
         elif upd and _same(wb.lat, seed_lat) and _same(wb.lon, seed_lon):
             # Still holds the original hand-entered value: safe to correct. Anything else was set deliberately.
             wb.lat, wb.lon = lat, lon
-        if name in FISHERY_HINTS and wb.species_json is None:
-            wb.species_json = json.dumps({"fisheries": FISHERY_HINTS[name], "source": "seed hint, unverified"})
+        if name in hints and wb.species_json is None:
+            wb.species_json = json.dumps({"fisheries": hints[name], "source": "seed hint, unverified"})
         for label in labels:
             key = normalize_alias(label)
             if session.scalar(
                 select(WaterbodyAlias.id).where(WaterbodyAlias.alias_text == key, WaterbodyAlias.source == SOURCE)
             ) is None:
                 session.add(WaterbodyAlias(alias_text=key, source=SOURCE, waterbody_id=wb.id, confirmed=1))
+    return added
+
+
+def seed_waterbodies(session: Session) -> int:
+    """Idempotent: adds missing waterbodies and their confirmed aliases, for Willamette and every zone module."""
+    from app.zones import MODULES
+    added = _seed_zone(session, ZONE, SEED, COORD_UPDATES, FISHERY_HINTS)
+    for m in MODULES:
+        added += _seed_zone(session, m.ZONE, m.SEED, {}, m.FISHERY_HINTS)  # a pin set here is only ever inserted, never re-applied over a person's edit
     session.commit()
     seed_gauges(session)
     return added
@@ -209,20 +217,25 @@ GAUGE_LINKS = {
 
 
 def seed_gauges(session: Session) -> int:
+    from app.zones import MODULES
     added = 0
-    for site, name, lat, lon in GAUGES:
-        g = session.scalar(select(Gauge).where(Gauge.site_no == site, Gauge.agency == "USGS"))
-        if g is None:
-            session.add(Gauge(site_no=site, agency="USGS", name=name, lat=lat, lon=lon))
-            added += 1
-    session.flush()
-    for wb_name, sites in GAUGE_LINKS.items():
-        wb = session.scalar(select(Waterbody).where(Waterbody.name == wb_name))
-        if wb is None:
-            continue
-        for site in sites:
-            g = session.scalar(select(Gauge).where(Gauge.site_no == site))
-            if g and session.get(WaterbodyGauge, (wb.id, g.id)) is None:
-                session.add(WaterbodyGauge(waterbody_id=wb.id, gauge_id=g.id))
+    groups = [(ZONE, GAUGES, GAUGE_LINKS)] + [(m.ZONE, m.GAUGES, m.GAUGE_LINKS) for m in MODULES]
+    for zone, gauges, links in groups:
+        for site, name, lat, lon in gauges:
+            g = session.scalar(select(Gauge).where(Gauge.site_no == site, Gauge.agency == "USGS"))
+            if g is None:
+                session.add(Gauge(site_no=site, agency="USGS", name=name, lat=lat, lon=lon, zone=zone))
+                added += 1
+            elif g.zone is None:
+                g.zone = zone
+        session.flush()
+        for wb_name, sites in links.items():
+            wb = session.scalar(select(Waterbody).where(Waterbody.name == wb_name))
+            if wb is None:
+                continue
+            for site in sites:
+                g = session.scalar(select(Gauge).where(Gauge.site_no == site))
+                if g and session.get(WaterbodyGauge, (wb.id, g.id)) is None:
+                    session.add(WaterbodyGauge(waterbody_id=wb.id, gauge_id=g.id))
     session.commit()
     return added
