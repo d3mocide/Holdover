@@ -95,3 +95,14 @@ GAUGES: list[tuple[str, str, float, float]] = [
 # None of them is clearly the same water as a stocked lake or pond in this zone's schedule, so no waterbody is linked (and no
 # ranking depends on them). They appear on the Gauges page, the map and the briefing.
 GAUGE_LINKS: dict[str, list[str]] = {}
+
+
+# Popular rivers (see app/zones/rivers.py): name -> (USGS gauges on it, fishery hints). Every gauge reported flow on the live API on 2026-10-19.
+from app.zones.rivers import add_rivers  # noqa: E402
+
+add_rivers(globals(), {
+    "Deschutes River": (["14076500", "14092500", "14103000"], ["steelhead"]),
+    "Crooked River": (["14087400"], []),
+    "Metolius River": (["14091500"], []),
+    "Hood River": (["14120000"], ["steelhead"]),
+})

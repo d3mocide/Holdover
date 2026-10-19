@@ -81,3 +81,15 @@ GAUGES: list[tuple[str, str, float, float]] = [
     ("13213100", "Snake River at Nyssa", 43.87611, -116.98250),
 ]
 GAUGE_LINKS: dict[str, list[str]] = {}
+
+
+# Popular rivers (see app/zones/rivers.py): name -> (USGS gauges on it, fishery hints). Every gauge reported flow on the live API on 2026-10-19.
+from app.zones.rivers import add_rivers  # noqa: E402
+
+add_rivers(globals(), {
+    "Williamson River": (["11502500"], []),
+    "Sprague River": (["11501000"], []),
+    "Klamath River": (["11509500"], []),
+    "Owyhee River": (["13181000"], ["warmwater"]),
+    "Malheur River": (["13233300"], ["warmwater"]),
+})

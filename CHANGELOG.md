@@ -4,6 +4,11 @@ Versions follow `0.minor.patch` while the app is still changing quickly: a minor
 `pyproject.toml` and `web/package.json` (a test keeps them equal) and is shown in Settings and `/healthz`. Details and evidence for each change are
 in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
+## Unreleased
+
+**Rivers.** 36 popular rivers across all six zones as waterbodies with their live gauges, flow against each river's own median, NOAA flood status (48 gauges, polled every 2 hours), water quality where a sensor is current, and Willamette Falls fish counts on the rivers above the falls. Settings, Place pins moves a river's pin to where you fish.
+Rankings are about 3 times faster.
+
 ## 0.6.0
 
 **Everywhere in Oregon.** All six ODFW zones (Willamette, Central, Northwest, Southwest, Northeast, Southeast): waterbodies, pins, gauges, stocking and a

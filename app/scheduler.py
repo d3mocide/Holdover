@@ -16,7 +16,7 @@ scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 # source -> expected cadence, used to flag a source stale when nothing succeeded recently
 CADENCE = {odfw_stocking.SOURCE: timedelta(days=7), odfw_report.SOURCE: timedelta(days=8),
            usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2),
-           corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3), nwps.SOURCE: timedelta(hours=2),
+           corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3), nwps.SOURCE: timedelta(hours=4),
            dart.SOURCE: timedelta(days=1)}
 # Sources that only run for things the owner opts into (nws needs starred waterbodies)
 OPTIONAL: set[str] = set()
@@ -224,7 +224,7 @@ def start() -> None:
     scheduler.add_job(run_nifc, "interval", hours=1, id="nifc", replace_existing=True, coalesce=True)
     # Fish counts: ODFW posts on weekdays, so one polite request each morning is plenty (about 6 KB).
     scheduler.add_job(run_dart, "cron", hour=8, minute=30, id="dart", replace_existing=True, coalesce=True)
-    scheduler.add_job(run_nwps, "interval", minutes=60, id="nwps", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_nwps, "interval", hours=2, id="nwps", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
     scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)
     scheduler.add_job(run_briefing, "cron", day_of_week="fri", hour=12, minute=0, id="briefing", replace_existing=True, misfire_grace_time=12 * 3600, coalesce=True)

@@ -230,6 +230,12 @@ GAUGES = [
     ("14183000", "North Santiam River at Mehama", 44.78925, -122.61881),
     ("14185900", "Quartzville Creek near Cascadia", 44.54012, -122.43592),
     ("14210000", "Clackamas River at Estacada", 45.29984, -122.35397),
+    ("14209500", "Clackamas River above Three Lynx Creek", 45.12484, -122.07341),
+    ("14137000", "Sandy River near Marmot", 45.39956, -122.13731),
+    ("14142500", "Sandy River below Bull Run River", 45.44901, -122.24509),
+    ("14187500", "South Santiam River at Waterloo", 44.49846, -122.82342),
+    ("14200000", "Molalla River near Canby", 45.24392, -122.68744),
+    ("14173500", "Calapooia River at Albany", 44.62003, -123.12847),
     ("14203500", "Tualatin River near Dilley", 45.47484, -123.12427),
     ("14206241", "Tualatin River at Highway 219 near Hillsboro", 45.50039, -122.99094),
     ("14207500", "Tualatin River at West Linn", 45.35068, -122.67620),
@@ -275,3 +281,17 @@ def seed_gauges(session: Session) -> int:
                     session.add(WaterbodyGauge(waterbody_id=wb.id, gauge_id=g.id))
     session.commit()
     return added
+
+
+# Popular rivers (see app/zones/rivers.py): name -> (USGS gauges on it, fishery hints). All the gauges report flow now (checked 2026-10-19).
+from app.zones.rivers import add_rivers  # noqa: E402
+
+add_rivers(globals(), {
+    "Willamette River": (["14166000", "14174000", "14191000"], ["steelhead", "warmwater"]),
+    "Clackamas River": (["14210000", "14209500"], ["steelhead"]),
+    "Sandy River": (["14137000", "14142500"], ["steelhead"]),
+    "South Santiam River": (["14187500"], ["steelhead"]),
+    "Middle Fork Willamette River": (["14152000"], ["steelhead"]),
+    "Molalla River": (["14200000"], ["steelhead"]),
+    "Calapooia River": (["14173500"], []),
+})

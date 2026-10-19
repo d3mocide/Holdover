@@ -42,20 +42,28 @@ def test_the_zone_seeds_are_consistent_and_never_invent_a_coordinate():
     for m, box in ((central, (43.3, 45.8, -122.3, -119.4)), (northwest, (43.5, 46.3, -124.4, -122.7)), (southwest, (41.9, 43.95, -124.7, -121.9)),
                    (northeast, (44.3, 46.1, -120.6, -116.4)), (southeast, (41.9, 44.8, -122.4, -116.4))):
         pinned = {s_[0] for s_ in m.SEED if s_[2] is not None}
-        assert pinned == set(m.PINS) and {v[0] for v in m.PINS.values()} <= {"osm", "likely"}, m.ZONE  # every pin says how it was found
+        assert pinned == set(m.PINS) and {v[0] for v in m.PINS.values()} <= {"osm", "likely", "gauge"}, m.ZONE  # every pin says how it was found
         for name, kind, lat, lon, _ in m.SEED:
             if lat is not None:
                 assert box[0] <= lat <= box[1] and box[2] <= lon <= box[3], name
-    assert len(central.SEED) == 35 and sum(1 for s_ in central.SEED if s_[2] is None) == 13
-    assert len(northwest.SEED) == 33 and sum(1 for s_ in northwest.SEED if s_[2] is None) == 11
-    assert [(len(m.SEED), sum(1 for s_ in m.SEED if s_[2] is None)) for m in (southwest, northeast, southeast)] == [(43, 21), (49, 40), (36, 23)]
+    lakes = lambda m: [s_ for s_ in m.SEED if s_[4]]  # waters with a stocking label (rivers have none)
+    unpinned = lambda m: sum(1 for s_ in m.SEED if s_[2] is None)
+    assert [(len(lakes(m)), unpinned(m)) for m in (central, northwest, southwest, northeast, southeast)] == [(35, 13), (33, 11), (43, 21), (49, 40), (36, 23)]
+    assert [len(m.SEED) - len(lakes(m)) for m in (central, northwest, southwest, northeast, southeast)] == [4, 7, 7, 5, 5]  # the popular rivers
+    for m in (central, northwest, southwest, northeast, southeast):  # every river is pinned at its first gauge and linked to gauges the zone defines
+        sites = {g[0] for g in m.GAUGES}
+        for name, kind, lat, lon, labels in m.SEED:
+            if not labels:
+                assert kind == "river" and m.PINS[name][0] == "gauge" and set(m.GAUGE_LINKS[name]) <= sites, name
+                lead = next(g for g in m.GAUGES if g[0] == m.GAUGE_LINKS[name][0])
+                assert (lat, lon) == (lead[2], lead[3]), name
 
 
 def test_seeding_creates_both_zones_idempotently_and_never_overwrites_a_pin_a_person_set(session):
     seed_waterbodies(session)
     n = session.scalar(select(func.count()).select_from(Waterbody))
-    assert session.scalar(select(func.count()).select_from(Waterbody).where(Waterbody.zone == "central")) == 35
-    assert session.scalar(select(func.count()).select_from(Waterbody).where(Waterbody.zone == "northwest")) == 33
+    assert session.scalar(select(func.count()).select_from(Waterbody).where(Waterbody.zone == "central")) == 39
+    assert session.scalar(select(func.count()).select_from(Waterbody).where(Waterbody.zone == "northwest")) == 40
     wb = session.scalar(select(Waterbody).where(Waterbody.name == "Hosmer Lake"))
     wb.lat, wb.lon = 43.9, -121.7  # a person moved it
     other = session.scalar(select(Waterbody).where(Waterbody.name == "East Lake"))
@@ -116,7 +124,7 @@ def test_the_endpoints_filter_by_zone_and_reject_an_unknown_one(session):
     loaded(session)
     c = client()
     zs = {z["key"]: z for z in c.get("/api/zones").json()["zones"]}
-    assert zs["central"]["waterbodies"] == 35 and zs["central"]["pinned"] == 22 and zs["willamette"]["waterbodies"] > 50
+    assert zs["central"]["waterbodies"] == 39 and zs["central"]["pinned"] == 26 and zs["willamette"]["waterbodies"] > 50
     feats = c.get("/api/map", params={"zone": "central"}).json()["features"]
     assert feats and {f["properties"]["name"] for f in feats if f["properties"]["layer"] == "stocking"} <= {s[0] for s in central.SEED}
     assert c.get("/api/spots", params={"zone": "central", "date": "2026-10-14"}).json()["zone"] == "central"
@@ -130,7 +138,7 @@ def test_gauges_belong_to_a_zone_and_the_endpoint_filters_by_it(session):
     c = client()
     wil = c.get("/api/gauges").json()["gauges"]
     cen = c.get("/api/gauges", params={"zone": "central"}).json()["gauges"]
-    assert len(wil) == 19 and len(cen) == 8 and len(c.get("/api/gauges", params={"zone": "northwest"}).json()["gauges"]) == 7
+    assert len(wil) == 25 and len(cen) == 8 and len(c.get("/api/gauges", params={"zone": "northwest"}).json()["gauges"]) == 7
     assert {g["site_no"] for g in cen} == {g[0] for g in central.GAUGES} and not ({g["site_no"] for g in wil} & {g["site_no"] for g in cen})
     assert session.scalar(select(func.count()).select_from(Gauge).where(Gauge.zone.is_(None))) == 0
 

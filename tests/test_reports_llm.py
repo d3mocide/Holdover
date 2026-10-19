@@ -56,7 +56,8 @@ def test_waterbody_matching_is_exact_not_loose(session):
     seed_waterbodies(session)
     assert match_waterbody(session, "North Santiam") is not None
     assert match_waterbody(session, "Dexter Reservoir") is not None
-    assert match_waterbody(session, "Willamette River") is None  # not the Coast Fork
+    mainstem = match_waterbody(session, "Willamette River")  # the river itself is now a waterbody (not the Coast Fork, which has its own name)
+    assert mainstem is not None and session.get(Waterbody, mainstem).name == "Willamette River"
     assert match_waterbody(session, "Imaginary Lake") is None
 
 

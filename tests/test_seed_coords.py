@@ -44,7 +44,7 @@ def test_every_update_names_a_seed_row_and_stays_in_oregon_zone():
     names = {n for n, *_ in SEED}
     for name, (lat, lon, how) in COORD_UPDATES.items():
         assert name in names, name
-        assert how in {"osm", "snap", "likely"}
+        assert how in {"osm", "snap", "likely", "gauge"}
         assert 43.4 < lat < 46.3 and -123.9 < lon < -121.4, name
 
 

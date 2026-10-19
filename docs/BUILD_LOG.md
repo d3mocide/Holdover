@@ -618,3 +618,18 @@ Owner asked what we know about rivers like the Tualatin and what other sources c
   browser suites offline 12/12, accounts 37/37, gear 46/46, pins 11/11 on a fresh instance. Live in the dev stack: the DART job added 3,444 rows, Dilley's quality readings arrived on the next poll.
 - Not verified: the Tualatin's pin or fishery hints on the ground; how the fish counts relate to what anglers find on the river; DART's terms beyond the citation request; the Pi.
 
+### 2026-10-19 · this commit · Phase 11 · Rivers mirrored: 36 popular rivers across all six zones
+Owner asked to mirror the Tualatin to the rivers most people fish. **The list is my judgement** (a river many anglers fish), not data; every one was verified against live sources first:
+- **Rivers**: Willamette zone: Willamette (mainstem), Clackamas, Sandy, South Santiam, Middle Fork Willamette, Molalla, Calapooia (with the existing Tualatin, McKenzie and North Santiam); Central: Deschutes, Crooked, Metolius, Hood;
+  Northwest: Nehalem, Wilson, Trask, Nestucca, Siletz, Alsea, Siuslaw; Southwest: Rogue, Umpqua, North and South Umpqua, Applegate, Illinois, Chetco; Northeast: Grande Ronde, John Day, North Fork John Day, Umatilla, Minam;
+  Southeast: Williamson, Sprague, Klamath, Owyhee, Malheur. Each is declared once in its zone module (`app/zones/rivers.py`): its gauges, and a fishery hint. Pins are at the first gauge, labelled "gauge".
+- **Checked live before adding**: all 37 USGS gauges reported flow within hours (one candidate, Silver Creek, was stale and was dropped); NOAA flood gauges matched 33 of them within 400 m and by name (the Deschutes at Culver, Crooked, Metolius, Rogue at Agness and
+  the Minam have none); NOAA is now one statewide request (about 380 KB, every 2 hours). The Wilson and Trask list water-quality sensors but their last reading is from 2014, so nothing is shown (readings older than 3 days are dropped).
+- **Fish counts only where the geography justifies them**: the Willamette Falls fishway counts apply to rivers above the falls (Willamette, South Santiam, Middle Fork, Molalla, Calapooia, McKenzie, North Santiam, Tualatin, Coast Fork). **Not** to the Clackamas
+  (it enters below the falls) or the Sandy (the Columbia). Those need the Columbia dams' counts, which I have not verified, so they show none rather than a wrong one.
+- A real improvement: the weekly report's "Willamette River" walleye item now matches the Willamette River waterbody (before it matched nothing). **Performance**: ranking read whole ORM rows for a week of gauge history; it now reads two columns, 0.43 s to 0.15 s per ranking
+  (the Plan page makes seven at once, which had grown to about 4 s).
+- Verified: 235 `pytest`, 56 frontend tests, browser pass on 7 rivers in all six zones at desktop and phone (flow, NOAA where it exists, fish passage only above the falls, no stocking section, axe zero, no page errors), browser suites offline 12/12, accounts 37/37,
+  gear 46/46, pins 11/11; live dev stack: 48 NOAA gauges, 4,161 backfilled readings.
+- Not verified: pins on the ground (all rivers are at a gauge, not where anglers fish), the fishery hints (general knowledge), whether every popular river is on the list (the Columbia, the lower Willamette below the falls and estuaries are not covered), the Pi.
+

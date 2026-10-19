@@ -50,7 +50,8 @@ def _gauge_inputs(session: Session, wb_id: int, day: date):
     gids = session.scalars(select(WaterbodyGauge.gauge_id).where(WaterbodyGauge.waterbody_id == wb_id)).all()
     best = (None, [], 0.0)
     for gid in gids:
-        rows = session.scalars(select(GaugeReading).where(GaugeReading.gauge_id == gid, GaugeReading.parameter == "discharge_cfs")
+        # only the two columns the factor needs, not whole ORM rows: a week of 15-minute readings is 672 of them per gauge
+        rows = session.execute(select(GaugeReading.value, GaugeReading.observed_at).where(GaugeReading.gauge_id == gid, GaugeReading.parameter == "discharge_cfs")
                                .order_by(GaugeReading.observed_at.desc()).limit(7 * 96)).all()
         if rows and len(rows) > len(best[1]):
             span = (datetime.fromisoformat(rows[0].observed_at) - datetime.fromisoformat(rows[-1].observed_at)).total_seconds() / 3600

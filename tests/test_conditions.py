@@ -99,7 +99,7 @@ def test_api_day_gauges_and_layers(session, monkeypatch):
     assert d["conditions"]["weather"]["day"] and d["conditions"]["advisories"][0]["kind"] == "algae:precaution"
     assert d["conditions"]["advisory_page"].startswith("https://www.oregon.gov")
     g = c.get("/api/gauges").json()
-    assert len(g["gauges"]) == 19 and "provisional" in g["note"]
+    assert len(g["gauges"]) == 25 and "provisional" in g["note"]
     m = c.get("/api/map?layers=stocking,gauges,advisories,reports").json()
     layers = {f["properties"]["layer"] for f in m["features"]}
     assert {"gauge", "advisory"} <= layers

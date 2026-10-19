@@ -315,3 +315,47 @@ From ODFW's Northwest zone stocking schedule (33 labels, 33 waterbodies), same m
 | Verified (OSM name match) | Lofton Reservoir | reservoir | 42.2639 | -120.8184 | OSM water 'Lofton Reservoir' |
 | Verified (OSM name match) | Phillips Reservoir | reservoir | 44.6776 | -118.0504 | OSM water 'Phillips Lake' |
 | Verified (OSM name match) | Priday Reservoir | reservoir | 42.3389 | -119.8961 | OSM water 'Priday Reservoir' |
+
+
+## Rivers (added 2026-10-19)
+
+The popular rivers, chosen by me as rivers many anglers fish (your call to add or drop any), each a waterbody pinned at its first USGS gauge. A river is long: use Settings, Place pins to move a pin to where you fish. They have no stocking schedule, so they appear in the Steelhead & salmon or Warmwater lists by a seed hint (general knowledge, unverified).
+
+| Zone | River | Lat | Lon |
+| --- | --- | --- | --- |
+| central | Crooked River | 44.4923 | -121.2984 |
+| central | Deschutes River | 44.4987 | -121.3212 |
+| central | Hood River | 45.6545 | -121.5488 |
+| central | Metolius River | 44.6262 | -121.4839 |
+| northeast | Grande Ronde River | 45.9457 | -117.4510 |
+| northeast | John Day River | 44.4185 | -118.9063 |
+| northeast | Minam River | 45.6199 | -117.7266 |
+| northeast | North Fork John Day River | 44.8149 | -119.4320 |
+| northeast | Umatilla River | 45.9027 | -119.3271 |
+| northwest | Alsea River | 44.3860 | -123.8318 |
+| northwest | Nehalem River | 45.7040 | -123.7554 |
+| northwest | Nestucca River | 45.2665 | -123.8471 |
+| northwest | Siletz River | 44.7151 | -123.8873 |
+| northwest | Siuslaw River | 44.0623 | -123.8832 |
+| northwest | Trask River | 45.4462 | -123.7104 |
+| northwest | Wilson River | 45.4759 | -123.7251 |
+| southeast | Klamath River | 42.1332 | -121.9622 |
+| southeast | Malheur River | 43.9875 | -117.2189 |
+| southeast | Owyhee River | 42.8664 | -117.6492 |
+| southeast | Sprague River | 42.5843 | -121.8483 |
+| southeast | Williamson River | 42.5644 | -121.8797 |
+| southwest | Applegate River | 42.3540 | -123.4067 |
+| southwest | Chetco River | 42.1234 | -124.1873 |
+| southwest | Illinois River | 42.5449 | -124.0519 |
+| southwest | North Umpqua River | 43.2710 | -123.4115 |
+| southwest | Rogue River | 42.5928 | -124.0620 |
+| southwest | South Umpqua River | 43.2518 | -123.4477 |
+| southwest | Umpqua River | 43.5859 | -123.5554 |
+| willamette | Calapooia River | 44.6200 | -123.1285 |
+| willamette | Clackamas River | 45.2998 | -122.3540 |
+| willamette | Middle Fork Willamette River | 43.9982 | -122.9059 |
+| willamette | Molalla River | 45.2439 | -122.6874 |
+| willamette | Sandy River | 45.3996 | -122.1373 |
+| willamette | South Santiam River | 44.4985 | -122.8234 |
+| willamette | Tualatin River | 45.3872 | -122.7625 |
+| willamette | Willamette River | 44.2704 | -123.1737 |

@@ -87,3 +87,17 @@ GAUGES: list[tuple[str, str, float, float]] = [
     ("14307620", "Siuslaw River near Mapleton", 44.0623, -123.8832),
 ]
 GAUGE_LINKS: dict[str, list[str]] = {}
+
+
+# Popular rivers (see app/zones/rivers.py): name -> (USGS gauges on it, fishery hints). Every gauge reported flow on the live API on 2026-10-19.
+from app.zones.rivers import add_rivers  # noqa: E402
+
+add_rivers(globals(), {
+    "Nehalem River": (["14301000"], ["steelhead"]),
+    "Wilson River": (["14301500"], ["steelhead"]),
+    "Trask River": (["14302480"], ["steelhead"]),
+    "Nestucca River": (["14303600"], ["steelhead"]),
+    "Siletz River": (["14305500"], ["steelhead"]),
+    "Alsea River": (["14306500"], ["steelhead"]),
+    "Siuslaw River": (["14307620"], ["steelhead"]),
+})

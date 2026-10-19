@@ -88,3 +88,15 @@ GAUGES: list[tuple[str, str, float, float]] = [
     ("14033500", "Umatilla River near Umatilla", 45.90269, -119.32708),
 ]
 GAUGE_LINKS: dict[str, list[str]] = {}
+
+
+# Popular rivers (see app/zones/rivers.py): name -> (USGS gauges on it, fishery hints). Every gauge reported flow on the live API on 2026-10-19.
+from app.zones.rivers import add_rivers  # noqa: E402
+
+add_rivers(globals(), {
+    "Grande Ronde River": (["13333000"], ["steelhead"]),
+    "John Day River": (["14038530", "14048000"], ["steelhead", "warmwater"]),
+    "North Fork John Day River": (["14046000"], ["steelhead"]),
+    "Umatilla River": (["14033500"], ["steelhead"]),
+    "Minam River": (["13331500"], []),
+})

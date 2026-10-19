@@ -98,3 +98,17 @@ GAUGES: list[tuple[str, str, float, float]] = [
     ("14312330", "South Umpqua River at Melrose", 43.25176, -123.44770),
 ]
 GAUGE_LINKS: dict[str, list[str]] = {}
+
+
+# Popular rivers (see app/zones/rivers.py): name -> (USGS gauges on it, fishery hints). Every gauge reported flow on the live API on 2026-10-19.
+from app.zones.rivers import add_rivers  # noqa: E402
+
+add_rivers(globals(), {
+    "Rogue River": (["14372300", "14339000", "14361500"], ["steelhead"]),
+    "Umpqua River": (["14321000"], ["steelhead", "warmwater"]),
+    "North Umpqua River": (["14319500"], ["steelhead"]),
+    "South Umpqua River": (["14312330"], ["warmwater"]),
+    "Applegate River": (["14369500"], ["steelhead"]),
+    "Illinois River": (["14378200"], ["steelhead"]),
+    "Chetco River": (["14400000"], ["steelhead"]),
+})

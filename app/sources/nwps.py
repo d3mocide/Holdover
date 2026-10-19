@@ -15,7 +15,7 @@ from app.http import Fetcher, http_fetch, store_fetch
 from app.models import RawFetch, RiverStatus
 
 SOURCE = "nwps"
-URL = "https://api.water.noaa.gov/nwps/v1/gauges?bbox.xmin=-124.0&bbox.ymin=43.2&bbox.xmax=-121.3&bbox.ymax=46.0&srid=EPSG_4326"
+URL = "https://api.water.noaa.gov/nwps/v1/gauges?bbox.xmin=-124.8&bbox.ymin=41.9&bbox.xmax=-116.4&bbox.ymax=46.4&srid=EPSG_4326"  # all of Oregon, about 380 KB
 PAGE = "https://water.noaa.gov/gauges/{lid}"
 # USGS site number -> NWPS gauge id. Each pair was checked by name and by position (all within 120 m) against the live
 # response on 2026-10-18. 14150000 (Dexter) and 14153500 (Cottage Grove Dam) are left out: NWPS's nearest gauges there are
@@ -24,6 +24,39 @@ LIDS = {
     "14166000": "HARO3", "14174000": "ALBO3", "14191000": "SLMO3", "14152000": "JASO3", "14157500": "GOSO3",
     "14162500": "VIDO3", "14163150": "MKLO3", "14165500": "MRGO3", "14178000": "BCKO3", "14179000": "BRBO3",
     "14181500": "BCLO3", "14203500": "DLLO3", "14207500": "WSLO3", "14183000": "MEHO3", "14185900": "QCCO3", "14210000": "ESTO3",
+    # the popular rivers (checked 2026-10-19: each NWPS gauge is within 400 m of its USGS gauge and has the same name)
+    "11501000": "CHSO3",
+    "11502500": "WMSO3",
+    "11509500": "KEOO3",
+    "13181000": "ROMO3",
+    "13233300": "VALO3",
+    "13333000": "TRYO3",
+    "14033500": "UMAO3",
+    "14038530": "JHNO3",
+    "14046000": "MONO3",
+    "14092500": "PERO3",
+    "14103000": "MODO3",
+    "14120000": "HODO3",
+    "14137000": "SRMO3",
+    "14142500": "SNDO3",
+    "14173500": "CPAO3",
+    "14187500": "WTLO3",
+    "14200000": "CANO3",
+    "14209500": "TLYO3",
+    "14301000": "FSSO3",
+    "14301500": "TLMO3",
+    "14302480": "TRAO3",
+    "14303600": "BEAO3",
+    "14305500": "SILO3",
+    "14306500": "TIDO3",
+    "14307620": "MPLO3",
+    "14312330": "SUMO3",
+    "14319500": "WNRO3",
+    "14321000": "EKTO3",
+    "14339000": "EGLO3",
+    "14361500": "GRAO3",
+    "14369500": "ARWO3",
+    "14400000": "CHTO3",
 }
 LABELS = {"no_flooding": "No flooding", "action": "Action stage (near flood stage)", "minor": "Minor flooding",
           "moderate": "Moderate flooding", "major": "Major flooding"}

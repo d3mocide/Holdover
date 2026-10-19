@@ -29,7 +29,8 @@ def run(session, b, status=200):
 
 
 def test_mapping_points_only_at_known_gauges_and_is_unique():
-    sites = {g[0] for g in GAUGES}
+    from app.zones import MODULES
+    sites = {g[0] for g in GAUGES} | {g[0] for m in MODULES for g in m.GAUGES}
     assert set(nwps.LIDS) <= sites and len(set(nwps.LIDS.values())) == len(nwps.LIDS)
     assert "14150000" not in nwps.LIDS and "14153500" not in nwps.LIDS  # NWPS has only reservoir gauges there
 
