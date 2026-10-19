@@ -14,7 +14,7 @@ log = logging.getLogger("holdover.scheduler")
 scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 
 # source -> expected cadence, used to flag a source stale when nothing succeeded recently
-CADENCE = {odfw_stocking.SOURCE: timedelta(days=1), odfw_report.SOURCE: timedelta(days=8),
+CADENCE = {odfw_stocking.SOURCE: timedelta(days=7), odfw_report.SOURCE: timedelta(days=8),
            usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2),
            corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3), nwps.SOURCE: timedelta(hours=2)}
 # Sources that only run for things the owner opts into (nws needs starred waterbodies)
@@ -31,11 +31,23 @@ def run_stocking() -> dict:
             return {"ok": False, "error": "job crashed, see logs"}
 
 
-def run_reports() -> dict:
+def report_due(session, today=None) -> bool:
+    """ODFW publishes the Recreation Report about once a week, so only fetch when the newest stored issue is 5 or more days old (or there is none)."""
+    from datetime import date as _date
+
+    from sqlalchemy import func as _f
+
+    from app.models import Report
+    latest = session.scalar(select(_f.max(Report.issued_on)))
+    return latest is None or ((today or _date.today()) - _date.fromisoformat(latest)).days >= 5
+
+
+def run_reports(force: bool = True) -> dict:
+    """Fetch the weekly report (unless a recent issue is already stored and force is off) and process any pending extraction."""
     from app.llm.jobs import process_pending
     with session_factory()() as s:
         try:
-            fetched = odfw_report.run_job(s)
+            fetched = odfw_report.run_job(s) if force or report_due(s) else {"ok": True, "skipped": "a recent issue is already stored"}
         except Exception:
             log.exception("report fetch crashed")
             s.rollback()
@@ -165,6 +177,16 @@ def catch_up() -> list[str]:
             log.info("catch-up: %s is stale, running it now", source)
             globals()[fn]()
             ran.append(source)
+    try:  # a zone enabled after the last Friday fetch has no data until next week: fetch just those now
+        from app.zones import enabled
+        missing = odfw_stocking.zones_without_data(session_factory()(), enabled(get_settings().enabled_zones))
+        if missing and "odfw_stocking" not in ran:
+            log.info("catch-up: no stocking data yet for %s, fetching", [z.key for z in missing])
+            with session_factory()() as s:
+                _logged("stocking (new zones)", odfw_stocking.run_zones(s, zones=missing))
+            ran.append("stocking (new zones)")
+    except Exception:
+        log.exception("stocking catch-up for new zones failed")
     try:  # the weekly briefing: written once per week, so a new install (or a missed Thursday) gets one
         from app.briefing import monday
         from app.llm.briefing import stored
@@ -181,10 +203,13 @@ def catch_up() -> list[str]:
 
 
 def start() -> None:
-    scheduler.add_job(run_stocking, "cron", hour=6, minute=15, id="stocking", replace_existing=True,
+    # The stocking schedule and the weekly report change about once a week, so each is fetched once, on Friday. A zone with no data yet is
+    # fetched at startup (catch_up), and the admin "run now" buttons force a fetch.
+    scheduler.add_job(run_stocking, "cron", day_of_week="fri", hour=6, minute=15, id="stocking", replace_existing=True,
                       misfire_grace_time=3600, coalesce=True)
     # Report is published weekly (usually Thursday); poll twice a day Wed-Fri, hash compare skips unchanged.
-    scheduler.add_job(run_reports, "cron", day_of_week="wed-fri", hour="9,15", minute=5, id="reports",
+    # The report: Friday morning, and Saturday and Monday only if no new issue has arrived yet (report_due skips the fetch otherwise).
+    scheduler.add_job(run_reports, "cron", kwargs={"force": False}, day_of_week="fri,sat,mon", hour=9, minute=5, id="reports",
                       replace_existing=True, misfire_grace_time=3600, coalesce=True)
     # Retry LLM work that was skipped because the host was down.
     scheduler.add_job(run_llm_retry, "interval", hours=2, id="llm_retry", replace_existing=True)
@@ -195,7 +220,7 @@ def start() -> None:
     scheduler.add_job(run_nwps, "interval", minutes=60, id="nwps", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
     scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)
-    scheduler.add_job(run_briefing, "cron", day_of_week="thu", hour=16, minute=30, id="briefing", replace_existing=True, misfire_grace_time=6 * 3600, coalesce=True)
+    scheduler.add_job(run_briefing, "cron", day_of_week="fri", hour=12, minute=0, id="briefing", replace_existing=True, misfire_grace_time=12 * 3600, coalesce=True)
     scheduler.add_job(run_oha, "cron", hour=5, minute=45, id="oha", replace_existing=True, coalesce=True)
     scheduler.add_job(backup, "cron", hour=3, minute=30, id="backup", replace_existing=True)
     scheduler.add_job(catch_up, "date", run_date=datetime.now(scheduler.timezone) + timedelta(seconds=5), id="catch_up", replace_existing=True)

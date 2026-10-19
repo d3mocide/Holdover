@@ -173,3 +173,13 @@ def run_zones(session: Session, fetch: Fetcher = http_fetch, today: date | None 
             out[k] += r[k]
         out["ok"] = out["ok"] and r["ok"]
     return out
+
+
+def zones_without_data(session: Session, zones) -> list:
+    """Enabled zones that have never been fetched (no stored page for their field_zone_value)."""
+    out = []
+    for z in zones:
+        hit = session.scalar(select(RawFetch.id).where(RawFetch.source == SOURCE, RawFetch.url.like(f"%field_zone_value={z.stocking_value}&%")).limit(1))
+        if hit is None:
+            out.append(z)
+    return out
