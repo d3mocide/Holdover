@@ -2,20 +2,20 @@
 
 Self-hosted PWA for Oregon fishing: where to fish, when, and what to bring, plus a technical angler's journal. One container, one SQLite file, a local LLM for text only.
 
-Status: version 0.5.0. Stocking map, weekly report and LLM pipeline, conditions (weather, USGS flow, Army Corps reservoir levels, NOAA flood status, fire danger and wildfire perimeters), planner, offline journal, optional accounts, gear database, three themes. See [docs/ROADMAP.md](docs/ROADMAP.md) for what is done and what is next.
+Status: version 0.6.0. All six ODFW zones (stocking map, ranked best bets, a look-ahead plan, gauges, a weekly report per zone written from the data and ODFW's own words), conditions (weather, USGS flow, Army Corps reservoir levels and NOAA flood status for the Willamette, fire danger and wildfire perimeters), an offline journal, optional accounts, a gear database, and three themes. See [docs/ROADMAP.md](docs/ROADMAP.md) for what is done and what is next.
 
 ## Run
 
 The published image (amd64 and arm64, so a Raspberry Pi works) needs no checkout. Put `docker-compose.yml` and a `.env` in a folder:
 
     # .env
-    USER_AGENT=Holdover/0.5 (you@example.com)   # identifies you to the data agencies; use a real contact
+    USER_AGENT=Holdover/0.6 (you@example.com)   # identifies you to the data agencies; use a real contact
 
     docker compose pull && docker compose up -d
     docker compose exec holdover python -m app.cli create-user YOURNAME   # first account = admin; see docs/accounts.md
     ./install-basemap.sh    # one time: Oregon map tiles (scripts/install-basemap.sh in this repo); see docs/basemap.md
 
-- `HOLDOVER_TAG` picks the image: `latest` (default) is the newest release, `0.5.0` pins one, `main` is whatever is on the main branch.
+- `HOLDOVER_TAG` picks the image: `latest` (default) is the newest release, `0.6.0` pins one, `main` is whatever is on the main branch.
 - To build from source instead: `cp .env.example .env`, then `docker compose up -d --build`.
 - Data lives in the named volume `holdover-data` (mounted at `/data`: SQLite file, tiles, photos, backups). `down` keeps it; `down -v` deletes it.
 - The app listens on `HOLDOVER_PORT` (default 8000). On first start it fetches every data source once, then keeps them fresh on a schedule (`docker compose logs holdover | grep job`).

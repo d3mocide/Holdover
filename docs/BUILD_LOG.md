@@ -595,3 +595,9 @@ to a zone with nothing pinned yet threw a page error (an empty bounding box).
   tap saved, prompt gone, removed from the list, cancel does nothing), axe zero on Settings with the card in all three themes at desktop and phone.
 - Not verified: placing a pin on a real basemap by tapping a real water body (the throwaway instance has no tiles), and on a phone.
 
+### 2026-10-18 · this commit · Release 0.6.0
+Version bumped to 0.6.0 (`pyproject.toml`, `web/package.json`, README), `CHANGELOG.md` added with upgrade notes. **Upgrade rehearsal**: a database built by the 0.5.0 code (migration 0006, 58 waterbodies, 100 stocking rows)
+was migrated and seeded by this version: it ended at migration 0008 with all 100 rows kept, six zones seeded (254 waterbodies, 54 gauges), every alias confirmed, and no snapshot attached to a
+waterbody in another zone. Final checks before the tag: 223 `pytest`, 52 frontend tests, browser suites offline 12/12, accounts 37/37, gear 46/46, pins 11/11.
+Not verified: the GitHub Actions workflow (never run: it builds the multi-arch image and publishes on the tag), the Pi, and the real-phone checks still open in the roadmap.
+

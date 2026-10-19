@@ -80,7 +80,7 @@ tags, and only after the tests pass**:
 | Event | Image tags | Use |
 | --- | --- | --- |
 | push to `main` | `main`, `sha-xxxxxxx` | edge: whatever main is now |
-| tag `v0.5.1` | `0.5.1`, `0.5`, `latest` | a release: what you deploy |
+| tag `v0.6.1` | `0.6.1`, `0.6`, `latest` | a release: what you deploy |
 
 The first publish creates the package as private: make it public in the package settings to pull without logging in.
 
@@ -95,7 +95,7 @@ On any machine with Docker (a Raspberry Pi 4 or 5 on a 64-bit OS works; no VM an
     docker compose pull && docker compose up -d
     docker compose exec holdover python -m app.cli create-user YOURNAME
 
-Pin a version with `HOLDOVER_TAG=0.5.0` (default `latest`; `main` for edge). To build from source instead:
+Pin a version with `HOLDOVER_TAG=0.6.0` (default `latest`; `main` for edge). To build from source instead:
 `docker compose up -d --build`. On a Pi keep the volume on an SSD or a good card (SQLite writes), keep the nightly backup
 (above) and copy it off the Pi, and prefer HTTPS via a tunnel or reverse proxy (below).
 
