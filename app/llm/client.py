@@ -21,6 +21,12 @@ class LLMClient:
         self.api_key = api_key if api_key is not None else s.llm_api_key
         self._http = httpx.Client(transport=transport, timeout=timeout if timeout is not None else s.llm_timeout)
 
+    @classmethod
+    def for_extraction(cls) -> "LLMClient":
+        """The client for the weekly report extraction: LLM_EXTRACT_MODEL (or the usual model) with the long extraction timeout."""
+        s = get_settings()
+        return cls(model=s.llm_extract_model or s.llm_model, timeout=s.llm_extract_timeout)
+
     @property
     def configured(self) -> bool:
         return bool(self.base_url and self.model)

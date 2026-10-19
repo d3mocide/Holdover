@@ -133,6 +133,9 @@ def catch_up() -> list[str]:
     try:
         from app.llm.client import LLMClient
         log.info("LLM: %s", LLMClient().status_line())
+        extract = LLMClient.for_extraction()
+        if extract.model != LLMClient().model:
+            log.info("LLM for report extraction: %s", extract.status_line())
     except Exception:
         log.exception("LLM status check failed")
     status = source_status()

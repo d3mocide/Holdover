@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     llm_base_url: str = ""
     llm_model: str = ""
     llm_api_key: str = ""
+    # The weekly report extraction can use a different (slower, stronger) model and a long timeout: it runs once a week, in the
+    # background. Empty means the same model as everything else.
+    llm_extract_model: str = ""
+    llm_extract_timeout: float = 1800
     llm_timeout: float = 180  # seconds per request; a reasoning model can take several minutes on a long report
     home_lat: float | None = None
     home_lon: float | None = None

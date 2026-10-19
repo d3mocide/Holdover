@@ -13,7 +13,7 @@ log = logging.getLogger("holdover.llm")
 def process_pending(session: Session, llm: LLMClient | None = None) -> dict:
     """Extract items from every report that hasn't been done yet, Willamette first. If the LLM
     host is down nothing is lost: reports stay pending and the next run retries."""
-    llm = llm or LLMClient()
+    llm = llm or LLMClient.for_extraction()
     out = {"extracted": 0, "pending": 0, "llm": "ok", "errors": 0}
     if not llm.configured:
         out["llm"] = "not_configured"

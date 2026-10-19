@@ -234,3 +234,22 @@ def test_all_reports_unknown_date_and_empty_database_are_empty_not_errors(sessio
     willamette(session)
     d = c.get("/api/reports/all", params={"issued_on": "2020-01-01"}).json()
     assert d["zones"] == [] and d["available"] == ["2026-10-16"]
+
+
+def test_extraction_can_use_its_own_model_and_a_longer_timeout(monkeypatch):
+    from app.config import get_settings
+    monkeypatch.setenv("LLM_BASE_URL", "http://x/v1")
+    monkeypatch.setenv("LLM_MODEL", "fast")
+    monkeypatch.setenv("LLM_TIMEOUT", "60")
+    monkeypatch.setenv("LLM_EXTRACT_MODEL", "slow-and-strong")
+    monkeypatch.setenv("LLM_EXTRACT_TIMEOUT", "1500")
+    get_settings.cache_clear()
+    try:
+        usual, extract = LLMClient(), LLMClient.for_extraction()
+        assert (usual.model, usual._http.timeout.read) == ("fast", 60)
+        assert (extract.model, extract._http.timeout.read) == ("slow-and-strong", 1500)
+        monkeypatch.delenv("LLM_EXTRACT_MODEL")
+        get_settings.cache_clear()
+        assert LLMClient.for_extraction().model == "fast"  # unset: same model as everything else
+    finally:
+        get_settings.cache_clear()
