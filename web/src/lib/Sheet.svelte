@@ -8,6 +8,7 @@
   import { liveQuery } from 'dexie';
   import { isFavorite, toggleFavorite } from './auth.svelte.js';
   import { waterbodyHistory } from './journalStats.js';
+  import GaugeHistory from './GaugeHistory.svelte';
   let { id, onclose, onday, onlog } = $props();
   let allTrips = $state([]), allCatches = $state([]), allGear = $state([]);
   let wb = $state(null);
@@ -42,6 +43,10 @@
     <p class="quiet small">{wb.stocking[0]?.zone_office ?? wb.zone}</p>
     {#if favMsg}<p role="alert" class="small err">{favMsg}</p>{/if}
 
+    {#if wb.kind === 'river'}
+      <p class="quiet small">River markers may be at a gauge; they are not verified fishing access points.</p>
+      <GaugeHistory gauges={wb.conditions.gauges} />
+    {/if}
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
     <StockingList stocking={wb.stocking} level={3} asOfIso={wb.stocking[0]?.scraped_at} />

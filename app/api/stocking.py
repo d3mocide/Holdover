@@ -78,6 +78,11 @@ def map_layers(zone: str = "willamette", layers: str = "stocking", session: Sess
 def _extra_layers(session: Session, wanted: set[str], zone: str, today: date) -> list[dict]:
     out = []
     pt = lambda lon, lat: {"type": "Point", "coordinates": [lon, lat]}
+    if "rivers" in wanted:
+        for wb in session.scalars(select(Waterbody).where(Waterbody.zone == zone, Waterbody.kind == "river")):
+            if wb.lat is not None and wb.lon is not None:
+                out.append({"type": "Feature", "geometry": pt(wb.lon, wb.lat), "properties": {
+                    "layer": "river", "id": wb.id, "name": wb.name, "kind": wb.kind, "zone": wb.zone}})
     if "gauges" in wanted:
         for g in session.scalars(select(Gauge).where(Gauge.zone == zone)):
             if g.lat is None:
@@ -119,7 +124,7 @@ def _latest_scrape(session: Session) -> str | None:
 @router.get("/waterbodies")
 def waterbody_list(session: Session = Depends(get_session)):
     """All seeded waterbodies, for the trip form's 'Where' picker."""
-    return [{"id": w.id, "name": w.name, "kind": w.kind, "lat": w.lat, "lon": w.lon}
+    return [{"id": w.id, "name": w.name, "kind": w.kind, "zone": w.zone, "lat": w.lat, "lon": w.lon}
             for w in session.scalars(select(Waterbody).order_by(Waterbody.name))]
 
 

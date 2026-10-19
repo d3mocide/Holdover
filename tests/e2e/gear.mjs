@@ -119,7 +119,7 @@ ok(await p.getByText(/You have: Panther Martin spinner/).first().isVisible(), 'p
 const claim = (await p.evaluate(() => document.body.innerText)).match(/.{0,50}(missing|you need to buy|you should buy).{0,50}/i);
 ok(!claim, 'pack list: never claims anything is missing' + (claim ? ` -> ${JSON.stringify(claim[0])}` : ''));
 await axe(p, 'Day view with owned gear');
-await p.getByRole('button', { name: 'Back' }).click(); await p.waitForTimeout(400);
+await p.getByRole('button', { name: 'Back', exact: true }).click(); await p.waitForTimeout(400);
 await nav(p, 'Journal'); await p.waitForTimeout(400);
 await p.getByRole('button', { name: 'Edit trip' }).first().click(); await p.waitForTimeout(500);
 await p.getByLabel('Species 1').fill(''); await p.getByRole('button', { name: /Fewer/ }).first().click().catch(() => {});

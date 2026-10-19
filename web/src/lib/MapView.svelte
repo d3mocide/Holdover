@@ -12,7 +12,7 @@
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
   maplibregl.setWorkerUrl(workerUrl);
 
-  let { journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, zoneKey = 'willamette', fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
+  let { waters = [], showRivers = true, journal = null, showJournal = true, data, selectedId = null, theme, onselect, showStocking = true, showGauges = true, showAdvisories = true, showReports = true, zoneKey = 'willamette', fire = null, showFire = true, inset = 0, home = null, pickMode = false, onpick } = $props();
   let el;
   let map;
   let ready = $state(false);
@@ -115,6 +115,7 @@
     const base = { ring: 'rgba(255,255,255,0.18)', bg: c.bg, accent: c.accent };
     const defs = {
       'gauge-icon': markers.gauge({ ...base, main: c.gauge }),
+      'river-icon': markers.river({ ...base, main: c.gauge }),
       'advisory-icon': markers.advisory({ ...base, main: c.accent }),
       'journal-icon': markers.journal({ ...base, main: css('--text') }),
       'home-icon': markers.home({ ...base, main: c.accent }),
@@ -129,7 +130,7 @@
   }
 
   const isL = (l) => ['==', ['get', 'layer'], l];
-  const selFilter = (id) => ['all', isL('stocking'), ['==', ['get', 'id'], id]];
+  const selFilter = (id) => ['all', ['in', ['get', 'layer'], ['literal', ['stocking', 'river']]], ['==', ['get', 'id'], id]];
 
   async function addLayers() {
     await addIcons();
@@ -165,11 +166,13 @@
       'circle-radius': rad, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2.5 } });
     map.addLayer({ id: 'gauge-pts', type: 'symbol', source: 'stocking', filter: isL('gauge'), layout: {
       'icon-image': 'gauge-icon', 'icon-size': 0.72, 'icon-allow-overlap': true } });
+    map.addLayer({ id: 'river-pts', type: 'symbol', source: 'stocking', filter: isL('river'), layout: {
+      'icon-image': 'river-icon', 'icon-size': 0.9, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'stocking-sel-glow', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
       'circle-radius': 26, 'circle-color': c.accent, 'circle-opacity': 0.22, 'circle-blur': 0.8 } });
     map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
       'circle-radius': ['+', rad, 5], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
-    for (const l of ['stocking-pts', 'advisory-ring', 'report-badge']) {
+    for (const l of ['stocking-pts', 'river-pts', 'advisory-ring', 'report-badge']) {
       map.on('click', l, (e) => { if (!pickMode) onselect?.(e.features[0].properties.id); });
     }
     map.on('click', (e) => { if (pickMode) onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); });
@@ -181,6 +184,7 @@
     });
     map.on('click', 'gauge-pts', (e) => {
       if (pickMode) return;
+      if (map.queryRenderedFeatures(e.point, { layers: ['river-pts'] }).length) return;
       const p = e.features[0].properties;
       const el = document.createElement('div');
       const t = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; el.appendChild(d); };
@@ -191,7 +195,7 @@
         const btn = document.createElement('button'); btn.className = 'pill'; btn.textContent = 'Open this river'; btn.onclick = () => { pop.remove(); onselect?.(Number(p.waterbody_id)); }; el.appendChild(btn);
       }
     });
-    for (const l of ['stocking-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
+    for (const l of ['stocking-pts', 'river-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
       map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
     }
@@ -228,8 +232,9 @@
     map.getSource('stocking').setData(data);
     if (!fitted && data.features.length) {
       fitted = true;
+      if (selectedId != null) return; // opening a search result already focused its pin; don't refit over it
       const b = new maplibregl.LngLatBounds();
-      data.features.filter((f) => f.properties.layer === 'stocking').forEach((f) => b.extend(f.geometry.coordinates));
+      data.features.filter((f) => ['stocking', 'river'].includes(f.properties.layer)).forEach((f) => b.extend(f.geometry.coordinates));
       if (!b.isEmpty()) map.fitBounds(b, { padding: 60, maxZoom: 9, duration: 0 });  // a zone with nothing pinned yet keeps the current view
     }
   });
@@ -241,6 +246,7 @@
     map.setLayoutProperty('stocking-halo', 'visibility', vis(showStocking));
     map.setLayoutProperty('stocking-sel-glow', 'visibility', vis(showStocking));
     map.setLayoutProperty('gauge-pts', 'visibility', vis(showGauges));
+    map.setLayoutProperty('river-pts', 'visibility', vis(showRivers));
     map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
     map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
   });
@@ -254,8 +260,11 @@
     if (!ready) return;
     map.setFilter('stocking-sel', selFilter(selectedId ?? -1));
     map.setFilter('stocking-sel-glow', selFilter(selectedId ?? -1));
-    const f = data?.features.find((x) => x.properties.layer === 'stocking' && x.properties.id === selectedId);
-    if (f) map.easeTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), duration: 400 });
+    const water = waters.find((w) => w.id === selectedId);
+    if (water?.lat != null && water?.lon != null) {
+      fitted = true;
+      map.easeTo({ center: [water.lon, water.lat], zoom: Math.max(map.getZoom(), 10), duration: 400 });
+    }
   });
   $effect(() => {
     theme; // re-read CSS variables when the theme changes
@@ -289,7 +298,7 @@
   });
 </script>
 
-<div class="map" bind:this={el} role="application" aria-label="Map of stocked waterbodies. The Plan list has the same waterbodies as buttons."></div>
+<div class="map" bind:this={el} role="application" aria-label="Fishing waters and stream gauges. Explore waters lists rivers and searchable waterbodies as buttons."></div>
 {#if ready && !hasBasemap}
   <p class="nobase quiet">No basemap installed: showing pins only. See docs/basemap.md.</p>
 {/if}

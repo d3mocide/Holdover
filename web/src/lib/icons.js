@@ -44,6 +44,7 @@ export const mark =
 
 // ---- Map markers: 40x40 art for the basemap. c = {main, ring, bg, accent} ----
 export const markers = {
+  river: (c) => `<rect x="4" y="5" width="32" height="30" rx="11" fill="${c.bg}" stroke="${c.main}" stroke-width="2.5"/><path d="M10 16c3-3 6-3 10 0s7 3 10 0M10 24c3-3 6-3 10 0s7 3 10 0" fill="none" stroke="${c.main}" stroke-width="2.5" stroke-linecap="round"/>`,
   stocking: (c) => `<circle cx="20" cy="20" r="14" fill="${c.main}" opacity=".22"/><circle cx="20" cy="20" r="9" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/>`,
   stocking_scheduled: (c) => `<circle cx="20" cy="20" r="9" fill="none" stroke="${c.main}" stroke-width="2.5"/><circle cx="20" cy="20" r="2.2" fill="${c.main}"/>`,
   selected: (c) => `<circle cx="20" cy="20" r="17" fill="${c.accent}" opacity=".2"/><circle cx="20" cy="20" r="13" fill="none" stroke="${c.accent}" stroke-width="2.5"/><circle cx="20" cy="20" r="8" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/>`,

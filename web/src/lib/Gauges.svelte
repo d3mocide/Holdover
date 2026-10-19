@@ -1,10 +1,10 @@
 <script>
-  import { api, TREND } from './api.js';
+  import { api, TREND, localDay } from './api.js';
   import { asOf } from './clock.svelte.js';
   import Icon from './Icon.svelte';
   import { floodShort, floodElevated } from './floodText.js';
   import ZonePicker from './ZonePicker.svelte';
-  import { SORTS, sortGauges, detailParts, unusual } from './gaugeText.js';
+  import { SORTS, sortGauges, medianText, unusual, qualityReadings, readingStale, gaugeStale } from './gaugeText.js';
   let { zone = 'willamette', zones = [], onzone = () => {} } = $props();
   let gauges = $state([]);
   let note = $state('');
@@ -29,11 +29,13 @@
           <span class="unit">cfs</span>
           {#if g.trend}<span class="trend small">{TREND[g.trend]}</span>{/if}
         </div>
-        {#if detailParts(g).length}
-          <p class="line mono">{#each detailParts(g) as part, i}{#if i}<span class="sep" aria-hidden="true">·</span>{/if}<span class:flag={i === 0 && unusual(g.vs_median_pct)}>{part}</span>{/each}</p>
-        {/if}
+        {#if medianText(g.vs_median_pct)}<p class="line mono" class:flag={unusual(g.vs_median_pct)}>{medianText(g.vs_median_pct)} · recent 7 days</p>{/if}
+        {#each [['gage_height_ft', 'Gauge height', 'ft'], ['water_temp_f', 'Water temperature', '°F']] as [key, label, unit]}
+          {#if g.values[key]}<p class="small quiet">{label}: {g.values[key].value} {unit} · {asOf(g.values[key].observed_at)}{readingStale(g.values[key]) ? `, ${localDay(g.values[key].observed_at)} · Stale` : ''}</p>{/if}
+        {/each}
+        {#each qualityReadings(g) as reading}<p class="small quiet">{reading.text} · {asOf(reading.observed_at)}{readingStale(reading) ? `, ${localDay(reading.observed_at)} · Stale` : ''}</p>{/each}
         {#if g.flood}<p class="small noaa" class:warn={floodElevated(g.flood)}>{floodShort(g.flood)}</p>{/if}
-        <p class="foot quiet">{asOf(g.as_of)}{#if g.stale} <b class="stale">Stale</b>{/if}</p>
+        <p class="foot quiet">{asOf(g.values.discharge_cfs?.observed_at ?? g.as_of)}{#if gaugeStale(g)} <b class="stale">Stale</b>{/if}</p>
       </li>
     {/each}
   </ul>

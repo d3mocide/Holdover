@@ -28,6 +28,19 @@ try {
       };
       await scan('settings');
       await nav(p, 'Map'); await p.getByRole('button', { name: 'Legend', exact: true }).waitFor(); await scan('map');
+      await p.getByRole('button', { name: 'Legend', exact: true }).click(); await scan('legend');
+      await p.getByRole('button', { name: 'Legend', exact: true }).click();
+      const explore = p.getByRole('region', { name: 'Explore waters', exact: true });
+      if (await explore.getByRole('button', { name: 'Explore waters', exact: true }).getAttribute('aria-expanded') === 'false')
+        await explore.getByRole('button', { name: 'Explore waters', exact: true }).click();
+      await explore.getByRole('button', { name: 'Rivers', exact: true }).click(); await scan('rivers');
+      await explore.getByRole('button', { name: /Tualatin River/ }).click();
+      await p.getByRole('heading', { name: 'River history', exact: true }).waitFor(); await scan('river-history');
+      await p.getByRole('button', { name: 'Close details', exact: true }).click();
+      await explore.getByRole('button', { name: 'Favorites', exact: true }).click(); await scan('favorites');
+      await explore.getByRole('searchbox', { name: 'Search all waters' }).fill('East Lake'); await scan('water-search');
+      await explore.getByRole('searchbox', { name: 'Search all waters' }).fill('');
+      await explore.getByRole('button', { name: 'Best bets', exact: true }).click();
       await nav(p, 'Plan'); await p.locator('.spot').first().waitFor(); await scan('plan');
       if (width < 900) {
         const overlap = await p.evaluate(() => {
@@ -45,6 +58,7 @@ try {
       await p.getByRole('button', { name: 'Log your first trip', exact: true }).click();
       await p.getByLabel('Where').waitFor(); await scan('log-trip');
       await p.getByRole('button', { name: 'Close', exact: true }).click();
+      await nav(p, 'Gauges'); await p.getByRole('heading', { name: 'Gauges', exact: true }).waitFor(); await scan('gauges');
     }
     assert.deepEqual(errors, [], `${size} browser errors`);
     await ctx.close();

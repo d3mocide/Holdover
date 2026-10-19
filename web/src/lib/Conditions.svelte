@@ -5,7 +5,7 @@
   import { asOf, clockText } from './clock.svelte.js';
   import { floodText, floodElevated } from './floodText.js';
   import { dangerText, fireLine } from './fireText.js';
-  import { qualityParts } from './gaugeText.js';
+  import { qualityReadings, readingStale, gaugeStale } from './gaugeText.js';
   import { rangeText, speciesLine, shownSpecies } from './passageText.js';
   // level: the heading level for this block's section titles. A sheet titles itself with an h2, the day view with an h1,
   // so each passes the level that keeps the outline in order (no skipped levels).
@@ -30,7 +30,7 @@
   <Tile icon="sun" label="Daylight" value={c.daylight ? clockText(`${c.daylight.sunrise}–${c.daylight.sunset}`) : null}
     sub={c.daylight ? clockText(`Light ${c.daylight.first_light}–${c.daylight.last_light}`) : 'No location'} asof="computed" />
   <Tile icon="temp" label="Water temp" value={c.water_temp_f ? `${Math.round(c.water_temp_f.value)}°F` : null}
-    sub={c.water_temp_f ? 'USGS, provisional' : 'No temperature gauge'} asof={c.water_temp_f ? asOf(c.water_temp_f.observed_at) : ''} />
+    sub={c.water_temp_f ? 'USGS, provisional' : 'No temperature gauge'} stale={c.water_temp_f && readingStale(c.water_temp_f)} asof={c.water_temp_f ? asOf(c.water_temp_f.observed_at) : ''} />
   <Tile icon="moon" label="Moon" value={c.moon.phase} sub={`Day ${c.moon.age_days} of cycle`} asof="computed" />
 </div>
 
@@ -54,9 +54,11 @@
     <div class="g">
       <span class="grow">{g.name}</span>
       <span class="mono">{g.values.discharge_cfs ? `${Math.round(g.values.discharge_cfs.value).toLocaleString()} cfs` : '—'}
-        {#if g.values.gage_height_ft}· {g.values.gage_height_ft.value} ft{/if}</span>
-      <span class="quiet small full">{g.trend ? TREND[g.trend] + ' (3 h) · ' : ''}Provisional USGS data, {asOf(g.as_of)} {#if g.stale}<b class="stale">Stale</b>{/if}</span>
-      {#if qualityParts(g).length}<span class="quiet small full">Water quality: {qualityParts(g).join(' · ')} (USGS, provisional)</span>{/if}
+      </span>
+      <span class="quiet small full">{g.trend ? TREND[g.trend] + ' (3 h) · ' : ''}Provisional USGS data, {asOf(g.values.discharge_cfs?.observed_at ?? g.as_of)} {#if gaugeStale(g)}<b class="stale">Stale</b>{/if}</span>
+      {#if g.values.gage_height_ft}<span class="quiet small full">Gauge height: {g.values.gage_height_ft.value} ft · {asOf(g.values.gage_height_ft.observed_at)} {#if readingStale(g.values.gage_height_ft)}<b class="stale">Stale</b>{/if}</span>{/if}
+      {#if g.values.water_temp_f}<span class="quiet small full">Water temperature: {g.values.water_temp_f.value}°F · {asOf(g.values.water_temp_f.observed_at)} {#if readingStale(g.values.water_temp_f)}<b class="stale">Stale</b>{/if}</span>{/if}
+      {#each qualityReadings(g) as reading}<span class="quiet small full">{reading.text} · {asOf(reading.observed_at)} {#if readingStale(reading)}<b class="stale">Stale</b>{/if}</span>{/each}
       {#if g.flood}<span class="quiet small full" class:warn={floodElevated(g.flood)}>{floodText(g.flood)} · {asOf(g.flood.as_of)} {#if g.flood.stale}<b class="stale">Stale</b>{/if} · <a href={g.flood.page} target="_blank" rel="noopener">NOAA</a></span>{/if}
     </div>
   {/each}

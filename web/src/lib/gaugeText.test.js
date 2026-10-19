@@ -1,7 +1,28 @@
 import test from 'node:test';
+import { qualityReadings, readingStale, gaugeStale } from './gaugeText.js';
 import assert from 'node:assert/strict';
 import { medianText, unusual, sortGauges, detailParts } from './gaugeText.js';
 import { floodShort } from './floodText.js';
+
+test('cached sensor freshness expires offline and a fresh temperature never refreshes old flow', () => {
+  const now = Date.parse('2026-10-19T12:00:00Z');
+  const old = { observed_at: '2026-10-19T06:00:00Z', stale: false };
+  const fresh = { observed_at: '2026-10-19T11:00:00Z', stale: false };
+  assert.equal(readingStale(old, now), true); assert.equal(readingStale(fresh, now), false);
+  assert.equal(gaugeStale({ as_of: fresh.observed_at, values: { discharge_cfs: old, water_temp_f: fresh } }, now), true);
+});
+
+test('water-quality rows retain their own timestamps and stale state', () => {
+  const now = Date.parse('2026-10-19T12:00:00Z');
+  const gauge = { values: { ph: { value: 7.4, observed_at: '2026-10-19T06:00:00Z', stale: true },
+    turbidity_fnu: { value: 2.5, observed_at: '2026-10-19T11:00:00Z', stale: false },
+    conductance_uscm: { value: 100, observed_at: '2026-10-10T11:00:00Z', stale: true } } };
+  const readings = qualityReadings(gauge, now);
+  assert.equal(readings.length, 2);
+  assert.equal(readings[0].observed_at, gauge.values.ph.observed_at);
+  assert.equal(readings[0].stale, true);
+  assert.equal(readings[1].stale, false);
+});
 
 const g = (name, cfs, pct, extra = {}) => ({ name, vs_median_pct: pct, values: cfs == null ? {} : { discharge_cfs: { value: cfs } }, ...extra });
 

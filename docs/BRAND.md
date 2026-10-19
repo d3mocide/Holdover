@@ -40,6 +40,8 @@ Look: a deep fir-green night, glass panels floating over a living map, one warm 
 - **Errors are specific and kind.** "Couldn't load gauges (503)." not "Something went wrong." Offline messages say
   what still works: "Saved on this phone, syncs when you have signal."
 - **Empty states invite.** A short reason, then the one next action ("Log your first trip").
+- **Flow context:** call the short baseline a recent seven-day median, never seasonal normal or a validated fishing range.
+  Evidence percentages describe the share of scoring inputs backed by data, not the chance of catching a fish.
 
 | Say | Not |
 | --- | --- |
@@ -169,6 +171,10 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
   (68% tall for pages, 62% for the detail sheet) above a 64 px nav bar plus the safe area.
 - **Breakpoints:** 900 px (phone layout below), 1100 px (zoom buttons and the offline label are hidden below it).
 - **Phone sheets are opaque** (`--bg`, no blur): nothing may ghost through.
+- The Map's dense **Explore waters** card has Best bets, Rivers and Favorites controls plus statewide search. On a phone,
+  its collapsed bar keeps a direct Rivers action visible. Unpinned search results say "No map pin yet" and still open details.
+- River detail sheets lead with a stored-observation chart, 24-hour/seven-day controls and a textual values alternative.
+  Each measurement keeps its own as-of/stale state. Search fields use the same token-based treatment as other text fields.
 - The full-height phone Plan panel reserves a 52 px control row above its content for the 44 px collapse button;
   the button must never cover the page title. The map and its controls share a labelled landmark.
 - Page backgrounds carry a soft two-tint gradient from `--glow-1` and `--glow-2`. **No glowing halos on UI elements** (buttons, nav, scores, icons): they read as cheesy; use outlines and fills. Map markers keep their own halos because those encode meaning.
@@ -193,6 +199,7 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 | Hollow ring with a dot | Scheduled, not yet stocked | `--fresh-1` outline; no halo |
 | Larger coral ring with glow | Selected | `--accent` |
 | Diamond with a drop | USGS stream gauge | `--gauge`; popups say "provisional" |
+| Rounded square with two waves | River | `--gauge`; opens the river directly and takes precedence over a co-located gauge. The marker is not a verified access point |
 | Ring with an exclamation | Algae advisory or precaution | `--accent` |
 | Rounded square, fish and 1-4 pips | Report rating | Colour and pips: excellent (lime, 4), good (teal, 3), fair (warn, 2), slow (slate, 1) |
 | White pin | A trip or pin you logged | Always from local data, so it works offline |

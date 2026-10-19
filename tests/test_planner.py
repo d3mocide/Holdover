@@ -75,6 +75,20 @@ def test_forecast_and_report_move_the_score(session):
     assert f["report"].value == 1.0 and f["forecast"].value is not None
 
 
+def test_old_forecast_does_not_count_as_ranking_evidence(session):
+    from datetime import datetime, timedelta, timezone
+    from app.models import ForecastCache
+    load(session, with_weather=True)
+    for row in session.scalars(select(ForecastCache)):
+        row.fetched_at = (datetime.now(timezone.utc) - timedelta(hours=12)).isoformat()
+        payload = json.loads(row.payload_json)
+        payload['fetched_at'] = row.fetched_at
+        row.payload_json = json.dumps(payload)
+    session.commit()
+    sp = next(s for s in rank(session, TODAY, 'trout') if s.wb.name == 'Alton Baker Canal')
+    assert next(f for f in sp.factors if f.name == 'forecast').value is None
+
+
 def test_fisheries_from_hints_and_reports(session):
     load(session)
     steel = {s.wb.name for s in rank(session, TODAY, "steelhead")}

@@ -4,7 +4,7 @@ import json
 import re
 import statistics
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -13,7 +13,7 @@ from app import scoring as sc
 from app.api.stocking import latest_rows
 from app.astro import daylight
 from app.config import get_settings
-from app.conditions import pick_weather
+from app.conditions import GAUGE_STALE_H, FORECAST_STALE_H, _age_h, pick_weather
 from app.models import Gauge, GaugeReading, Report, ReportItem, Waterbody, WaterbodyGauge
 from app.sources import nws
 
@@ -52,7 +52,10 @@ def _gauge_inputs(session: Session, wb_id: int, day: date):
     for gid in gids:
         # only the two columns the factor needs, not whole ORM rows: a week of 15-minute readings is 672 of them per gauge
         rows = session.execute(select(GaugeReading.value, GaugeReading.observed_at).where(GaugeReading.gauge_id == gid, GaugeReading.parameter == "discharge_cfs")
+                               .where(GaugeReading.observed_at >= (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(timespec="minutes"))
                                .order_by(GaugeReading.observed_at.desc()).limit(7 * 96)).all()
+        if rows and _age_h(rows[0].observed_at) > GAUGE_STALE_H:
+            continue
         if rows and len(rows) > len(best[1]):
             span = (datetime.fromisoformat(rows[0].observed_at) - datetime.fromisoformat(rows[-1].observed_at)).total_seconds() / 3600
             best = (rows[0].value, [r.value for r in rows], span)
@@ -106,8 +109,10 @@ def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | 
         rep = sc.report_factor(rated[0].rating if rated else None, rated[1].issued_on if rated else None, day, s.w_report)
         cur, hist, span = _gauge_inputs(session, wb.id, day)
         flow = sc.flow_factor(cur, hist, s.w_flow, span)
+        if flow.value is not None and day != date.today():
+            flow.detail += " (latest observed flow, not a forecast)"
         near = nws.nearest_cached(session, wb.lat, wb.lon)
-        wx = pick_weather(near[0], day) if near else None
+        wx = pick_weather(near[0], day) if near and _age_h(near[0]["fetched_at"]) <= FORECAST_STALE_H else None
         fc = sc.forecast_factor(wx["temp_f"] if wx else None, wx["precip_pct"] if wx else None,
                                 wind_mph(wx["wind"]) if wx else None, s.w_forecast)
         forecast_note = f" (NWS point {near[1]:.0f} km away)" if near and fc.value is not None and near[1] >= 1 else ""

@@ -41,6 +41,7 @@
   let error = $state('');
   let selectedId = $state(null);
   let showStocking = $state(true);
+  let showRivers = $state(true);
   let showGauges = $state(true);
   let showAdvisories = $state(true);
   let showFire = $state(true);
@@ -96,7 +97,8 @@
   });
 
   async function load() {
-    try { data = await api.map(zone); error = ''; } catch (e) { error = e.message; }
+    const z = zone;
+    try { const result = await api.map(z); if (z === zone) { data = result; error = ''; } } catch (e) { if (z === zone) error = e.message; }
   }
   function loadMapSpots() {
     mapSpotsError = '';
@@ -118,6 +120,11 @@
   let tight = $state(typeof innerWidth === 'number' ? innerWidth < 1280 : false);
   $effect(() => { const f = () => (tight = innerWidth < 1280); addEventListener('resize', f); return () => removeEventListener('resize', f); });
   const select = (id) => { selectedId = id; dayFor = null; if (!onMap) view = 'map'; };
+  const openWater = (id) => {
+    const water = wbList.find((w) => w.id === id);
+    if (water?.zone && water.zone !== zone) setZone(water.zone);
+    select(id);
+  };
 </script>
 
 <div class="shell" class:haszones={zones.length > 1} class:sheetopen={onMap && !!(selectedId || dayFor)} class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && tight && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
@@ -151,11 +158,12 @@
     {/if}
   </main>
   <div class="mapwrap" class:hide={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} class:sheet={selectedId && !dayFor && onMap} class:wide={!!dayFor && onMap} role="region" aria-label="Fishing map and controls">
-      <MapView zoneKey={zone} inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking || !!pin.target} onpick={async (p) => { if (pin.target) { try { await api.setCoords(pin.target.id, p.lat, p.lon); pinSaved(); load(); api.waterbodyList().then((v) => (wbList = v)).catch(() => {}); } catch (e) { error = e.message; } return; } picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
+      <MapView zoneKey={zone} inset={wide ? panelW + 112 : 0} home={prefs.home} pickMode={picking || !!pin.target} onpick={async (p) => { if (pin.target) { try { await api.setCoords(pin.target.id, p.lat, p.lon); pinSaved(); load(); api.waterbodyList().then((v) => (wbList = v)).catch(() => {}); } catch (e) { error = e.message; } return; } picking = false; try { await setHome(p); } catch { /* shown in Settings next time */ } }} {data} journal={journalGeo} {showJournal} {selectedId} {theme} {showStocking} {showRivers} waters={wbList} {showGauges} {showAdvisories} {showReports} fire={fireData} {showFire} onselect={select} />
       <div class="layers glass" class:open={layersOpen} role="group" aria-label="Map layers">
         <button class="pill" aria-expanded={layersOpen} onclick={() => (layersOpen = !layersOpen)}><Icon name="layers" /> Layers</button>
         {#if layersOpen}
           <label class="lyr"><input type="checkbox" bind:checked={showStocking} /> Stocking</label>
+          <label class="lyr"><input type="checkbox" bind:checked={showRivers} /> Rivers</label>
           <label class="lyr"><input type="checkbox" bind:checked={showReports} /> Report ratings</label>
           <label class="lyr"><input type="checkbox" bind:checked={showGauges} /> Gauges</label>
           <label class="lyr"><input type="checkbox" bind:checked={showJournal} /> My pins &amp; trips</label>
@@ -177,8 +185,8 @@
         <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
       {/if}
       <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
-      {#if view === 'map' && !drawerOpen && !(tight && (selectedId || dayFor))}
-        <MapCard spots={mapSpots} {zones} {zone} onzone={setZone} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={select} onplan={() => go('plan')} error={mapSpotsError} />
+      {#if view === 'map' && !drawerOpen}
+        <MapCard hidden={tight && !!(selectedId || dayFor)} spots={mapSpots} waters={wbList} {zones} {zone} onzone={setZone} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={openWater} onplan={() => go('plan')} error={mapSpotsError} />
       {/if}
   </div>
     {#if dayFor && onMap}

@@ -192,6 +192,8 @@ its server.
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
 - [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction
+- [ ] Trip-area offline preparation: choose a zone or area around a trip, preview tile count/storage, and save higher detail where needed
+- [ ] Resize journal and gear photos on the device before storage/upload, with original orientation preserved
 - [x] Read the published terms for ODFW, OHA, NWS, USGS and Protomaps/OSM and record them (`docs/sources.md`); found and fixed missing OpenStreetMap attribution and added data credits
 - [ ] **Owner:** decide whether to email ODFW (and OHA) about using their public data; ODF terms still unread (feed not built)
 - [ ] Watch the scheduler for a day (timings, `/healthz`)
@@ -208,6 +210,7 @@ its server.
 - [x] Per-waterbody history on the sheet: trips, fish, catches by species, best day with its conditions, most productive lure
 - [ ] Journal-informed scoring factor (for example, waters and lures that worked under similar flows)
 - [x] Gear in the pack list: the day view shows "You have: ..." under template items you own (never says anything is missing)
+- [ ] Favorites dashboard: latest conditions and recent personal trips for your saved waters (the Map's Favorites browser is built)
 
 ## Phase 11: More sources and statewide coverage
 
@@ -221,10 +224,14 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 - [x] **Fire map layer**: ODF danger zones and NIFC perimeters drawn on the map (Layers toggle, Legend entries), served from the stored responses by `/api/fire/map`. Built 2026-10-18
 - [ ] NASA FIRMS hotspots: the owner is not sure FIRMS is wanted (it needs a free key)
 - [x] **River flood status** from NOAA NWPS: NOAA's official flood category, stage and forecast on 14 of the 16 USGS gauges (the other two have only reservoir gauges at NWPS), on the sheet's flow rows and the Gauges page. Built 2026-10-18
-- [ ] **Rivers**: the Tualatin River is the pilot (three gauges, water quality, NOAA flood status, Willamette Falls fish counts from DART). Mirror to the Clackamas, Sandy, Santiam, McKenzie and others once the owner is happy with the Tualatin; StreamNet and OWRD are researched (docs/data-source-options.md section 10) and not built
+- [x] **Rivers**: Tualatin plus popular rivers across all six zones, with linked USGS gauges, statewide NOAA flood status where available, and Willamette Falls counts only on applicable upper-Willamette rivers (built 2026-10-19; see the build log). StreamNet and OWRD remain researched, not built
+- [x] **River discovery and evidence**: direct river map markers, Rivers and Favorites browsing, statewide waterbody search including unpinned waters, stored flow/temperature charts (24 h / 7 d), measurement-specific freshness, and visible score evidence. Stale flow and forecasts do not count as ranking evidence
+- [ ] **Seasonal flow context**: use a documented historical baseline and show its period/sample coverage; the current comparison is only a recent seven-day median, not a validated fishing range
+- River discovery gate: a river opens from its marker or its name without a gauge-popup step; cross-zone search, unpinned waters and loaded charts work; browser regressions and all-theme axe scans pass. Stop here for feedback before expanding the comparison/offline features
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
 - [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value. **New (2026-10-18):** the *Angling Zones* (Sport Fishing Regulations zones) are the useful layer, free to use with an ODFW credit, but the server is firewalled from here: see data-source-options 6b
-- [x] Statewide coverage: all six ODFW zones. Central, Northwest, Southwest, Northeast and Southeast were added 2026-10-18 (see the build log), each a module in `app/zones`, pins from OpenStreetMap (many left unpinned for you to place), live USGS gauges, a zone pill on the map. Still Willamette-only: Corps reservoirs, NOAA flood status, the offline map region.
+- [x] Statewide coverage: all six ODFW zones. Central, Northwest, Southwest, Northeast and Southeast were added 2026-10-18 (see the build log), each a module in `app/zones`, pins from OpenStreetMap (many left unpinned for you to place), live USGS gauges, a zone pill on the map. Corps reservoirs and the offline map region remain Willamette-only; NOAA flood status is statewide where linked
+- [x] Admin pin placement from Settings and the map (built 2026-10-18)
 
 ## Phase 12: Coast and marine
 
@@ -263,6 +270,5 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 ## Backlog (unscheduled)
 
 - Pulse on "this week" pins; avoid labels under pins
-- Admin screen for editing pins (today: an API call, see [waterbody-pins.md](waterbody-pins.md))
 - Password reset by email, two-factor sign-in (deliberately out of scope for now)
 - More glyph ranges for map labels if non-Latin names matter

@@ -3,6 +3,7 @@
   import { isFavorite } from './auth.svelte.js';
   import { FRESH_LABEL, FACTOR_LABEL } from './api.js';
   import { hhmm, clockText } from './clock.svelte.js';
+  import { evidenceText } from './waterSearch.js';
   // A ranked list of spots for one day, each with a "why this score" breakdown.
   let { spots, fresh = {}, selectedId = null, onselect } = $props();
 </script>
@@ -16,6 +17,7 @@
         <span class="body">
           <span class="name">{s.waterbody.name}{#if isFavorite(s.waterbody.id)} <span class="fav" title="Favorite"><Icon name="star_fill" size={14} /></span>{/if}</span>
           <span class="why small quiet">{clockText(s.explanation.text)}</span>
+          <span class="small quiet">{evidenceText(s.coverage)} · share of scoring inputs backed by data</span>
         </span>
         <span class="end">
           {#if f}<span class="dot {f.freshness}" title={FRESH_LABEL[f.freshness]}></span>{/if}

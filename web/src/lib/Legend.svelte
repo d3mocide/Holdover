@@ -13,7 +13,7 @@
   const mk = (name, main, extra) => markers[name]({ main, ring: c.ring, bg: c.bg, accent: c.accent }, extra);
   const items = $derived(c ? [
     ['stocking', c.f1, 'Stocked this week'], ['stocking', c.f2, 'Last 2 weeks'], ['stocking', c.f3, 'Older'],
-    ['stocking_scheduled', c.f1, 'Scheduled'], ['gauge', c.gauge, 'Stream gauge'], ['advisory', c.accent, 'Algae advisory'],
+    ['stocking_scheduled', c.f1, 'Scheduled'], ['river', c.gauge, 'River · opens directly'], ['gauge', c.gauge, 'Stream gauge'], ['advisory', c.accent, 'Algae advisory'],
     ['report', c.f1, 'Report rating', 4], ['report', c.f1, 'AI-read, unreviewed', 4, true], ['journal', c.text, 'My trips & pins']
   ] : []);
 </script>

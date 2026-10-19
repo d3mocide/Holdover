@@ -24,6 +24,7 @@ def flow_vs_median(session: Session, gauge_id: int) -> tuple[float | None, float
     """The gauge's median flow over its recent history and how far the latest reading is from it (percent). Needs at least 24
     readings spanning two days, the same rule the planner uses, so a new gauge says nothing instead of something silly."""
     rows = session.scalars(select(GaugeReading).where(GaugeReading.gauge_id == gauge_id, GaugeReading.parameter == "discharge_cfs")
+                           .where(GaugeReading.observed_at >= (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(timespec="minutes"))
                            .order_by(GaugeReading.observed_at.desc()).limit(7 * 96)).all()
     if len(rows) < 24:
         return None, None
@@ -42,20 +43,23 @@ def latest_gauge(session: Session, g: Gauge) -> dict:
                            .order_by(GaugeReading.observed_at.desc()).limit(1))
         if r is None:
             continue
-        out["values"][param] = {"value": r.value, "observed_at": r.observed_at}
+        out["values"][param] = {"value": r.value, "observed_at": r.observed_at,
+                                "stale": _age_h(r.observed_at) > GAUGE_STALE_H, "provisional": bool(r.provisional)}
         if out["as_of"] is None or r.observed_at > out["as_of"]:
             out["as_of"] = r.observed_at
         out["provisional"] = out["provisional"] and bool(r.provisional)
     if "water_temp_c" in out["values"]:
-        out["values"]["water_temp_f"] = {"value": round(out["values"]["water_temp_c"]["value"] * 9 / 5 + 32, 1),
-                                         "observed_at": out["values"]["water_temp_c"]["observed_at"]}
+        out["values"]["water_temp_f"] = {**out["values"]["water_temp_c"],
+                                         "value": round(out["values"]["water_temp_c"]["value"] * 9 / 5 + 32, 1)}
     q = out["values"].get("discharge_cfs")
     if q:
+        out["as_of"] = q["observed_at"]  # a newer temperature sensor must not make old flow look fresh
+    if q and not q["stale"]:
         cutoff = (datetime.fromisoformat(q["observed_at"]) - timedelta(hours=3)).isoformat(timespec="minutes")
         earlier = session.scalar(select(GaugeReading).where(
             GaugeReading.gauge_id == g.id, GaugeReading.parameter == "discharge_cfs", GaugeReading.observed_at <= cutoff)
             .order_by(GaugeReading.observed_at.desc()).limit(1))
-        if earlier and earlier.value:
+        if earlier and earlier.value and (datetime.fromisoformat(cutoff) - datetime.fromisoformat(earlier.observed_at)).total_seconds() <= 3600:
             change = (q["value"] - earlier.value) / earlier.value
             out["trend"] = "rising" if change > 0.03 else "falling" if change < -0.03 else "steady"
     out["stale"] = out["as_of"] is None or _age_h(out["as_of"]) > GAUGE_STALE_H
@@ -102,7 +106,7 @@ def conditions(session: Session, wb: Waterbody, day: date, today: date | None = 
                              .where(WaterbodyGauge.waterbody_id == wb.id)).all()
     out["gauges"] = [latest_gauge(session, g) for g in gauges]
     temps = [g["values"]["water_temp_f"] for g in out["gauges"] if "water_temp_f" in g["values"]]
-    out["water_temp_f"] = temps[0] if temps else None
+    out["water_temp_f"] = max(temps, key=lambda t: datetime.fromisoformat(t["observed_at"])) if temps else None
 
     if wb.lat is not None and wb.lon is not None:
         out["daylight"] = daylight(wb.lat, wb.lon, day)

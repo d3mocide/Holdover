@@ -11,7 +11,8 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | `gear.mjs` | Starter catalog, items, setups, the trip picker, stats, trip editing, your history on the sheet, the pack list, sync, offline create, cross-account isolation, axe on every gear view | 46 |
 | `hardening.mjs` | Offline anonymous JSON/CSV export, shared-device draft clearing and cancellation, account-switch draft isolation, late offline arrival on a second device, exact-date day cache | 14 |
 | `day-cache.mjs` | Vite modules: v2 journal upgrade preserved, separate dates and fisheries, no future-day substitution, no guessing legacy fishery, Oregon evening date, cached trip capture | 10 |
-| `accessibility.mjs` | Full axe (including landmarks) and screenshots of Settings, Map, Plan, Day, Journal and Log trip in three themes at phone, tablet and desktop widths; phone title bounds | 54 scans |
+| `accessibility.mjs` | Full axe and screenshots of Settings, Map, Legend, Rivers, River history, Favorites, search, Plan, Day, Journal, Log trip and Gauges in three themes at phone, tablet and desktop widths; phone title bounds | 108 scans |
+| `rivers.mjs` | Direct river browsing and marker clicks, populated charts, measurement switching, Favorites, cross-zone search, unpinned waters, offline river reload, phone fit | 12 |
 
 ## One-time setup
 
@@ -44,6 +45,20 @@ For the hardening suite, use a separate fresh fixture instance (never the person
 isolated browser. Day responses are explicit test fixtures intercepted in the browser; it never changes server data.
 Run `node tests/e2e/day-cache.mjs` while the dev stack is up. The new scripts save screenshots under `/tmp` by default
 (`SHOTS` overrides the directory). Do not reset a fixture server while another suite is using it.
+
+The river suite needs populated chart observations on its own disposable instance:
+
+    task_river_dir=$(mktemp -d /tmp/holdover-rivers-XXXXXX)
+    E2E_DIR="$task_river_dir" PORT=8041 tests/e2e/setup.sh gear
+    .venv/bin/python tests/e2e/seed-river-history.py "$task_river_dir/data/e2e.db"
+    BASE_URL=http://localhost:8041/ node tests/e2e/rivers.mjs
+    BASE_URL=http://localhost:8041/ node tests/e2e/accessibility.mjs
+    kill "$(cat "$task_river_dir/server.pid")"
+
+`seed-river-history.py` adds explicitly synthetic observations only to a disposable `/tmp/holdover-...` database;
+it refuses other locations and never overwrites rows. These are chart fixtures, not real readings. The expanded
+accessibility suite now covers Rivers, River history, Favorites, water search, Legend and Gauges too: 108 scans in total, with no
+landmark rule disabled.
 
 ## offline.mjs
 

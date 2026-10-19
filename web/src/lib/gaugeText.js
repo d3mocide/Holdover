@@ -4,6 +4,10 @@ export const medianText = (pct) => (pct == null ? null : pct === 0 ? 'at median'
 export const unusual = (pct) => pct != null && Math.abs(pct) >= 20;
 export const SORTS = [['name', 'Name'], ['unusual', 'Most unusual'], ['flow', 'Highest flow']];
 
+// Cached responses age while offline too; don't trust a freshness flag computed when they were fetched.
+export const readingStale = (reading, now = Date.now()) => !reading || !!reading.stale || !Number.isFinite(Date.parse(reading.observed_at)) || now - Date.parse(reading.observed_at) > 3 * 3600000;
+export const gaugeStale = (g, now = Date.now()) => g.values?.discharge_cfs ? readingStale(g.values.discharge_cfs, now) : readingStale({ observed_at: g.as_of, stale: g.stale }, now);
+
 export function sortGauges(list, mode) {
   const byName = (a, b) => a.name.localeCompare(b.name);
   const cfs = (g) => g.values?.discharge_cfs?.value ?? -1;
@@ -23,6 +27,10 @@ export function detailParts(g) {
 
 const QUALITY = [['dissolved_oxygen_mgl', (v) => `dissolved oxygen ${v.toFixed(1)} mg/L`], ['ph', (v) => `pH ${v.toFixed(1)}`],
   ['turbidity_fnu', (v) => `turbidity ${v < 10 ? v.toFixed(1) : Math.round(v)} FNU`], ['conductance_uscm', (v) => `conductance ${Math.round(v)} µS/cm`]];
+export function qualityReadings(g, now = Date.now()) {
+  return QUALITY.filter(([key]) => g.values?.[key] && now - Date.parse(g.values[key].observed_at) < 36 * 3600000)
+    .map(([key, format]) => ({ ...g.values[key], text: format(g.values[key].value) }));
+}
 /** The water-quality readings a gauge has, newest day only (a sensor that stopped reporting a day ago is not shown as current). */
 export function qualityParts(g, now = Date.now()) {
   const v = g.values ?? {};
