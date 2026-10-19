@@ -37,7 +37,7 @@
 </section>
 
 <style>
-  .mapcard { position: absolute; z-index: 2; left: 112px; top: 16px; width: min(380px, calc(100% - 144px)); max-height: calc(100% - 32px); overflow-y: auto;
+  .mapcard { position: absolute; z-index: 2; left: 96px; top: 16px; width: min(380px, calc(100% - 144px)); max-height: calc(100% - 32px); overflow-y: auto;
     border-radius: 20px; padding: 6px 10px 8px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
     border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; gap: 4px; }
   .head { width: 100%; display: flex; justify-content: space-between; align-items: center; border: 0; background: none; min-height: 44px; padding: 0 4px; height: auto; }

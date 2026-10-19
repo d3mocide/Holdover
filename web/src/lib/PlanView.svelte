@@ -5,6 +5,7 @@
   import { api, dayLabel, isoDay, localDay, weekLabel, FISHERIES } from './api.js';
   import { homeForRequests } from './auth.svelte.js';
   import ZonePicker from './ZonePicker.svelte';
+  import PageIcon from './PageIcon.svelte';
   import { hhmm } from './clock.svelte.js';
   import { monthLabel, monthShort, monthRange, weekSummary } from './scheduleText.js';
   import { weekLabelYear } from './stockingGroups.js';
@@ -53,7 +54,7 @@
 <section class="panel" aria-label="Plan ahead">
   <header>
     <div class="row">
-      <h1>Plan <span class="ov">ahead</span></h1>
+      <div class="ttl"><PageIcon name="plan" /><h1>Plan <span class="ov">ahead</span></h1></div>
       <span class="quiet mono small">{data?.meta.as_of ? `Synced ${hhmm(data.meta.as_of)}` : 'Not synced'}</span>
     </div>
     <ZonePicker {zones} {zone} {onzone} />
@@ -143,7 +144,8 @@
 
 <style>
   .panel { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .ttl { display: flex; align-items: center; gap: 14px; min-width: 0; }
   h1 { font-size: 24px; letter-spacing: -0.02em; } .ov { color: var(--fresh-1); } h2 { font-weight: 500; margin: 4px 0 0; }
   .small { font-size: 13px; margin: 0; } .intro { margin: 0; }
   .tabs { display: flex; gap: 22px; border-bottom: 1px solid var(--hair); margin-top: 8px; }

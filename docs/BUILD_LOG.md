@@ -535,3 +535,14 @@ Owner approved Central as the pilot, ODFW polling for more zones, and OpenStreet
 - Not verified: the 22 pins on the ground (OSM matches, not a survey), whether "Metolius Pond" and the other unpinned waters can be found in OpenStreetMap by another
   name, a real phone, the second zone on the Pi.
 
+### 2026-10-18 · this commit · Phase 11 · Zone pill on the map, one left edge, page icons
+Owner feedback: the zone picker crowded the fish chips, belongs on the map, and the Legend sat far from the rail when the panel was minimized.
+- **Zone pill on the map (desktop)**, top-left, with the Legend after it; the pickers inside the cards are gone on desktop. On a phone (map often
+  covered, top row full) the picker stays in the Best bets card and the Plan and Gauges headers, now spaced from the chips. With a waterbody open the pill and
+  Legend drop to the bottom-left (Legend icon-only); on windows under 1280 px the pill hides while a sheet is open.
+- **One left edge.** Everything beside the panel (Best bets card, pill, Legend, drawers, the home-picker bar) is 16 px after the rail or after the panel, through one
+  CSS variable. The card and Legend used to start 32 px from the rail, and the Legend kept the panel's gap when the panel was minimized.
+- **Page icons** on Plan, Journal and Settings (a shared `PageIcon`), matching Gauges, Reports and Gear.
+- Verified: rail-to-card/panel gaps measured at 16 px at 1920, 1440 and 1100 in every state (Map, Plan, panel hidden, sheet open); no overlaps between pill, Legend, Layers
+  and the sheet; axe zero; 211 `pytest`, 52 frontend tests; browser suites offline 12/12, accounts 37/37, gear 46/46. Not verified: a real phone.
+

@@ -1,4 +1,5 @@
 <script>
+  import PageIcon from './PageIcon.svelte';
   import { liveQuery } from 'dexie';
   import { db, nowIso } from './db.js';
   import { syncState, syncNow, countPending } from './sync.svelte.js';
@@ -45,7 +46,7 @@
 </script>
 
 <div class="page">
-  <header><h1>Journal</h1>{#if trips.length}<button class="primary" onclick={() => onlog()}><Icon name="log" size={18} /> Log a trip</button>{/if}</header>
+  <header><div class="ttl"><PageIcon name="journal" /><h1>Journal</h1></div>{#if trips.length}<button class="primary" onclick={() => onlog()}><Icon name="log" size={18} /> Log a trip</button>{/if}</header>
   <p class="quiet small" role="status">{statusText}{syncState.pending ? ` · ${syncState.pending} waiting to sync` : ''}</p>
 
   {#if !trips.length}
@@ -84,6 +85,7 @@
 </div>
 
 <style>
+  .ttl { display: flex; align-items: center; gap: 14px; min-width: 0; }
   .page { padding: 20px 16px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   header { display: flex; justify-content: space-between; align-items: center; min-height: 44px; } h1 { font-size: 24px; letter-spacing: -0.01em; }
   ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; margin: 0; }

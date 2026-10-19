@@ -118,7 +118,7 @@
   const select = (id) => { selectedId = id; dayFor = null; if (!onMap) view = 'map'; };
 </script>
 
-<div class="shell" class:sheetopen={onMap && !!(selectedId || dayFor)} class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && tight && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
+<div class="shell" class:haszones={zones.length > 1} class:sheetopen={onMap && !!(selectedId || dayFor)} class:drawer={drawerOpen} class:nopanel={view === 'map'} class:collapsed class:full={view === 'plan'} class:tall={view !== 'map' && view !== 'plan'} style:--panel-w={collapsed && wide ? '0px' : (view === 'plan' && tight && (selectedId || dayFor) ? 'min(380px, 36vw)' : (PANEL[view] ?? PANEL.map))}>
   <nav class="rail" aria-label="Main">
     <span class="logo"><Logo /></span>
     {#each tabs as [k, label, icon]}
@@ -161,6 +161,9 @@
           <label class="lyr"><input type="checkbox" bind:checked={showFire} /> Fire danger and fires</label>
         {/if}
       </div>
+      {#if zones.length > 1}
+        <div class="zonepill glass"><ZonePicker variant="map" {zones} {zone} onzone={setZone} /></div>
+      {/if}
       <div class="legend glass" class:open={legendOpen} role="group" aria-label="Map legend">
         <button class="pill" aria-label="Legend" aria-expanded={legendOpen} onclick={() => (legendOpen = !legendOpen)}><Icon name="legend" /> <span class="lgl">Legend</span></button>
         {#if legendOpen}<Legend {theme} />
@@ -231,7 +234,13 @@
   .lyr.off { color: var(--text-quiet); }
   .lyr input { width: 18px; height: 18px; accent-color: var(--accent); }
   .soon { font-size: 11px; }
-  .legend { position: absolute; left: calc(112px + var(--panel-w, 380px) + var(--drawer-shift, 0px)); transition: left 0.25s ease; top: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
+  /* One left edge for everything that sits beside the panel: 16 px after the rail, or after the panel (--base). The zone pill sits there
+     first and Legend follows it; with the panel hidden (collapsed or the Map tab) there is no panel gap. */
+  .shell { --panel-gap: 16px; --zp-w: 0px; --base: calc(96px + var(--panel-w, 0px) + var(--panel-gap) + var(--drawer-shift, 0px)); }
+  .shell.collapsed, .shell.nopanel { --panel-gap: 0px; }
+  .shell.haszones { --zp-w: 156px; }
+  .zonepill { position: absolute; left: var(--base); transition: left 0.25s ease; top: 16px; z-index: 2; border-radius: 14px; width: 148px; padding: 0; display: none; }
+  .legend { position: absolute; left: calc(var(--base) + var(--zp-w)); transition: left 0.25s ease; top: 16px; border-radius: 14px; display: flex; padding: 6px; z-index: 2; flex-direction: column; align-items: flex-start; }
   .sm { font-size: 11px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .overlay { grid-area: auto !important; position: absolute; inset: 0; z-index: 15; background: var(--page-bg); overflow: hidden; }
@@ -241,24 +250,31 @@
     .shell.drawer { --drawer-shift: calc(min(520px, calc(100% - 128px - var(--panel-w, 0px))) + 16px); }
     /* With a sheet open the top row is full (panel or card, Legend, Layers, zoom): Legend drops to the bottom-left, its list opening upward. */
     .shell.sheetopen .legend { top: auto; bottom: 16px; flex-direction: column-reverse; }
+    .shell.sheetopen .zonepill { top: auto; bottom: 16px; }
+    .shell.sheetopen .lgl { display: none; }  /* icon only, so the pill and Legend fit between the panel and the sheet */
     /* On the Map tab the Best bets card sits where the side panel does, and Legend moves to its right. */
-    .shell.nopanel .legend { left: calc(112px + min(380px, calc(100% - 144px)) + 16px); }
-    .shell.nopanel.drawer .legend { left: calc(112px + var(--panel-w, 0px) + var(--drawer-shift, 0px)); }
+    .shell.nopanel { --base: calc(96px + min(380px, calc(100% - 144px)) + 16px); }
+    .shell.nopanel.drawer { --base: calc(96px + var(--drawer-shift, 0px)); }
+    .zonepill { display: block; }
     /* Beside the drawer there is little room: Legend shrinks to its icon (and its list is closed when a drawer opens). */
     .shell.drawer .lgl { display: none; }
     /* It opens right beside the panel it came from (Journal, Gear, ...), not at the far edge of the screen. */
-    .overlay { inset: 16px auto 16px calc(112px + var(--panel-w, 0px)); width: min(520px, calc(100% - 128px - var(--panel-w, 0px))); border-radius: 20px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
+    .overlay { inset: 16px auto 16px calc(96px + var(--panel-w, 0px) + var(--panel-gap, 16px)); width: min(520px, calc(100% - 128px - var(--panel-w, 0px))); border-radius: 20px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
       border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   }
+  @media (min-width: 900px) and (max-width: 1279px) {
+    .shell.sheetopen .zonepill { display: none; }  /* no room beside a sheet on a tight window; it returns when the sheet closes */
+    .shell.sheetopen { --zp-w: 0px; }
+  }
   @media (min-width: 900px) and (max-width: 1299px) {
-    .shell.drawer .legend { display: none; }  /* no room beside the drawer; it reopens when the drawer closes */
+    .shell.drawer .legend, .shell.drawer .zonepill { display: none; }  /* no room beside the drawer; they return when it closes */
   }
   .sym { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--text-quiet); }
   .sym.diamond { background: var(--gauge); border-color: var(--bg); box-shadow: 0 0 0 1px var(--gauge); }
   .sym.diamond { transform: rotate(45deg); }
   .sym.ring { border-radius: 50%; border-color: var(--accent); }
   .sheetwrap.wide { width: var(--wide-w); }
-  .pickbar { position: absolute; left: calc(112px + var(--panel-w, 380px) + var(--drawer-shift, 0px)); top: 72px; z-index: 3; border-radius: 14px; padding: 4px 4px 4px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .pickbar { position: absolute; left: var(--base); top: 72px; z-index: 3; border-radius: 14px; padding: 4px 4px 4px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
   /* Icon only, tucked under the zoom control in the top-right column; it slides over with the sheet like Layers and zoom do. */
   .offline { position: absolute; right: calc(16px + var(--sheet-inset, 0px)); transition: right 0.25s ease; top: 114px; z-index: 2; color: var(--text); padding: 0; width: 44px; justify-content: center; }
 

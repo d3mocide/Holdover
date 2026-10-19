@@ -1,4 +1,5 @@
 <script>
+  import PageIcon from './PageIcon.svelte';
   import { clock, setClock } from './clock.svelte.js';
   import { api } from './api.js';
   import { auth } from './auth.svelte.js';
@@ -14,7 +15,7 @@
 </script>
 
 <div class="settings">
-  <h1>Settings</h1>
+  <div class="ttl"><PageIcon name="settings" /><h1>Settings</h1></div>
 
   <Account {invite} {oninvitedone} />
   <Preferences {wbList} {picking} {onpick} />
@@ -56,6 +57,7 @@
 </div>
 
 <style>
+  .ttl { display: flex; align-items: center; gap: 14px; }
   .settings { padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; height: 100%; }
   fieldset { border: 1px solid var(--hair); border-radius: 14px; background: var(--glass-fill); padding: 8px 16px 12px; }
   legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
