@@ -12,6 +12,7 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | `hardening.mjs` | Offline anonymous JSON/CSV export, shared-device draft clearing and cancellation, account-switch draft isolation, late offline arrival on a second device, exact-date day cache | 14 |
 | `day-cache.mjs` | Vite modules: v2 journal upgrade preserved, separate dates and fisheries, no future-day substitution, no guessing legacy fishery, Oregon evening date, cached trip capture | 10 |
 | `accessibility.mjs` | Full axe and screenshots of Settings, Map, Legend, Rivers, River history, Favorites, search, Plan, Day, Journal, Log trip and Gauges in three themes at phone, tablet and desktop widths; phone title bounds | 108 scans |
+| `map-markers.mjs` | Reviewed/AI report overlap click priority, gauge timestamp and offline aging, close-target bounds, waterbody action, popup axe and screenshots in all three themes at phone/tablet/desktop sizes. Browser-only synthetic responses; never changes stored data | 66 checks, including 9 axe scans |
 | `rivers.mjs` | Direct river browsing and marker clicks, populated charts, measurement switching, Favorites, cross-zone search, unpinned waters, offline river reload, phone fit | 12 |
 
 ## One-time setup

@@ -45,9 +45,11 @@ export const mark =
 // ---- Map markers: 40x40 art for the basemap. c = {main, ring, bg, accent} ----
 export const markers = {
   river: (c) => `<rect x="4" y="5" width="32" height="30" rx="11" fill="${c.bg}" stroke="${c.main}" stroke-width="2.5"/><path d="M10 16c3-3 6-3 10 0s7 3 10 0M10 24c3-3 6-3 10 0s7 3 10 0" fill="none" stroke="${c.main}" stroke-width="2.5" stroke-linecap="round"/>`,
-  stocking: (c) => `<circle cx="20" cy="20" r="14" fill="${c.main}" opacity=".22"/><circle cx="20" cy="20" r="9" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/>`,
-  stocking_scheduled: (c) => `<circle cx="20" cy="20" r="9" fill="none" stroke="${c.main}" stroke-width="2.5"/><circle cx="20" cy="20" r="2.2" fill="${c.main}"/>`,
-  selected: (c) => `<circle cx="20" cy="20" r="17" fill="${c.accent}" opacity=".2"/><circle cx="20" cy="20" r="13" fill="none" stroke="${c.accent}" stroke-width="2.5"/><circle cx="20" cy="20" r="8" fill="${c.main}" stroke="${c.bg}" stroke-width="2.5"/>`,
+  stocking: (c) => `<circle cx="20" cy="20" r="16" fill="${c.main}" stroke="${c.bg}" stroke-width="2"/><g transform="translate(8 8)" fill="${c.bg}"><path d="${FISH}"/></g>`,
+  stocking_recent: (c) => `<circle cx="20" cy="20" r="16" fill="${c.main}" fill-opacity=".18" stroke="${c.main}" stroke-width="2.5"/><g transform="translate(8 8)" fill="${c.main}"><path d="${FISH}"/></g>`,
+  stocking_older: (c) => `<circle cx="20" cy="20" r="16" fill="${c.main}" fill-opacity=".12" stroke="${c.main}" stroke-width="2.5" stroke-dasharray="3 4"/><g transform="translate(8 8)" fill="${c.main}"><path d="${FISH}"/></g>`,
+  stocking_scheduled: (c) => `<rect x="5" y="7" width="30" height="28" rx="5" fill="${c.main}" fill-opacity=".12" stroke="${c.main}" stroke-width="2.5"/><path d="M5 14h30M13 4v7M27 4v7" fill="none" stroke="${c.main}" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(10 13) scale(.84)" fill="${c.main}"><path d="${FISH}"/></g>`,
+  selected: (c) => `<circle cx="20" cy="20" r="19" fill="${c.accent}" fill-opacity=".2" stroke="${c.accent}" stroke-width="2"/>${markers.stocking(c)}`,
   gauge: (c) => `<path d="M20 3 37 20 20 37 3 20z" fill="${c.main}" stroke="${c.bg}" stroke-width="3" stroke-linejoin="round"/><path d="M20 10.5c4.2 5.4 6.8 8.4 6.8 11.9a6.8 6.8 0 0 1-13.6 0c0-3.5 2.6-6.5 6.8-11.9z" fill="${c.bg}"/>`,
   advisory: (c) => `<circle cx="20" cy="20" r="14" fill="${c.accent}" opacity=".15"/><circle cx="20" cy="20" r="12" fill="none" stroke="${c.accent}" stroke-width="3"/><path d="M20 13.5v8" stroke="${c.accent}" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="26.2" r="1.8" fill="${c.accent}"/>`,
   report: (c, pips) => `<rect x="4" y="4" width="32" height="32" rx="10" fill="${c.bg}" stroke="${c.main}" stroke-width="2"/><g transform="translate(8.5 6.5) scale(.96)" fill="none" stroke="${c.main}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${FISH}"/></g>` +

@@ -188,17 +188,17 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 - **Sizes:** 14 px inline with small caps labels, 18 px in buttons, 22 px in nav. Decorative icons are `aria-hidden`;
   standalone ones get a label.
 - **Adding an icon:** draw it on the same grid with the same stroke, add it to `icons.js`, regenerate the atlas image,
-  and use it through `Icon.svelte`. Do not paste SVG into components or import an icon library.
+  and use it through `Icon.svelte`. Regenerate with `CHROMIUM=/path/to/chromium node scripts/render-icon-atlas.mjs` (uses the browser-test dependencies). Do not paste SVG into components or import an icon library.
 - A fish glyph means fish, a drop in a diamond means a stream gauge, a fish hook means your gear. Keep those meanings unique.
 
 ### Map marker language
 
 | Marker | Meaning | Rules |
 | --- | --- | --- |
-| Filled circle with a soft halo | Stocked waterbody | Colour is freshness (`--fresh-1/2/3`); **size grows with fish stocked** |
-| Hollow ring with a dot | Scheduled, not yet stocked | `--fresh-1` outline; no halo |
-| Larger coral ring with glow | Selected | `--accent` |
-| Diamond with a drop | USGS stream gauge | `--gauge`; popups say "provisional" |
+| Fish in a circle | Stocked waterbody | Filled this week, outlined recent, dotted outline older; freshness uses `--fresh-1/2/3`. Consistent size; fish counts live in details |
+| Fish in a calendar | Scheduled, not yet stocked | `--fresh-1`; calendar tabs distinguish future stocking without colour or a dark empty centre |
+| Coral ring with glow | Selected | `--accent` |
+| Diamond with a drop | USGS stream gauge | `--gauge`; popups say "Provisional", show the observation date/time and flag stale readings |
 | Rounded square with two waves | River | `--gauge`; opens the river directly and takes precedence over a co-located gauge. The marker is not a verified access point |
 | Ring with an exclamation | Algae advisory or precaution | `--accent` |
 | Rounded square, fish and 1-4 pips | Report rating | Colour and pips: excellent (lime, 4), good (teal, 3), fair (warn, 2), slow (slate, 1) |
@@ -207,7 +207,7 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 | Tinted area with a thin outline | ODF fire danger zone | `--warn`. Low is an outline only; Moderate, High and Extreme add a stronger tint. The Legend and each sheet say the level in words, so colour is never the only signal |
 | Dashed outline with a faint fill and a name | Active wildfire perimeter | `--accent`; the name shows from zoom 8.5. It means a fire is burning there, not that anything is closed |
 
-Pins are the brightest things on the map. Everything else recedes.
+Pins are the brightest things on the map. Everything else recedes. River and stocking art is about 23 px across, gauges about 23 px on the diagonal, and report badges about 26 px. Reports (reviewed and AI-read) draw above every other marker and the selection ring; clicks use the same priority. Advisory markers sit immediately below reports, followed by home/journal pins, rivers, gauges and stocking. Gauge cards reserve a separate 44 px close target, wrap long names, separate the flow value from provenance/time, and offer a full-width waterbody action.
 
 ## 8. Map
 

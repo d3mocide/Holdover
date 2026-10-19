@@ -7,6 +7,8 @@
   import * as maplibregl from 'maplibre-gl';
   import { registerTileProtocol, basemapAvailable } from './tiles.js';
   import { markers } from './icons.js';
+  import { clock } from './clock.svelte.js';
+  import { markerLayers, markerHit, gaugeDetails } from './mapMarkers.js';
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
@@ -87,15 +89,6 @@
     return style;
   }
 
-  function freshnessPaint() {
-    const c = palette();
-    return {
-      color: ['match', ['get', 'freshness'], 'this_week', c.f1, 'recent', c.f2, 'older', c.f3, 'upcoming', c.bg, c.f3],
-      stroke: ['match', ['get', 'freshness'], 'upcoming', c.f1, c.bg],
-      halo: ['match', ['get', 'freshness'], 'this_week', c.f1, 'recent', c.f2, 'older', c.f3, c.f1]
-    };
-  }
-
   // Marker art lives in icons.js as SVG; rasterise at 2x so it stays sharp on phones.
   function svgImage(inner, size = 40) {
     return new Promise((resolve, reject) => {
@@ -116,6 +109,8 @@
     const defs = {
       'gauge-icon': markers.gauge({ ...base, main: c.gauge }),
       'river-icon': markers.river({ ...base, main: c.gauge }),
+      ...Object.fromEntries([['this_week', 'stocking', c.f1], ['recent', 'stocking_recent', c.f2], ['older', 'stocking_older', c.f3], ['upcoming', 'stocking_scheduled', c.f1]]
+        .map(([state, name, main]) => [`stocking-${state}`, markers[name]({ ...base, main })])),
       'advisory-icon': markers.advisory({ ...base, main: c.accent }),
       'journal-icon': markers.journal({ ...base, main: css('--text') }),
       'home-icon': markers.home({ ...base, main: c.accent }),
@@ -134,7 +129,6 @@
 
   async function addLayers() {
     await addIcons();
-    const p = freshnessPaint();
     const c = palette();
     map.addSource('stocking', { type: 'geojson', data: data ?? { type: 'FeatureCollection', features: [] } });
     map.addSource('journal', { type: 'geojson', data: journal ?? { type: 'FeatureCollection', features: [] } });
@@ -155,45 +149,37 @@
       'icon-image': 'home-icon', 'icon-size': 0.62, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
     map.addLayer({ id: 'advisory-ring', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
       'icon-image': 'advisory-icon', 'icon-size': 0.9, 'icon-allow-overlap': true } });
-    map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
-      'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.52, 'icon-offset': [20, -20], 'icon-allow-overlap': true },
-      paint: { 'icon-opacity': ['case', ['==', ['get', 'reviewed'], false], 0.6, 1] } });  // the model's unreviewed reading is drawn fainter
-    const fishN = ['coalesce', ['get', 'last_total'], ['get', 'next_total'], 0];
-    const rad = ['interpolate', ['linear'], ['sqrt', fishN], 0, 6, 30, 8, 60, 11, 100, 14];
-    map.addLayer({ id: 'stocking-halo', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
-      'circle-radius': ['+', rad, 7], 'circle-color': p.halo, 'circle-opacity': ['match', ['get', 'freshness'], 'upcoming', 0, 'older', 0.1, 0.24], 'circle-blur': 0.9 } });
-    map.addLayer({ id: 'stocking-pts', type: 'circle', source: 'stocking', filter: isL('stocking'), paint: {
-      'circle-radius': rad, 'circle-color': p.color, 'circle-stroke-color': p.stroke, 'circle-stroke-width': 2.5 } });
+    map.addLayer({ id: 'stocking-pts', type: 'symbol', source: 'stocking', filter: isL('stocking'), layout: {
+      'icon-image': ['match', ['get', 'freshness'], 'this_week', 'stocking-this_week', 'recent', 'stocking-recent', 'upcoming', 'stocking-upcoming', 'stocking-older'],
+      'icon-size': 0.7, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'gauge-pts', type: 'symbol', source: 'stocking', filter: isL('gauge'), layout: {
-      'icon-image': 'gauge-icon', 'icon-size': 0.72, 'icon-allow-overlap': true } });
+      'icon-image': 'gauge-icon', 'icon-size': 0.65, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'river-pts', type: 'symbol', source: 'stocking', filter: isL('river'), layout: {
-      'icon-image': 'river-icon', 'icon-size': 0.9, 'icon-allow-overlap': true } });
+      'icon-image': 'river-icon', 'icon-size': 0.7, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'stocking-sel-glow', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
-      'circle-radius': 26, 'circle-color': c.accent, 'circle-opacity': 0.22, 'circle-blur': 0.8 } });
+      'circle-radius': 19, 'circle-color': c.accent, 'circle-opacity': 0.22, 'circle-blur': 0.8 } });
     map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
-      'circle-radius': ['+', rad, 5], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
-    for (const l of ['stocking-pts', 'river-pts', 'advisory-ring', 'report-badge']) {
-      map.on('click', l, (e) => { if (!pickMode) onselect?.(e.features[0].properties.id); });
-    }
-    map.on('click', (e) => { if (pickMode) onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); });
-    map.on('click', 'journal-pts', (e) => {
-      if (pickMode) return;
-      const p = e.features[0].properties;
-      const el = document.createElement('div'); el.textContent = p.label; 
-      new maplibregl.Popup({ offset: 8 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
-    });
-    map.on('click', 'gauge-pts', (e) => {
-      if (pickMode) return;
-      if (map.queryRenderedFeatures(e.point, { layers: ['river-pts'] }).length) return;
-      const p = e.features[0].properties;
-      const el = document.createElement('div');
-      const t = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; el.appendChild(d); };
-      t(p.name); t(p.flow_cfs != null ? `${Math.round(p.flow_cfs).toLocaleString()} cfs${p.trend ? ' · ' + p.trend : ''}` : 'No flow data', 'mono');
-      t(`USGS ${p.site_no} · provisional${p.stale === true || p.stale === 'true' ? ' · STALE' : ''}`);
-      const pop = new maplibregl.Popup({ offset: 12 }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
-      if (p.waterbody_id != null && p.waterbody_id !== 'null') {  // a gauge on a waterbody we track: offer its sheet
-        const btn = document.createElement('button'); btn.className = 'pill'; btn.textContent = 'Open this river'; btn.onclick = () => { pop.remove(); onselect?.(Number(p.waterbody_id)); }; el.appendChild(btn);
-      }
+      'circle-radius': 16, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
+    // Reports stay legible over river/stocking markers and the selection ring.
+    map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
+      'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.75, 'icon-offset': [18, -18], 'icon-allow-overlap': true },
+      paint: { 'icon-opacity': ['case', ['==', ['get', 'reviewed'], false], 0.75, 1] } });
+    for (const id of markerLayers) map.moveLayer(id);
+    map.on('click', (e) => {
+      if (pickMode) { onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); return; }
+      const hit = markerHit(map.queryRenderedFeatures(e.point, { layers: markerLayers }));
+      if (!hit) return;
+      const p = hit.properties;
+      if (hit.layer.id === 'journal-pts') {
+        const content = document.createElement('div'); content.textContent = p.label;
+        new maplibregl.Popup({ offset: 8 }).setLngLat(e.lngLat).setDOMContent(content).addTo(map);
+      } else if (hit.layer.id === 'gauge-pts') {
+        const content = gaugeDetails(p, Date.now(), clock.mode);
+        const pop = new maplibregl.Popup({ offset: 14, maxWidth: '280px', className: 'gauge-popup' })
+          .setLngLat(e.lngLat).setDOMContent(content).addTo(map);
+        pop.getElement().querySelector('.maplibregl-popup-close-button')?.setAttribute('aria-label', 'Close gauge details');
+        content.querySelector('button')?.addEventListener('click', () => { pop.remove(); onselect?.(Number(p.waterbody_id)); });
+      } else if (hit.layer.id !== 'home-pts') onselect?.(p.id);
     });
     for (const l of ['stocking-pts', 'river-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
       map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
@@ -243,7 +229,6 @@
     const vis = (on) => (on ? 'visible' : 'none');
     map.setLayoutProperty('stocking-pts', 'visibility', vis(showStocking));
     map.setLayoutProperty('stocking-sel', 'visibility', vis(showStocking));
-    map.setLayoutProperty('stocking-halo', 'visibility', vis(showStocking));
     map.setLayoutProperty('stocking-sel-glow', 'visibility', vis(showStocking));
     map.setLayoutProperty('gauge-pts', 'visibility', vis(showGauges));
     map.setLayoutProperty('river-pts', 'visibility', vis(showRivers));
@@ -270,7 +255,7 @@
     theme; // re-read CSS variables when the theme changes
     if (!ready) return;
     queueMicrotask(() => {
-      const c = palette(); const p = freshnessPaint();
+      const c = palette();
       map.setPaintProperty('bg', 'background-color', hasBasemap ? c.water : c.land);
       if (hasBasemap) {
         map.setPaintProperty('earth', 'fill-color', c.land);
@@ -288,9 +273,6 @@
       for (const id of ['fire-zone-fill', 'fire-zone-line']) map.setPaintProperty(id, id.endsWith('fill') ? 'fill-color' : 'line-color', c.warn);
       map.setPaintProperty('fire-perim-fill', 'fill-color', c.accent); map.setPaintProperty('fire-perim-line', 'line-color', c.accent);
       map.setPaintProperty('fire-perim-label', 'text-color', c.accent); map.setPaintProperty('fire-perim-label', 'text-halo-color', c.bg);
-      map.setPaintProperty('stocking-pts', 'circle-color', p.color);
-      map.setPaintProperty('stocking-pts', 'circle-stroke-color', p.stroke);
-      map.setPaintProperty('stocking-halo', 'circle-color', p.halo);
       map.setPaintProperty('stocking-sel', 'circle-stroke-color', c.accent);
       map.setPaintProperty('stocking-sel-glow', 'circle-color', c.accent);
       addIcons();
