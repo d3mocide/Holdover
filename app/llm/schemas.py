@@ -27,5 +27,9 @@ class ExtractionResult(BaseModel):
     items: list[ExtractedItem]
 
 
+class ParagraphResult(BaseModel):
+    text: str = Field(min_length=1, max_length=1400)
+
+
 class TextResult(BaseModel):
     text: str = Field(min_length=1, max_length=600)

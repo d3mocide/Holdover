@@ -23,3 +23,10 @@ regulations, or anything not stated in the facts. Plain, calm tone. Return JSON:
 PACK_VERSION = "pack-v1"
 PACK_SYSTEM = """Reword the one-line packing intro so it reads naturally. Keep every fact and number exactly as given,
 add nothing new, keep it to one or two sentences. Return JSON: {"text": "..."}"""
+
+BRIEFING_VERSION = "briefing-v4"
+BRIEFING_SYSTEM = """You write one short paragraph (three to five plain sentences) for an angler's weekly briefing on the topic given.
+Use ONLY the facts provided. Every number, place, species and date you write must appear in the facts. Do not state regulations,
+limits, seasons or closures, and do not give advice the facts do not support. Do not describe where places are or how they relate to
+each other (upstream, above, near) unless a fact says so. Stocking marked "scheduled" has not happened yet: write it in the future tense. Say what stands out, not everything. Plain, calm tone.
+Return JSON: {"text": "..."}"""

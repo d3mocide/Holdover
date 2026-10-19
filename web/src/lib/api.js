@@ -21,6 +21,7 @@ async function req(path, opts = {}) {
 export const api = {
   map: () => req('/api/map?zone=willamette&layers=stocking,gauges,advisories,reports'),
   fireMap: () => req('/api/fire/map'),
+  briefing: () => req('/api/briefing'),
   reportsAll: (issuedOn = null) => req(`/api/reports/all${issuedOn ? `?issued_on=${issuedOn}` : ''}`),
   schedule: (start = null, end = null) => req(`/api/schedule${start ? `?start=${start}&end=${end}` : ''}`),
   waterbodyList: () => req('/api/waterbodies'),
@@ -87,6 +88,8 @@ export function longDate(iso) {
 }
 
 export const asOf = (iso) => (iso ? `as of ${hhmm(iso)}` : 'no data');
+/** The local calendar date of an ISO timestamp (an "as of" time is shown in local time, so its date must be too). */
+export const localDay = (iso) => (iso ? new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : '');
 export const cToF = (c) => Math.round((c * 9) / 5 + 32);
 export const TREND = { rising: '↑ rising', falling: '↓ falling', steady: '→ steady' };
 export const isoDay = (offset = 0) => {

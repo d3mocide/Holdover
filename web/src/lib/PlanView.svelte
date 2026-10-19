@@ -2,7 +2,7 @@
   import Icon from './Icon.svelte';
   import SpotList from './SpotList.svelte';
   import ReportCard from './ReportCard.svelte';
-  import { api, dayLabel, isoDay, longDate, weekLabel, FISHERIES } from './api.js';
+  import { api, dayLabel, isoDay, localDay, weekLabel, FISHERIES } from './api.js';
   import { homeForRequests } from './auth.svelte.js';
   import { hhmm } from './clock.svelte.js';
   import { monthLabel, monthShort, monthRange, weekSummary } from './scheduleText.js';
@@ -129,7 +129,7 @@
           </li>
         {/each}
       </ul>
-      <footer class="quiet small">Weeks, not days. {sched.as_of ? `Schedule fetched ${longDate(sched.as_of.slice(0, 10))}. ` : ''}Check ODFW for regulations.</footer>
+      <footer class="quiet small">Weeks, not days. {sched.as_of ? `Schedule fetched ${localDay(sched.as_of)}. ` : ''}Check ODFW for regulations.</footer>
     {:else if !schedError}<p class="quiet small">Loading the schedule…</p>{/if}
   {/if}
 </section>

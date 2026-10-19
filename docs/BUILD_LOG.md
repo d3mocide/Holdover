@@ -459,3 +459,28 @@ Read the owner's b50 traces (an LLM request log, `GET /api/traces`, bodies base6
   37/37, gear 46/46 (the nav-width check now expects seven tabs). Not verified: the Reports page with several stored issues (only one exists
   here), the icon atlas, a real phone.
 
+### 2026-10-18 · this commit · Phase 2 · A weekly briefing written from everything we gather; the 9B on extraction
+Owner idea: use the slow model for something genuinely useful, once a week. The Reports tab (ODFW's words, no AI) gained a first tab,
+**This week**: a briefing whose facts are built by code and whose paragraphs a model writes from them.
+- **Facts (`app/briefing.py`), no AI**: Watch-outs (OHA algae advisories, nearby wildfires; shown first, only when present), Where to fish
+  (top spots per fishery that have a real signal: stocking or an accepted report item, never distance), Stocking (this week and the next
+  two, "scheduled" marked), Rivers and reservoirs (each gauge against its own median, NOAA flood category when elevated, Army Corps pool and
+  7-day change), and ODFW's own wording for the Willamette zone. Empty sections are dropped.
+- **Paragraphs (`app/llm/briefing.py`)**: the extraction-class model (`LLM_EXTRACT_MODEL`, a long timeout) writes 3 to 5 sentences for Where, Stocking and
+  Water from only that section's facts, with a one-line editorial hint ("recommend the two or three best", "say what stands out"). Each
+  paragraph is checked against its facts (numbers, names, species), retried once with the offending terms named, then dropped; kept
+  paragraphs are stored with the exact facts, the model and the time. A new prompt version invalidates old paragraphs. Without a model
+  the page shows the facts. Job: Thursday 16:30, a manual admin job `briefing`, and a startup catch-up if the week has none.
+- **9B on extraction**, real run on all five zones: 0 errors, about 7 minutes (the earlier ">400 s" was the model loading). It split "Fall Chinook fishing
+  is fair to good in the Siletz, Alsea, Siuslaw..." into one item per river with species, left a retention sentence unrated, and found
+  Phillips Reservoir's tiger muskie. `LLM_EXTRACT_MODEL=ornith-1.5-9b-uncensored` is now set in the owner's `.env`.
+- **Iterations driven by reading the output against the facts**: past tense for scheduled stocking (now "Scheduled for the week of...");
+  an unstated "above it" relationship between two gauges (the prompt now forbids describing how places relate); a steelhead list padded
+  with waters that only fit the fishery (now requires a signal); a UTC date next to a local time (new `localDay`).
+- Verified: 196 `pytest` (new: facts, ordering, grounded/retried/dropped paragraphs, replacement, hint, API with and without a paragraph),
+  47 frontend tests; axe zero in all three themes at desktop and phone; browser suites accounts 37/37 and gear 46/46. **Live**: Ornith wrote
+  three paragraphs in about 80 to 136 s, none rejected.
+- Not verified: quality over several weeks; paragraphs when little data exists (a new install); whether `Where to fish` should
+  remain a separate paragraph from Stocking (they overlap); the offline e2e (not re-run after the final edit, which only touched
+  dates and the briefing).
+

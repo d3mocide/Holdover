@@ -88,6 +88,19 @@ def run_nwps() -> dict:
     return _run("nwps", nwps)
 
 
+def run_briefing() -> dict:
+    """Write the week's briefing paragraphs (slow model, runs in the background; the facts are available without it)."""
+    from app.llm.briefing import generate
+    from app.llm.client import LLMClient
+    with session_factory()() as s:
+        try:
+            return _logged("briefing", generate(s, LLMClient.for_extraction()))
+        except Exception:
+            log.exception("briefing job crashed")
+            s.rollback()
+            return {"ok": False, "error": "job crashed, see logs"}
+
+
 def run_oha() -> dict:
     return _run("oha", oha)
 
@@ -145,6 +158,17 @@ def catch_up() -> list[str]:
             log.info("catch-up: %s is stale, running it now", source)
             globals()[fn]()
             ran.append(source)
+    try:  # the weekly briefing: written once per week, so a new install (or a missed Thursday) gets one
+        from app.briefing import monday
+        from app.llm.briefing import stored
+        from app.llm.client import LLMClient
+        from datetime import date
+        if LLMClient.for_extraction().configured and not stored(session_factory()(), monday(date.today())):
+            log.info("catch-up: no briefing paragraphs for this week, writing them now")
+            run_briefing()
+            ran.append("briefing")
+    except Exception:
+        log.exception("briefing catch-up failed")
     log.info("catch-up finished, ran: %s", ran or "nothing")
     return ran
 
@@ -164,6 +188,7 @@ def start() -> None:
     scheduler.add_job(run_nwps, "interval", minutes=60, id="nwps", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nws, "interval", hours=1, id="nws", replace_existing=True, coalesce=True)
     scheduler.add_job(run_explain, "cron", hour="6,12,17", minute=40, id="explain", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_briefing, "cron", day_of_week="thu", hour=16, minute=30, id="briefing", replace_existing=True, misfire_grace_time=6 * 3600, coalesce=True)
     scheduler.add_job(run_oha, "cron", hour=5, minute=45, id="oha", replace_existing=True, coalesce=True)
     scheduler.add_job(backup, "cron", hour=3, minute=30, id="backup", replace_existing=True)
     scheduler.add_job(catch_up, "date", run_date=datetime.now(scheduler.timezone) + timedelta(seconds=5), id="catch_up", replace_existing=True)
