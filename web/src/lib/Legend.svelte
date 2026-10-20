@@ -7,13 +7,13 @@
     theme; // re-read the palette when the theme changes
     queueMicrotask(() => {
       c = { f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), gauge: css('--gauge'), accent: css('--accent'),
-        warn: css('--warn'), text: css('--text'), bg: css('--bg'), ring: 'rgba(255,255,255,0.18)' };
+        warn: css('--warn'), alert: css('--alert'), text: css('--text'), bg: css('--bg'), ring: 'rgba(255,255,255,0.18)' };
     });
   });
   const mk = (name, main, extra) => markers[name]({ main, ring: c.ring, bg: c.bg, accent: c.accent }, extra);
   const items = $derived(c ? [
     ['stocking', c.f1, 'Stocked this week'], ['stocking_recent', c.f2, 'Last 2 weeks'], ['stocking_older', c.f3, 'Older'],
-    ['stocking_scheduled', c.f1, 'Scheduled'], ['river', c.gauge, 'River · opens directly'], ['gauge', c.gauge, 'Stream gauge'], ['advisory', c.accent, 'Algae advisory'],
+    ['stocking_scheduled', c.f1, 'Scheduled'], ['river', c.gauge, 'River · opens directly'], ['gauge', c.gauge, 'Stream gauge'], ['advisory', c.alert, 'Algae advisory'],
     ['report', c.f1, 'Report rating', 4], ['report', c.f1, 'AI-read, unreviewed', 4, true], ['journal', c.text, 'My trips & pins']
   ] : []);
 </script>
@@ -24,7 +24,7 @@
   {/each}
   <span class="item"><span class="sw zone" aria-hidden="true"></span>High fire danger</span>
   <span class="item"><span class="sw perim" aria-hidden="true"></span>Wildfire perimeter</span>
-  <span class="note quiet">Fish: filled this week, outlined recent, dotted older, calendar scheduled. Report pips show the rating; AI-read reports await review.</span>
+  <span class="note quiet">Fish: filled this week, outlined recent, dotted older, calendar scheduled. Dashed red ring: advisory at a waterbody. Report pips show the rating; AI-read reports await review.</span>
 </div>
 
 <style>

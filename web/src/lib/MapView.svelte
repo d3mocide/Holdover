@@ -25,7 +25,7 @@
 
   function palette() {
     return {
-      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), label: css('--text-quiet'), labelHi: css('--text'), shore: css('--shore'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'),
+      land: css('--land'), forest: css('--forest'), water: css('--water'), river: css('--river'), label: css('--text-quiet'), labelHi: css('--text'), shore: css('--shore'), line: css('--road'), minor: css('--road-minor'), gauge: css('--gauge'), warn: css('--warn'), alert: css('--alert'),
       f1: css('--fresh-1'), f2: css('--fresh-2'), f3: css('--fresh-3'), accent: css('--accent'), bg: css('--bg')
     };
   }
@@ -112,8 +112,7 @@
       'river-icon': markers.river({ ...base, main: c.gauge }),
       ...Object.fromEntries([['this_week', 'stocking', c.f1], ['recent', 'stocking_recent', c.f2], ['older', 'stocking_older', c.f3], ['upcoming', 'stocking_scheduled', c.f1]]
         .map(([state, name, main]) => [`stocking-${state}`, markers[name]({ ...base, main })])),
-      'advisory-icon': markers.advisory({ ...base, main: c.accent }),
-      'advisory-link-icon': markers.advisory_link({ ...base, main: c.accent }),
+      'advisory-icon': markers.advisory({ ...base, main: c.alert }),
       'journal-icon': markers.journal({ ...base, main: css('--text') }),
       'home-icon': markers.home({ ...base, main: c.accent }),
       ...Object.fromEntries([['excellent', c.f1, 4], ['good', c.f2, 3], ['fair', c.warn, 2], ['slow', c.f3, 1], ['unknown', c.f3, 0]]
@@ -149,10 +148,8 @@
       'icon-image': 'journal-icon', 'icon-size': 0.6, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
     map.addLayer({ id: 'home-pts', type: 'symbol', source: 'home', layout: {
       'icon-image': 'home-icon', 'icon-size': 0.62, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
-    map.addLayer({ id: 'advisory-link', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
-      'icon-image': 'advisory-link-icon', 'icon-size': 1, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'advisory-ring', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
-      'icon-image': 'advisory-icon', 'icon-size': 0.7, 'icon-offset': [-26, 26], 'icon-allow-overlap': true } });
+      'icon-image': 'advisory-icon', 'icon-size': 1.45, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'stocking-pts', type: 'symbol', source: 'stocking', filter: isL('stocking'), layout: {
       'icon-image': ['match', ['get', 'freshness'], 'this_week', 'stocking-this_week', 'recent', 'stocking-recent', 'upcoming', 'stocking-upcoming', 'stocking-older'],
       'icon-size': 0.7, 'icon-allow-overlap': true } });
@@ -169,7 +166,6 @@
       'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.75, 'icon-offset': [18, -18], 'icon-allow-overlap': true },
       paint: { 'icon-opacity': ['case', ['==', ['get', 'reviewed'], false], 0.75, 1] } });
     for (const id of markerLayers) map.moveLayer(id);
-    map.moveLayer('advisory-link', 'advisory-ring');
     function openMarker(hit, lngLat) {
       popup?.remove();
       const p = hit.properties;
@@ -186,7 +182,7 @@
     }
     map.on('click', (e) => {
       if (pickMode) { onpick?.({ lat: +e.lngLat.lat.toFixed(4), lon: +e.lngLat.lng.toFixed(4) }); return; }
-      // The separated alert is a clear direct target; other hits retain the nearby-water chooser.
+      // A clear hit on the warning ring opens its waterbody; other hits retain the nearby-water chooser.
       const direct = markerChoices(map.queryRenderedFeatures(e.point, { layers: markerLayers }));
       const choices = direct.length === 1 && direct[0].layer.id === 'advisory-ring' ? direct : markerChoices(map.queryRenderedFeatures([[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]], { layers: markerLayers }));
       if (!choices.length) return;
@@ -250,7 +246,6 @@
     map.setLayoutProperty('gauge-pts', 'visibility', vis(showGauges));
     map.setLayoutProperty('river-pts', 'visibility', vis(showRivers));
     map.setLayoutProperty('advisory-ring', 'visibility', vis(showAdvisories));
-    map.setLayoutProperty('advisory-link', 'visibility', vis(showAdvisories));
     map.setLayoutProperty('report-badge', 'visibility', vis(showReports));
   });
   $effect(() => {

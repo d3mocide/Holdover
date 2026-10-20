@@ -15,11 +15,11 @@ try {
     .markers .row { justify-content: center; height: 68px; } .markers .label { text-align: center; }
   </style></head><body><h1>Holdover icon atlas</h1><p>24 px UI grid · round caps · duotone accent. Map symbols share a compact footprint and shape carries meaning.</p><h2>Navigation, actions & subjects</h2><div class="grid">${Object.entries(icons).map(([name, art]) => `<div class="tile"><div class="row">${svg(art, 20)}${svg(art, 28)}<span class="large">${svg(art, 44)}</span></div><div class="label">${name}</div></div>`).join('')}</div><h2>Brand mark</h2>${svg(mark, 64, 32)}<h2>Map markers · enlarged for review (map: about 23 px; reports: 26 px)</h2><div class="grid markers" id="markers"></div></body></html>`);
   // Read colours from the actual theme tokens.
-  const c = await page.evaluate(() => Object.fromEntries(['bg', 'accent', 'fresh-1', 'fresh-2', 'fresh-3', 'gauge', 'text', 'warn'].map((name) => [name, getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim()])));
+  const c = await page.evaluate(() => Object.fromEntries(['bg', 'accent', 'fresh-1', 'fresh-2', 'fresh-3', 'gauge', 'text', 'warn', 'alert'].map((name) => [name, getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim()])));
   const marker = (name, color, n) => markers[name]({ main: c[color], bg: c.bg, accent: c.accent, ring: c['fresh-3'] }, n);
   const cells = [
     ['This week', marker('stocking', 'fresh-1')], ['Last 2 weeks', marker('stocking_recent', 'fresh-2')], ['Older', marker('stocking_older', 'fresh-3')], ['Scheduled', marker('stocking_scheduled', 'fresh-1')], ['Selected', marker('selected', 'fresh-1')], ['River', marker('river', 'gauge')],
-    ['Stream gauge', marker('gauge', 'gauge')], ['Advisory', marker('advisory', 'accent')], ['My trip', marker('journal', 'text')], ['Home', marker('home', 'accent')],
+    ['Stream gauge', marker('gauge', 'gauge')], ['Advisory', marker('advisory', 'alert')], ['My trip', marker('journal', 'text')], ['Home', marker('home', 'accent')],
     ...[['excellent', 'fresh-1', 4], ['good', 'fresh-2', 3], ['fair', 'warn', 2], ['slow', 'fresh-3', 1], ['unknown', 'fresh-3', 0]].map(([name, color, n]) => [`Report: ${name}`, marker('report', color, n)])
   ];
   await page.locator('#markers').evaluate((el, body) => { el.innerHTML = body; }, cells.map(([label, art]) => `<div class="tile"><div class="row">${svg(art, 64, 40)}</div><div class="label">${label}</div></div>`).join(''));

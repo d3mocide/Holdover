@@ -73,7 +73,7 @@ literal colours. Fir & Steelhead is the default.
 ```css
 /* tokens:fir */
 --bg: #0b1613; --surface: #16261f; --line: #2a4036;
---primary: #2f6b52; --accent: #f08a5d;
+--primary: #2f6b52; --accent: #f08a5d; --alert: #ff7070;
 --text: #e8f0ec; --text-quiet: #9db3a9;
 --fresh-1: #c4f16a; --fresh-2: #35d0b0; --fresh-3: #6b86a8;
 --land: #0e1c17; --forest: #112a1f; --water: #0e2b3b; --river: #2f84a6; --shore: #2a6f8f; --road: #2f463c; --road-minor: #22352d;
@@ -83,7 +83,7 @@ literal colours. Fir & Steelhead is the default.
 ```css
 /* tokens:redband */
 --bg: #0c1620; --surface: #172636; --line: #2a4054;
---primary: #245a7d; --accent: #f0643f;
+--primary: #245a7d; --accent: #f0643f; --alert: #ff7070;
 --text: #f3ebdf; --text-quiet: #a3b4c2;
 --fresh-1: #9be86f; --fresh-2: #3fc9d6; --fresh-3: #7f95b4;
 --land: #0f1c28; --forest: #123039; --water: #0a3350; --river: #3a9fd4; --shore: #2d7fb0; --road: #2f4659; --road-minor: #223648;
@@ -93,14 +93,14 @@ literal colours. Fir & Steelhead is the default.
 ```css
 /* tokens:nightbite */
 --bg: #080c10; --surface: #121a21; --line: #22313c;
---primary: #2a6f9c; --accent: #f2a541;
+--primary: #2a6f9c; --accent: #f2a541; --alert: #ff7070;
 --text: #e6edf2; --text-quiet: #9aabb7;
 --fresh-1: #6fe3f7; --fresh-2: #a58bff; --fresh-3: #62798f;
 --land: #0a1016; --forest: #0d1b22; --water: #0b2438; --river: #4db2e6; --shore: #2f86b3; --road: #28394a; --road-minor: #1c2a37;
 --gauge: #d3e4fb; --warn: #f2a541; --glow-1: rgba(165, 139, 255, 0.15); --glow-2: rgba(111, 227, 247, 0.10);
 ```
 
-Shared defaults (all themes, in `:root`): `--warn: #e9b44c`, `--glass-line: rgba(255,255,255,0.09)`,
+Shared defaults (all themes, in `:root`): `--warn: #e9b44c`, `--alert: #ff7070`, `--glass-line: rgba(255,255,255,0.09)`,
 `--glass-fill: rgba(255,255,255,0.045)`, `--hair: rgba(255,255,255,0.07)`.
 
 | Redband | Night Bite |
@@ -113,7 +113,8 @@ Shared defaults (all themes, in `:root`): `--warn: #e9b44c`, `--glass-line: rgba
 | --- | --- | --- |
 | `--bg`, `--surface`, `--line` | Ground and structure | Page, panels (via glass), borders |
 | `--text`, `--text-quiet` | Type | Body, secondary |
-| `--accent` | **Action and warning** | Primary buttons, the selected day, the selected pin's ring, advisories, home pin. Never "good" or "bad" |
+| `--accent` | **Action and warning** | Primary buttons, the selected day, the selected pin's ring, home pin. Never "good" or "bad" |
+| `--alert` | Waterbody advisory | Red dashed map warning rings; the dash pattern and legend also carry meaning |
 | `--primary` | Selection | Selected chips (text on it is `--on-primary`) |
 | `--fresh-1` / `--fresh-2` / `--fresh-3` | Stocking freshness | This week / last 2 weeks / older. Also a score's strength, scheduled-tag outline, brand lime |
 | `--gauge` | Stream gauges | The diamond marker and its icon, always |
@@ -133,6 +134,7 @@ Rules:
 | --- | --- | --- | --- |
 | `--text` on `--bg` | 15.9 | 15.4 | 16.6 |
 | `--text-quiet` on `--bg` | 8.3 | 8.6 | 8.3 |
+| `--alert` on `--land` | 6.5 | 6.4 | 7.1 |
 | `--fresh-1` on `--land` | 13.5 | 11.6 | 12.7 |
 | `--fresh-2` on `--land` | 9.0 | 8.7 | 7.0 |
 | `--fresh-3` on `--land` | 4.7 | 5.6 | 4.2 |
@@ -201,14 +203,14 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 | Coral ring with glow | Selected | `--accent` |
 | Diamond with a drop | USGS stream gauge | `--gauge`; popups say "Provisional", show the observation date/time and flag stale readings |
 | Rounded square with two waves | River | `--gauge`; opens the river directly and takes precedence over a co-located gauge. The marker is not a verified access point |
-| Solid warning badge with an exclamation | Algae advisory or precaution | Opaque `--accent` body, `--bg` glyph/edge; offset lower-left with a short connector to its waterbody |
+| Large dashed red ring | Algae advisory or precaution | `--alert` outline with a dark edge, centred on the waterbody; open centre preserves the normal marker |
 | Rounded square, fish and 1-4 pips | Report rating | Colour and pips: excellent (lime, 4), good (teal, 3), fair (warn, 2), slow (slate, 1) |
 | White pin | A trip or pin you logged | Always from local data, so it works offline |
 | Coral pin with a house | Your home | |
 | Tinted area with a thin outline | ODF fire danger zone | `--warn`. Low is an outline only; Moderate, High and Extreme add a stronger tint. The Legend and each sheet say the level in words, so colour is never the only signal |
 | Dashed outline with a faint fill and a name | Active wildfire perimeter | `--accent`; the name shows from zoom 8.5. It means a fire is burning there, not that anything is closed |
 
-Pins are the brightest things on the map. Everything else recedes. River and stocking art is about 23 px across, gauges about 23 px on the diagonal, and report badges about 26 px. Reports (reviewed and AI-read) draw above every other marker and the selection ring. A tap within 12 px of nearby marker artwork opens a chooser when multiple items are present; reports come first, and every river, gauge, report, advisory and nearby water remains reachable. A single item opens directly. A clear hit on the separated advisory badge opens its waterbody directly even when other markers are nearby; ambiguous overlaps still use the chooser. The chooser removes duplicate tile hits, shows full waterbody names/types and scheduled weeks (which may change), scrolls long lists and uses 44 px or larger choices; it does not move stored pins or merge different waters. Advisory badges are about 20 px across, offset about 18 px left/down of the stored point; reports stay on the opposite upper-right side. Their opaque body prevents underlying fish/calendar/wave art bleeding through. The connector is decorative and hides with the badge; it identifies the associated waterbody, not an advisory boundary or access location. Advisory markers sit immediately below reports, followed by home/journal pins, stocking, rivers and gauges. Map popups draw above Layers/Legend, below the edge collapse control and detail sheet, so their close buttons stay reachable. Gauge cards reserve a separate 44 px close target, wrap long names, separate the flow value from provenance/time, and offer a full-width waterbody action.
+Pins are the brightest things on the map. Everything else recedes. River and stocking art is about 23 px across, gauges about 23 px on the diagonal, and report badges about 26 px. Reports (reviewed and AI-read) draw above every other marker and the selection ring. A tap within 12 px of nearby marker artwork opens a chooser when multiple items are present; reports come first, and every river, gauge, report, advisory and nearby water remains reachable. A single item opens directly. A clear hit on the warning ring opens its waterbody directly; ambiguous overlaps still use the chooser. The chooser removes duplicate tile hits, shows full waterbody names/types and scheduled weeks (which may change), scrolls long lists and uses 44 px or larger choices; it does not move stored pins or merge different waters. Advisory rings are about 50 px across, centred on the stored waterbody point, with no fill or centre glyph. Their dashed red outline differs from the smaller solid selected-pin ring. They mark an advisory at the waterbody, not a measured advisory boundary or access location; the ring is fixed in screen pixels rather than a distance buffer. Advisory markers sit immediately below reports, followed by home/journal pins, stocking, rivers and gauges. Map popups draw above Layers/Legend, below the edge collapse control and detail sheet, so their close buttons stay reachable. Gauge cards reserve a separate 44 px close target, wrap long names, separate the flow value from provenance/time, and offer a full-width waterbody action.
 
 ## 8. Map
 

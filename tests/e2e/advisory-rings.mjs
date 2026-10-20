@@ -3,7 +3,7 @@ import { chromium } from 'playwright-core';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 const BASE = process.env.BASE_URL ?? 'http://localhost:8054/';
-const shots = process.env.SHOTS ?? '/tmp/holdover-advisory-shots';
+const shots = process.env.SHOTS ?? '/tmp/holdover-ring-shots';
 await fs.mkdir(shots, { recursive: true });
 const axe = await fs.readFile('node_modules/axe-core/axe.min.js', 'utf8');
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM, args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
@@ -19,8 +19,6 @@ const pixels = async (p, points) => {
   }, { png, points });
 };
 const near = (a, b, tolerance = 12) => a.every((v, i) => Math.abs(v - b[i]) <= tolerance);
-// Thin diagonal strokes are antialiased: verify warning hue and visible brightness, not an exact opaque pixel.
-const warningTone = (pixel, rgb) => Math.max(...pixel) > Math.max(...rgb) * .5 && near(pixel.map((v) => v / Math.max(...pixel)), rgb.map((v) => v / Math.max(...rgb)), .12);
 try {
   for (const [size, width, height] of [['phone', 393, 852], ['tablet', 768, 1024], ['desktop', 1440, 900]]) {
     const ctx = await b.newContext({ viewport: { width, height }, serviceWorkers: 'block' });
@@ -49,17 +47,16 @@ try {
       await p.waitForTimeout(800);
       const canvas = await p.locator('.maplibregl-canvas').boundingBox();
       const x = canvas.x + canvas.width / 2 + (width >= 900 ? 56 : 0), y = canvas.y + canvas.height / 2;
-      const accent = await p.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim());
+      const accent = await p.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--alert').trim());
       const rgb = accent.slice(1).match(/../g).map((v) => parseInt(v, 16));
-      const points = [[x - 22, y + 18], [x - 10, y + 10]];
+      const points = [[x, y + 25], [x, y]];
       const before = await pixels(p, points);
       await p.screenshot({ path: `${shots}/${theme}-${size}-stack.png` });
-      ok(near(before[0], rgb), `${theme}/${size}: offset advisory body is solid warning colour`);
-      ok(warningTone(before[1], rgb), `${theme}/${size}: small connector associates the badge with the pin`);
+      ok(near(before[0], rgb), `${theme}/${size}: surrounding ring uses the red advisory colour`);
       await p.screenshot({ path: `${shots}/${theme}-${size}-detail.png`, clip: { x: x - 60, y: y - 60, width: 120, height: 120 } });
-      await p.mouse.click(x - 18, y + 18);
+      await p.mouse.click(x, y + 25);
       await p.getByRole('heading', { name: 'Tualatin River', exact: true }).waitFor();
-      ok(await p.getByRole('group', { name: 'Map items here', exact: true }).count() === 0, `${theme}/${size}: clear badge click opens its waterbody directly`);
+      ok(await p.getByRole('group', { name: 'Map items here', exact: true }).count() === 0, `${theme}/${size}: ring click opens its waterbody directly`);
       await p.getByRole('button', { name: 'Close details', exact: true }).click();
       await p.waitForTimeout(800); await p.mouse.click(x, y);
       const picker = p.getByRole('group', { name: 'Map items here', exact: true }); await picker.waitFor();
@@ -70,11 +67,15 @@ try {
       await p.getByRole('button', { name: 'Layers', exact: true }).click(); await p.getByLabel('Advisories', { exact: true }).uncheck(); await p.getByRole('button', { name: 'Layers', exact: true }).click();
       await p.waitForTimeout(300);
       const after = await pixels(p, points);
-      ok(!near(after[0], rgb, 30), `${theme}/${size}: advisory toggle hides the badge`);
-      ok(!warningTone(after[1], rgb), `${theme}/${size}: advisory toggle leaves no connector behind`);
+      ok(!near(after[0], rgb, 30), `${theme}/${size}: advisory toggle hides the ring`);
+      ok(near(after[1], before[1], 1), `${theme}/${size}: advisory ring leaves the centre marker unchanged`);
       await p.getByRole('button', { name: 'Layers', exact: true }).click(); await p.getByLabel('Advisories', { exact: true }).check(); await p.getByRole('button', { name: 'Layers', exact: true }).click();
+      await p.getByRole('button', { name: 'Legend', exact: true }).click();
+      const legendRing = p.locator('.legend-body .item').filter({ hasText: 'Algae advisory' });
+      ok(await legendRing.locator('circle[fill="none"][stroke-dasharray]').count() === 1, `${theme}/${size}: legend identifies the dashed warning ring`);
+      await p.getByRole('button', { name: 'Legend', exact: true }).click();
     }
     ok(!errors.length, `${size}: no browser errors`); await ctx.close();
   }
-  console.log(`${checks} advisory badge checks passed`);
+  console.log(`${checks} advisory ring checks passed`);
 } finally { await b.close(); }
