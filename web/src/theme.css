@@ -142,6 +142,12 @@ input[type='radio']:checked::after { content: ''; width: 10px; height: 10px; bor
 .gauge-trend { text-transform: capitalize; }
 .gauge-meta { color: var(--text-quiet); font-size: 12px; }
 .gauge-action { margin-top: 6px; width: 100%; }
+.fire-popup .maplibregl-popup-content { width: 300px; max-width: calc(100vw - 32px); padding: 16px !important; box-sizing: border-box; }
+.fire-popup .maplibregl-popup-close-button { top: 4px; right: 4px; width: 44px; height: 44px; min-height: 44px; padding: 0; font-size: 24px; border-radius: 10px; }
+.fire-details { display: grid; gap: 10px; max-height: 45vh; overflow-y: auto; }
+.fire-details h3 { margin-right: 32px; font-size: 15px; line-height: 1.4; }
+.fire-details p { margin: 0; color: var(--text-quiet); font-size: 12px; }
+.fire-details a { display: flex; align-items: center; min-height: 44px; }
 .selector-tabs { display: flex; gap: 22px; border-bottom: 1px solid var(--hair); margin-top: 8px; }
 .selector-tab { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; min-height: 44px; padding: 0 2px; margin-bottom: -1px; color: var(--text-quiet); font-weight: 500; }
 .selector-tab[aria-pressed='true'] { color: var(--text); border-bottom-color: var(--accent); }

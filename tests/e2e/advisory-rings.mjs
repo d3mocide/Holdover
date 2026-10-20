@@ -49,12 +49,12 @@ try {
       const x = canvas.x + canvas.width / 2 + (width >= 900 ? 56 : 0), y = canvas.y + canvas.height / 2;
       const accent = await p.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--alert').trim());
       const rgb = accent.slice(1).match(/../g).map((v) => parseInt(v, 16));
-      const points = [[x, y + 25], [x, y]];
+      const points = [[x, y + 18], [x, y]];
       const before = await pixels(p, points);
       await p.screenshot({ path: `${shots}/${theme}-${size}-stack.png` });
       ok(near(before[0], rgb), `${theme}/${size}: surrounding ring uses the red advisory colour`);
       await p.screenshot({ path: `${shots}/${theme}-${size}-detail.png`, clip: { x: x - 60, y: y - 60, width: 120, height: 120 } });
-      await p.mouse.click(x, y + 25);
+      await p.mouse.click(x, y + 18);
       await p.getByRole('heading', { name: 'Tualatin River', exact: true }).waitFor();
       ok(await p.getByRole('group', { name: 'Map items here', exact: true }).count() === 0, `${theme}/${size}: ring click opens its waterbody directly`);
       await p.getByRole('button', { name: 'Close details', exact: true }).click();

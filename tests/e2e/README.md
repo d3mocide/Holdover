@@ -13,6 +13,7 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | `day-cache.mjs` | Vite modules: v2 journal upgrade preserved, separate dates and fisheries, no future-day substitution, no guessing legacy fishery, Oregon evening date, cached trip capture | 10 |
 | `accessibility.mjs` | Full axe and screenshots of Settings, Reports, Gear, Map, Legend, Rivers, River history, Favorites, search, Plan, Day, Journal, Log trip and Gauges in three themes at phone, tablet and desktop widths; phone title bounds | 126 scans |
 | `map-markers.mjs` | All overlapping layers reachable, reports first, gauge timestamp and offline aging, close-target bounds, waterbody action, picker/card axe and screenshots across themes and screen sizes. Browser-only synthetic responses | 102 checks, including 18 axe scans |
+| `fire-perimeters.mjs` | No automatic perimeter text, one incident name per popup despite duplicate fragments, update time/source, 44px close, fire layer toggle and axe in all themes/sizes. Browser-only synthetic perimeter | 66 checks, including 9 axe scans |
 | `advisory-rings.mjs` | Red warning-ring pixels, unobscured centre marker, direct ring clicks, overlap chooser access, advisory toggle, dashed legend and axe in all themes/screen sizes. Explicit browser-only synthetic markers | 66 checks, including 9 axe scans |
 | `map-layout.mjs` | Shared title/icon alignment on six pages; matching Explore/Plan dimensions and title size; 900px control separation; edge collapse/restore; Explore underline selectors and header; nearby creek/reservoir choices, distinct schedule weeks and correct selection. Browser-only synthetic schedules | 171 checks, including 12 axe scans |
 | `rivers.mjs` | Direct river browsing and marker clicks, populated charts, measurement switching, Favorites, cross-zone search, unpinned waters, offline river reload, phone fit | 12 |
@@ -57,6 +58,7 @@ The river suite needs populated chart observations on its own disposable instanc
     BASE_URL=http://localhost:8041/ node tests/e2e/rivers.mjs
     BASE_URL=http://localhost:8041/ node tests/e2e/map-markers.mjs
     BASE_URL=http://localhost:8041/ node tests/e2e/advisory-rings.mjs
+    BASE_URL=http://localhost:8041/ node tests/e2e/fire-perimeters.mjs
     BASE_URL=http://localhost:8041/ node tests/e2e/map-layout.mjs
     BASE_URL=http://localhost:8041/ node tests/e2e/accessibility.mjs
     kill "$(cat "$task_river_dir/server.pid")"

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { dangerText, dangerHigh, fireLine, nearbyText } from './fireText.js';
+import { dangerText, dangerHigh, fireLine, nearbyText, firePerimeters } from './fireText.js';
 
 test('danger text names the level and area, and is honest outside ODF land', () => {
   assert.equal(dangerText({ covered: true, level: 2, label: 'Moderate', area: 'JD-2' }), 'Moderate (level 2 of 4), ODF area JD-2');
@@ -26,4 +26,11 @@ test('no fires is worded as not listed, never as no fire; unknown stays silent',
   assert.match(nearbyText({ fires: [], near_km: 50 }), /No active wildfire perimeter within 50 km in the data NIFC publishes/);
   assert.equal(nearbyText({ fires: [{}], near_km: 50 }), null);
   assert.equal(nearbyText(null), null);
+});
+
+test('a fire popup deduplicates tile fragments, retains distinct fires and uses the newest metadata', () => {
+  const feature = (name, updated) => ({ properties: { name, updated } });
+  const old = feature('Synthetic fire A', '2026-10-01'), recent = feature('Synthetic fire A', '2026-10-02'), other = feature('Synthetic fire B', '2026-10-01');
+  assert.deepEqual(firePerimeters([old, other, recent, recent]), [recent.properties, other.properties]);
+  assert.deepEqual(firePerimeters([]), []);
 });

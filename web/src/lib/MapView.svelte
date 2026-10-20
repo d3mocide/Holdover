@@ -8,7 +8,7 @@
   import { registerTileProtocol, basemapAvailable } from './tiles.js';
   import { markers } from './icons.js';
   import { clock } from './clock.svelte.js';
-  import { markerLayers, markerChoices, markerPicker, gaugeDetails } from './mapMarkers.js';
+  import { markerLayers, markerChoices, markerPicker, gaugeDetails, fireDetails } from './mapMarkers.js';
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 
   // Bundlers don't emit MapLibre's worker on their own, so ship it as a hashed asset (precached by the PWA).
@@ -142,14 +142,12 @@
     map.addLayer({ id: 'fire-zone-line', type: 'line', source: 'fire-zones', paint: { 'line-color': c.warn, 'line-width': ['match', ['get', 'level'], 3, 1.4, 4, 1.8, 0.8], 'line-opacity': ['match', ['get', 'level'], 1, 0.22, 0.55] } });
     map.addLayer({ id: 'fire-perim-fill', type: 'fill', source: 'fire-perims', paint: { 'fill-color': c.accent, 'fill-opacity': 0.34 } });
     map.addLayer({ id: 'fire-perim-line', type: 'line', source: 'fire-perims', paint: { 'line-color': c.accent, 'line-width': 2, 'line-dasharray': [2, 1.5] } });
-    map.addLayer({ id: 'fire-perim-label', type: 'symbol', source: 'fire-perims', minzoom: 8.5, layout: { 'text-field': ['concat', ['get', 'name'], ' fire'], 'text-font': ['Noto Sans Medium'], 'text-size': 12 },
-      paint: { 'text-color': c.accent, 'text-halo-color': c.bg, 'text-halo-width': 1.6 } });
     map.addLayer({ id: 'journal-pts', type: 'symbol', source: 'journal', layout: {
       'icon-image': 'journal-icon', 'icon-size': 0.6, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
     map.addLayer({ id: 'home-pts', type: 'symbol', source: 'home', layout: {
       'icon-image': 'home-icon', 'icon-size': 0.62, 'icon-anchor': 'bottom', 'icon-allow-overlap': true } });
     map.addLayer({ id: 'advisory-ring', type: 'symbol', source: 'stocking', filter: isL('advisory'), layout: {
-      'icon-image': 'advisory-icon', 'icon-size': 1.45, 'icon-allow-overlap': true } });
+      'icon-image': 'advisory-icon', 'icon-size': 1.05, 'icon-allow-overlap': true } });
     map.addLayer({ id: 'stocking-pts', type: 'symbol', source: 'stocking', filter: isL('stocking'), layout: {
       'icon-image': ['match', ['get', 'freshness'], 'this_week', 'stocking-this_week', 'recent', 'stocking-recent', 'upcoming', 'stocking-upcoming', 'stocking-older'],
       'icon-size': 0.7, 'icon-allow-overlap': true } });
@@ -160,7 +158,7 @@
     map.addLayer({ id: 'stocking-sel-glow', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
       'circle-radius': 19, 'circle-color': c.accent, 'circle-opacity': 0.22, 'circle-blur': 0.8 } });
     map.addLayer({ id: 'stocking-sel', type: 'circle', source: 'stocking', filter: selFilter(-1), paint: {
-      'circle-radius': 16, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
+      'circle-radius': 14, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': c.accent, 'circle-stroke-width': 2.5 } });
     // Reports stay legible over river/stocking markers and the selection ring.
     map.addLayer({ id: 'report-badge', type: 'symbol', source: 'stocking', filter: isL('report'), layout: {
       'icon-image': ['concat', 'report-', ['coalesce', ['get', 'rating'], 'unknown']], 'icon-size': 0.75, 'icon-offset': [18, -18], 'icon-allow-overlap': true },
@@ -185,14 +183,23 @@
       // A clear hit on the warning ring opens its waterbody; other hits retain the nearby-water chooser.
       const direct = markerChoices(map.queryRenderedFeatures(e.point, { layers: markerLayers }));
       const choices = direct.length === 1 && direct[0].layer.id === 'advisory-ring' ? direct : markerChoices(map.queryRenderedFeatures([[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]], { layers: markerLayers }));
-      if (!choices.length) return;
+      if (!choices.length) {
+        const fires = map.queryRenderedFeatures(e.point, { layers: ['fire-perim-fill'] });
+        if (fires.length) {
+          popup?.remove();
+          popup = new maplibregl.Popup({ offset: 12, maxWidth: '300px', className: 'fire-popup' })
+            .setLngLat(e.lngLat).setDOMContent(fireDetails(fires, clock.mode)).addTo(map);
+          popup.getElement().querySelector('.maplibregl-popup-close-button')?.setAttribute('aria-label', 'Close wildfire details');
+        }
+        return;
+      }
       if (choices.length === 1) { openMarker(choices[0], e.lngLat); return; }
       popup?.remove();
       popup = new maplibregl.Popup({ offset: 14, maxWidth: '320px', className: 'marker-popup' })
         .setLngLat(e.lngLat).setDOMContent(markerPicker(choices, (hit) => openMarker(hit, hit.geometry.coordinates))).addTo(map);
       popup.getElement().querySelector('.maplibregl-popup-close-button')?.setAttribute('aria-label', 'Close map items');
     });
-    for (const l of ['stocking-pts', 'river-pts', 'gauge-pts', 'advisory-ring', 'report-badge']) {
+    for (const l of ['stocking-pts', 'river-pts', 'gauge-pts', 'advisory-ring', 'report-badge', 'fire-perim-fill']) {
       map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
     }
@@ -218,7 +225,7 @@
   });
 
   $effect(() => { if (ready && fire) { map.getSource('fire-zones').setData(fire.zones); map.getSource('fire-perims').setData(fire.fires); } });
-  $effect(() => { if (ready) for (const id of ['fire-zone-fill', 'fire-zone-line', 'fire-perim-fill', 'fire-perim-line', 'fire-perim-label']) map.setLayoutProperty(id, 'visibility', showFire ? 'visible' : 'none'); });
+  $effect(() => { if (ready) { popup?.remove(); for (const id of ['fire-zone-fill', 'fire-zone-line', 'fire-perim-fill', 'fire-perim-line']) map.setLayoutProperty(id, 'visibility', showFire ? 'visible' : 'none'); } });
   $effect(() => { if (ready && journal) map.getSource('journal').setData(journal); });
   $effect(() => { if (ready) map.setLayoutProperty('journal-pts', 'visibility', showJournal ? 'visible' : 'none'); });
   let fitted = false;
@@ -285,7 +292,6 @@
       }
       for (const id of ['fire-zone-fill', 'fire-zone-line']) map.setPaintProperty(id, id.endsWith('fill') ? 'fill-color' : 'line-color', c.warn);
       map.setPaintProperty('fire-perim-fill', 'fill-color', c.accent); map.setPaintProperty('fire-perim-line', 'line-color', c.accent);
-      map.setPaintProperty('fire-perim-label', 'text-color', c.accent); map.setPaintProperty('fire-perim-label', 'text-halo-color', c.bg);
       map.setPaintProperty('stocking-sel', 'circle-stroke-color', c.accent);
       map.setPaintProperty('stocking-sel-glow', 'circle-color', c.accent);
       addIcons();

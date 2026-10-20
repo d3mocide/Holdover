@@ -19,3 +19,14 @@ export function fireLine(f) {
 }
 export const nearbyText = (n) => (n == null ? null
   : n.fires.length ? null : `No active wildfire perimeter within ${n.near_km} km in the data NIFC publishes. Perimeters can lag a new fire.`);
+
+// Rendered polygon fragments can repeat at tile boundaries. A popup names each incident once.
+export function firePerimeters(features) {
+  const byName = new Map();
+  for (const { properties: p } of features) {
+    if (!p.name) continue;
+    const previous = byName.get(p.name);
+    if (!previous || (p.updated ?? '') > (previous.updated ?? '')) byName.set(p.name, p);
+  }
+  return [...byName.values()];
+}

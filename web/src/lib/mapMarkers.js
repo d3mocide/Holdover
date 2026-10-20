@@ -1,6 +1,7 @@
 import { gaugeStale } from './gaugeText.js';
 import { icons } from './icons.js';
 import { longDate } from './api.js';
+import { firePerimeters } from './fireText.js';
 
 // Bottom to top. Hit testing follows the same priority as drawing, including AI-read reports.
 export const markerLayers = ['gauge-pts', 'river-pts', 'stocking-pts', 'journal-pts', 'home-pts', 'advisory-ring', 'report-badge'];
@@ -51,6 +52,21 @@ export function markerPicker(choices, onchoose) {
     detail.textContent = markerDescription(feature); text.append(name, detail); button.append(icon, text);
     button.addEventListener('click', () => onchoose(feature)); list.appendChild(button);
   }
+  return content;
+}
+
+export function fireDetails(features, clockMode = '12') {
+  const content = document.createElement('div'); content.className = 'fire-details';
+  content.setAttribute('role', 'group'); content.setAttribute('aria-label', 'Wildfire perimeter details');
+  for (const p of firePerimeters(features)) {
+    const name = document.createElement('h3'); name.textContent = `${p.name} fire`; content.appendChild(name);
+    const updated = Date.parse(p.updated);
+    const time = document.createElement('p');
+    time.textContent = Number.isFinite(updated) ? `Perimeter updated ${new Date(updated).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: clockMode !== '24', timeZoneName: 'short' })}` : 'Perimeter update time unavailable';
+    content.appendChild(time);
+  }
+  const note = document.createElement('p'); note.textContent = 'NIFC mapped perimeter. Perimeters can lag conditions. This is not a closure notice.'; content.appendChild(note);
+  const link = document.createElement('a'); link.href = 'https://wildfire.oregon.gov'; link.target = '_blank'; link.rel = 'noopener'; link.textContent = 'Official Oregon wildfire information'; content.appendChild(link);
   return content;
 }
 
