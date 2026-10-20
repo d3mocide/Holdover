@@ -9,6 +9,9 @@
   import { hhmm } from './clock.svelte.js';
   import { monthLabel, monthShort, monthRange, weekSummary } from './scheduleText.js';
   import { weekLabelYear } from './stockingGroups.js';
+  import JournalRanking from './JournalRanking.svelte';
+  import { adviceState, adviceData } from './journalAdvice.svelte.js';
+  import { personalSpots } from './journalAdvice.js';
   // Plan: look ahead. "Next 7 days" ranks spots day by day; "Further out" browses ODFW's published stocking schedule
   // (about a year ahead) by month. The Map tab is for "where today?"; this is for "when and where next?".
   let { data, report, zone = 'willamette', zones = [], onzone = () => {}, fishery, onfishery, offset, onoffset, selectedId, onselect, onreview, canReview, onreports, error } = $props();
@@ -16,6 +19,7 @@
 
   // ---- next 7 days: one ranking per day, fetched together
   let outlook = $state([]);
+  const personalOutlook = $derived(outlook.map(day => ({ ...day, spots: personalSpots(day.spots, adviceData(), adviceState.enabled, adviceState.now) })));
   let outlookError = $state('');
   $effect(() => {
     const f = fishery, home = homeForRequests();
@@ -70,11 +74,12 @@
     <div class="chips first" role="group" aria-label="Fishery">
       {#each FISHERIES as [k, label]}<button class="chip" aria-pressed={fishery === k} onclick={() => onfishery(k)}>{label}</button>{/each}
     </div>
+    <JournalRanking />
     <ReportCard {report} {canReview} {onreview} onopen={onreports} />
     {#if outlookError}<p class="notice" role="alert">Couldn't rank spots ({outlookError}).</p>{/if}
     <ul class="days">
       {#each [0, 1, 2, 3, 4, 5, 6] as o (o)}
-        {@const day = outlook[o]}
+        {@const day = personalOutlook[o]}
         <li class="day" class:open={offset === o}>
           <button class="dayhead" aria-expanded={offset === o} onclick={() => onoffset(o)}>
             <span class="dl"><strong>{dayLabel(o)}</strong></span>

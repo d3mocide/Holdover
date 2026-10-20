@@ -33,6 +33,7 @@ class Spot:
     factors: list[sc.Factor]
     facts: dict
     template: str
+    journal_context: dict
 
 
 def wind_mph(s: str | None) -> float | None:
@@ -49,17 +50,23 @@ def zone_p90(rows, day: date) -> float:
 def _gauge_inputs(session: Session, wb_id: int, day: date):
     gids = session.scalars(select(WaterbodyGauge.gauge_id).where(WaterbodyGauge.waterbody_id == wb_id)).all()
     best = (None, [], 0.0)
+    journal_gauges = []
     for gid in gids:
         # only the two columns the factor needs, not whole ORM rows: a week of 15-minute readings is 672 of them per gauge
         rows = session.execute(select(GaugeReading.value, GaugeReading.observed_at).where(GaugeReading.gauge_id == gid, GaugeReading.parameter == "discharge_cfs")
-                               .where(GaugeReading.observed_at >= (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(timespec="minutes"))
+                               .where(GaugeReading.observed_at >= (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(timespec="minutes"),
+                                      GaugeReading.observed_at <= datetime.now(timezone.utc).isoformat())
                                .order_by(GaugeReading.observed_at.desc()).limit(7 * 96)).all()
         if rows and _age_h(rows[0].observed_at) > GAUGE_STALE_H:
             continue
+        if rows:
+            gauge = session.get(Gauge, gid)
+            journal_gauges.append({"site_no": gauge.site_no, "values": {"discharge_cfs": {
+                "value": rows[0].value, "observed_at": rows[0].observed_at}}, "provisional": True})
         if rows and len(rows) > len(best[1]):
             span = (datetime.fromisoformat(rows[0].observed_at) - datetime.fromisoformat(rows[-1].observed_at)).total_seconds() / 3600
             best = (rows[0].value, [r.value for r in rows], span)
-    return best
+    return (*best, journal_gauges)
 
 
 def _report_inputs(session: Session, wb_id: int):
@@ -107,7 +114,7 @@ def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | 
         if not in_fishery(wb, fishery, stock if fishery == "trout" else sc.Factor("s", None, 0, ""), species_text):
             continue
         rep = sc.report_factor(rated[0].rating if rated else None, rated[1].issued_on if rated else None, day, s.w_report)
-        cur, hist, span = _gauge_inputs(session, wb.id, day)
+        cur, hist, span, journal_gauges = _gauge_inputs(session, wb.id, day)
         flow = sc.flow_factor(cur, hist, s.w_flow, span)
         if flow.value is not None and day != date.today():
             flow.detail += " (latest observed flow, not a forecast)"
@@ -130,7 +137,9 @@ def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | 
                  "forecast": plain_forecast if fc.value is not None else None,
                  "daylight": f"{dl['sunrise']}-{dl['sunset']}", "distance": dist.detail if dist.value is not None else None,
                  "species": rated[0].species if rated else None}
-        spots.append(Spot(wb, score, coverage, factors, facts, template_text(facts, coverage)))
+        context = {"gauges": journal_gauges, "weather": wx,
+                   "weather_as_of": near[0]["fetched_at"] if wx else None, "date": day.isoformat()}
+        spots.append(Spot(wb, score, coverage, factors, facts, template_text(facts, coverage), context))
     spots.sort(key=lambda x: (-x.score, x.wb.name))
     return spots
 

@@ -41,6 +41,7 @@ def spots(date_: date | None = Query(None, alias="date"), fishery: str = "trout"
             "rank": i, "waterbody": {"id": sp.wb.id, "name": sp.wb.name, "kind": sp.wb.kind, "lat": sp.wb.lat, "lon": sp.wb.lon},
             "favorite": sp.wb.id in favs,
             "score": sp.score, "coverage": sp.coverage,
+            "journal_context": sp.journal_context,
             "factors": [{"name": f.name, "value": f.value, "weight": f.weight, "points": f.contribution, "detail": f.detail,
                          "applicable": f.applicable}
                         for f in sp.factors],

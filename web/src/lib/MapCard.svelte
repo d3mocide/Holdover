@@ -8,10 +8,13 @@
   import ZonePicker from './ZonePicker.svelte';
   import { prefs, isFavorite } from './auth.svelte.js';
   import { findWaters, evidenceText } from './waterSearch.js';
+  import JournalRanking from './JournalRanking.svelte';
+  import { adviceState, adviceData } from './journalAdvice.svelte.js';
+  import { personalSpots } from './journalAdvice.js';
   let { hidden = false, spots, waters = [], zones = [], zone = 'willamette', onzone = () => {}, fishery, onfishery, selectedId = null, onselect, onplan, error = '' } = $props();
   const narrow = typeof matchMedia === 'function' && matchMedia('(max-width: 899px)').matches;
   let open = $state(!narrow);  // collapsed to a bar on a phone so the map stays clear
-  const top = $derived((spots?.spots ?? []).slice(0, 5));
+  const top = $derived(personalSpots(spots?.spots ?? [], adviceData(), adviceState.enabled, adviceState.now).slice(0, 5));
   let mode = $state('bets'), query = $state('');
   const browsing = $derived(mode !== 'bets' || query.trim());
   const matches = $derived(findWaters(waters, { query, mode, zone, favorites: prefs.favorites }));
@@ -57,13 +60,14 @@
     <div class="chips" role="group" aria-label="Fishery">
       {#each FISHERIES as [k, label]}<button class="chip" aria-pressed={fishery === k} onclick={() => onfishery(k)}>{label}</button>{/each}
     </div>
+    <JournalRanking />
     {#if error}<p class="small notice" role="alert">Couldn't rank spots ({error}).</p>{/if}
     <ul>
       {#each top as s, i (s.waterbody.id)}
         <li><button class="row" class:sel={s.waterbody.id === selectedId} onclick={() => onselect(s.waterbody.id)}>
           <span class="mono rank">{i + 1}</span>
-          <span class="body"><span class="name">{s.waterbody.name}</span><span class="why small quiet">{clockText(s.explanation.text)}</span><span class="small quiet">{evidenceText(s.coverage)}</span></span>
-          <span class="mono score" class:hi={s.score >= 60} class:mid={s.score >= 45 && s.score < 60}>{Math.round(s.score)}</span>
+          <span class="body"><span class="name">{s.waterbody.name}</span><span class="why small quiet">{clockText(s.explanation.text)}</span><span class="small quiet">{evidenceText(s.coverage)}</span>{#if s.personal}<span class="small quiet">Public {Math.round(s.public_score)} · journal {s.advice.adjustment > 0 ? '+' : ''}{s.advice.adjustment} · {s.advice.matched.length} comparable trips</span>{/if}</span>
+          <span class="mono score" class:hi={s.score >= 60} class:mid={s.score >= 45 && s.score < 60}>{s.personal ? s.score.toFixed(1) : Math.round(s.score)}</span>
         </button></li>
       {:else}
         {#if spots}<li class="quiet small pad">Nothing ranks for this fishery today yet.</li>{:else}<li class="quiet small pad">Ranking…</li>{/if}

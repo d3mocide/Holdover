@@ -8,6 +8,9 @@
   import { db } from './db.js';
   import { ownedFor, ownedText } from './gearPack.js';
   import Icon from './Icon.svelte';
+  import JournalAdvice from './JournalAdvice.svelte';
+  import { journalAdvice, dayContext } from './journalAdvice.js';
+  import { adviceState, adviceData } from './journalAdvice.svelte.js';
   let { id, fishery = 'trout', startOffset = 0, onback, onlog, onoffline } = $props();
   let offset = $state(startOffset);
   let d = $state(null);
@@ -28,6 +31,8 @@
   });
   const c = $derived(d?.conditions);
   const pack = $derived(d?.pack);
+  const comparison = $derived(dayContext(c));
+  const advice = $derived(d ? journalAdvice(d.waterbody, comparison, adviceData(), adviceState.now) : null);
   const packKey = $derived(`holdover.pack.${id}.${isoDay(offset)}.${fishery}`);
   let myGear = $state([]);
   $effect(() => { const sub = liveQuery(() => db.gear.toArray()).subscribe((v) => (myGear = v)); return () => sub.unsubscribe(); });
@@ -69,6 +74,7 @@
       </ul>
     {/if}
     <p class="quiet small">Facts only: this page doesn't state regulations.</p>
+    <JournalAdvice {advice} />
 
     {#if pack}
       <h2 class="quiet small">Pack</h2>

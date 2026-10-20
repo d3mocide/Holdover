@@ -4,6 +4,7 @@
   import { FRESH_LABEL, FACTOR_LABEL } from './api.js';
   import { hhmm, clockText } from './clock.svelte.js';
   import { evidenceText } from './waterSearch.js';
+  import JournalAdvice from './JournalAdvice.svelte';
   // A ranked list of spots for one day, each with a "why this score" breakdown.
   let { spots, fresh = {}, selectedId = null, onselect } = $props();
 </script>
@@ -18,16 +19,17 @@
           <span class="name">{s.waterbody.name}{#if isFavorite(s.waterbody.id)} <span class="fav" title="Favorite"><Icon name="star_fill" size={14} /></span>{/if}</span>
           <span class="why small quiet">{clockText(s.explanation.text)}</span>
           <span class="small quiet">{evidenceText(s.coverage)} · share of scoring inputs backed by data</span>
+          {#if s.personal}<span class="small quiet">Public {Math.round(s.public_score)} · journal {s.advice.adjustment > 0 ? '+' : ''}{s.advice.adjustment} points</span>{/if}
         </span>
         <span class="end">
           {#if f}<span class="dot {f.freshness}" title={FRESH_LABEL[f.freshness]}></span>{/if}
-          <span class="mono score" class:hi={s.score >= 60} class:mid={s.score >= 45 && s.score < 60}>{Math.round(s.score)}</span>
+          <span class="mono score" class:hi={s.score >= 60} class:mid={s.score >= 45 && s.score < 60}>{s.personal ? s.score.toFixed(1) : Math.round(s.score)}</span>
         </span>
       </button>
       <details class="how">
         <summary class="small">Why this score</summary>
         <p class="small quiet">{s.explanation.source === 'llm' ? `Wording by a local model from the facts below, ${hhmm(s.explanation.as_of)}.` : 'Wording built directly from the facts below.'}
-          {Math.round(s.coverage * 100)}% of the score is backed by data; missing inputs count as neutral.</p>
+          {Math.round(s.coverage * 100)}% of the public score is backed by data; missing inputs count as neutral. {#if s.personal}The factors below add up to the public score of {s.public_score}; your optional journal adjustment is shown separately.{/if}</p>
         {#each s.factors as ft}
           {#if ft.applicable}
             <div class="frow small">
@@ -40,6 +42,7 @@
         {/each}
         {#if s.report_sentence}<p class="small quiet">ODFW: “{s.report_sentence}”</p>{/if}
       </details>
+      {#if s.advice}<div class="personal"><JournalAdvice advice={s.advice} compact /></div>{/if}
     </li>
   {/each}
 </ul>
@@ -59,6 +62,7 @@
   .score { font-size: 24px; font-weight: 600; line-height: 1; color: var(--text-quiet); }
   .score.hi { color: var(--fresh-1); } .score.mid { color: var(--fresh-2); }
   .how { padding: 0 12px 8px 40px; }
+  .personal { padding: 0 12px; }
   .how summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--text-quiet); }
   .frow { display: grid; grid-template-columns: 78px 1fr 40px; gap: 2px 8px; align-items: center; margin: 4px 0; }
   .fl { color: var(--text); } .pts { text-align: right; }

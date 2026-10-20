@@ -67,4 +67,9 @@ public server, put it behind HTTPS and ideally behind your reverse proxy's own a
 
 Explore's Favorites cards combine public conditions with recent trips from the existing device journal. They use the same favorites preferences and device-owner clearing as Journal; no shared personal endpoint or new table is introduced. Public details use a network-first read with the existing API cache as an offline fallback. Refresh and reconnect reload the dashboard; freshness labels age while it is open. Anonymous favorites and trips remain on the device until adopted at sign-in.
 
+[Journal recommendations](journal-recommendations.md) also use the existing device journal, including unsynced
+entries. Computation stays in the browser; personal results are never returned by or stored in the public API
+cache. An in-memory snapshot from a different signed-in owner is hidden during account switching. No new personal
+table, account preference or sync payload is introduced; adoption and shared-device clearing stay the same.
+
 New journal/gear photos are decoded and resized on-device (maximum edge 1600 pixels) before entering IndexedDB or sync. JPEG orientation is applied to the exported pixels; transparent PNG/WebP inputs retain alpha. Unreadable/unsupported photos produce a form error without saving a partial entry. Existing stored photos are not rewritten. The existing owner-prefixed upload/read/reference checks still apply.

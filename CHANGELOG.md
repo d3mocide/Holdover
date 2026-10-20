@@ -4,6 +4,14 @@ Versions follow `0.minor.patch` while the app is still changing quickly: a minor
 `pyproject.toml` and `web/package.json` (a test keeps them equal) and is shown in Settings and `/healthz`. Details and evidence for each change are
 in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
+## Unreleased
+
+**Your journal in the planner.** Optional personal rankings use transparent same-water condition comparisons,
+including trips without recorded catches. Expandable evidence in Plan, water details and the day view shows
+sample counts, captured values/times and recorded lure/setup results. Anonymous and offline journals work with
+the existing account isolation. Public scores remain available. No schema migration or new service is required;
+the comparison rules are unvalidated heuristics, documented in [journal recommendations](docs/journal-recommendations.md).
+
 ## 0.8.0
 
 **Trip preparation.** Resize new journal and gear photos before storage/upload, preserving orientation and transparency. Save offline maps around a trip, another zone's pinned waters or installed Oregon coverage, with detail, exact dates, tile/storage previews and graceful cancellation/quota handling.

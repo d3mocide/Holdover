@@ -18,6 +18,7 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | `map-layout.mjs` | Shared title/icon alignment on six pages; matching Explore/Plan dimensions and title size; 900px control separation; edge collapse/restore; Explore underline selectors and header; nearby creek/reservoir choices, distinct schedule weeks and correct selection. Browser-only synthetic schedules | 171 checks, including 12 axe scans |
 | `trip-preparation.mjs` | Eastern-Oregon trip tiles, exact cached days, EXIF-oriented journal/gear photos, alpha/no enlargement, invalid-image rejection, anonymous airplane-mode Favorites/history, photo reconnect/upload and cross-account denial. Requires a disposable gear fixture with synthetic statewide tiles | 19 |
 | `trip-preparation-ui.mjs` | Favorites, zone/trip offline previews, plan-date handoff, photo wording, cancellation/reuse, quota and storage budget, all themes and phone/tablet/desktop; full axe and screenshots | 92 checks, including 36 axe scans |
+| `journal-advice.mjs` | Optional Map/Plan rankings, explicit public/personal scores, comparable trips including zero catches, lure/setup evidence, all themes/sizes, airplane-mode reload, reconnect adoption and shared-device account isolation. Synthetic journal and public comparison fixtures on a disposable gear instance | 114 checks, including 36 full axe scans |
 | `area-forecasts.mjs` | Area forecast value/distance/time, stale badge, distinct missing-area/unavailable-date states, overflow, screenshots and full axe in all three themes at phone/tablet/desktop widths. Explicit browser-only synthetic forecasts | 138 checks, including 45 axe scans |
 | `rivers.mjs` | Direct river browsing and marker clicks, populated charts, measurement switching, Favorites, cross-zone search, unpinned waters, offline river reload, phone fit | 12 |
 
@@ -39,6 +40,13 @@ They use a **throwaway instance** with its own database in `/tmp/holdover-e2e`, 
 `setup.sh` refuses to start if the port is busy, so a stale server can never answer for the new one (`PORT=...` to
 change it). The accounts test registers "sam" itself, so run `setup.sh accounts` (not `gear`) before it. Each run
 needs a fresh `setup.sh`: the tests create data.
+
+Run `journal-advice.mjs` after `setup.sh gear`, against the built frontend. `UI_ONLY=1` runs only the
+all-theme phone/tablet/desktop matrix; `FEATURE_ONLY=1` runs only the offline/adoption/account-switch scenario.
+Use a fresh disposable server for the complete run. Fixtures are synthetic; never point it at a personal dev or
+production instance. Public response routes are installed on the browser context so service-worker fetches see
+the same fixtures, then removed before airplane mode. Raw IndexedDB fixture inserts are followed by a reload;
+app writes use Dexie and update the comparison through live queries.
 
 For the hardening suite, use a separate fresh fixture instance (never the personal dev database):
 

@@ -9,6 +9,9 @@
   import { isFavorite, toggleFavorite } from './auth.svelte.js';
   import { waterbodyHistory } from './journalStats.js';
   import GaugeHistory from './GaugeHistory.svelte';
+  import JournalAdvice from './JournalAdvice.svelte';
+  import { journalAdvice, dayContext } from './journalAdvice.js';
+  import { adviceState, adviceData } from './journalAdvice.svelte.js';
   let { id, onclose, onday, onlog } = $props();
   let allTrips = $state([]), allCatches = $state([]), allGear = $state([]);
   let wb = $state(null);
@@ -23,6 +26,8 @@
     return () => sub.unsubscribe();
   });
   const history = $derived(waterbodyHistory({ trips: allTrips, catches: allCatches, gear: allGear, waterbodyId: id }));
+  const comparison = $derived(dayContext(wb?.conditions));
+  const advice = $derived(wb ? journalAdvice(wb, comparison, adviceData(), adviceState.now) : null);
   $effect(() => {
     wb = null; error = '';
     api.waterbody(id).then((v) => (wb = v)).catch((e) => (error = e.message));
@@ -50,6 +55,7 @@
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
     <StockingList stocking={wb.stocking} level={3} asOfIso={wb.stocking[0]?.scraped_at} />
+    <JournalAdvice {advice} />
 
     {#if wb.report_items?.length}
       <h3 class="eyebrow">From the weekly report</h3>

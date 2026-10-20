@@ -78,3 +78,31 @@ def test_stale_flow_does_not_count_as_ranking_evidence(session):
     session.add(GaugeReading(gauge_id=g.id, parameter='discharge_cfs', value=100, observed_at=now.isoformat()))
     session.commit()
     assert flow().value is not None
+
+
+def test_public_rankings_expose_only_source_timed_comparison_inputs(session):
+    from app.main import app
+    seed_waterbodies(session)
+    g = session.scalar(select(Gauge).where(Gauge.site_no == '14183000'))
+    now = datetime.now(timezone.utc)
+    stamp = (now - timedelta(minutes=10)).isoformat()
+    session.add_all([
+        GaugeReading(gauge_id=g.id, parameter='discharge_cfs', value=123, observed_at=stamp),
+        GaugeReading(gauge_id=g.id, parameter='discharge_cfs', value=999, observed_at=(now + timedelta(hours=1)).isoformat()),
+    ])
+    session.commit()
+    c = TestClient(app)
+    spot = next(s for s in c.get('/api/spots?fishery=steelhead').json()['spots']
+                if s['waterbody']['name'] == 'Santiam River, North Fork')
+    context = spot['journal_context']
+    assert set(context) == {'gauges', 'weather', 'weather_as_of', 'date'}
+    assert context['gauges'] == [{'site_no': g.site_no, 'values': {
+        'discharge_cfs': {'value': 123, 'observed_at': stamp}}, 'provisional': True}]
+    assert spot['score'] == next(s.score for s in rank(session, now.date(), 'steelhead')
+                                  if s.wb.name == 'Santiam River, North Fork')
+    reading = session.scalar(select(GaugeReading).where(GaugeReading.observed_at == stamp))
+    reading.observed_at = (now - timedelta(hours=8)).isoformat()
+    session.commit()
+    spot = next(s for s in c.get('/api/spots?fishery=steelhead').json()['spots']
+                if s['waterbody']['name'] == 'Santiam River, North Fork')
+    assert spot['journal_context']['gauges'] == []

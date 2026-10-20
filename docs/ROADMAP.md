@@ -28,7 +28,7 @@ Published release milestone: **v0.8.0** adds photo resizing, trip-area offline m
 | 7 | Accounts | Done |
 | 8 | Gear | Done |
 | 9 | Hardening and first deployment | In progress |
-| 10 | Journal depth and journal-informed scoring | In progress |
+| 10 | Journal depth and journal-informed scoring | Done |
 | 11 | More sources and statewide coverage | In progress |
 | 12 | Coast and marine | Planned |
 | 13 | Light theme | Planned |
@@ -205,13 +205,23 @@ its server.
 
 ## Phase 10: Journal depth and journal-informed scoring
 
-**Status:** In progress. **Goal:** use what people log. Needs Phase 8's gear data.
+**Status:** Done. **Goal:** use what people log. Needs Phase 8's gear data.
+
+**Gate:** existing trip editing/history and owned-gear pack behavior pass browser regressions; personal comparisons,
+optional ranking adjustments and recorded gear evidence work with anonymous/offline journals, reconnect sync and
+same-device account isolation. Chromium software evidence is in the 2026-10-20 Phase 10 build-log entry.
 
 - [x] Edit an existing trip (in place; keeps the conditions captured at the time; removed catches are soft-deleted)
 - [x] Per-waterbody history on the sheet: trips, fish, catches by species, best day with its conditions, most productive lure
-- [ ] Journal-informed scoring factor (for example, waters and lures that worked under similar flows)
+- [x] Journal-informed recommendations: transparent same-water condition comparisons, zero-catch evidence, optional
+      bounded personal ranking adjustment and recorded lure/setup suggestions. Uses the existing device journal;
+      public scores remain available. See [journal-recommendations.md](journal-recommendations.md) for rules and limitations
 - [x] Gear in the pack list: the day view shows "You have: ..." under template items you own (never says anything is missing)
 - [x] Favorites dashboard: saved waters show source-timed forecast/flow, relevant advisories/fire notices and the three most recent local personal trips; works offline after loading and follows existing device/account isolation
+
+**Carried forward:** personal comparison thresholds and scoring are unvalidated heuristics, cover all species because
+trip targets were not recorded, and do not control for effort. Physical-phone/field qualification stays in Phase 9.
+Seasonal historical flow baselines remain a separate Phase 11 item. This feature is unreleased pending owner feedback.
 
 ## Phase 11: More sources and statewide coverage
 

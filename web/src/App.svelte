@@ -23,6 +23,14 @@
   import { db, metaGet, metaSet } from './lib/db.js';
   import { startSync, syncState } from './lib/sync.svelte.js';
   import { auth, loadAuth, prefs, homeForRequests, setHome } from './lib/auth.svelte.js';
+  import { startAdvice, adviceState } from './lib/journalAdvice.svelte.js';
+
+  $effect(() => startAdvice());
+  let adviceOwner;
+  $effect(() => {
+    const owner = auth.user?.id ?? null;
+    if (owner !== adviceOwner) { adviceState.enabled = false; adviceOwner = owner; }
+  });
 
   const stored = (k, d) => { try { return localStorage.getItem(k) || d; } catch { return d; } };
   let theme = $state(stored('holdover.theme', 'fir'));
