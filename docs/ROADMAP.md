@@ -13,7 +13,7 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 - Statuses: `Done`, `In progress`, `Planned`. Do not invent others.
 - `tests/test_docs.py` checks that every Done phase has a build-log entry and that this file's links resolve.
 
-Published release milestone: **v0.7.0** packages river discovery, map browsing improvements and offline reliability fixes; GitHub CI and amd64/arm64 image publishing passed on 2026-10-19. See [CHANGELOG.md](../CHANGELOG.md). Production remains the last observed 0.6.0 deployment; The v0.8.0 trip-preparation/Favorites milestone adds the completed items below; physical-device and deployment gates stay open.
+Published release milestone: **v0.8.0** adds photo resizing, trip-area offline maps, the Favorites dashboard and area forecasts on top of v0.7.0's river discovery/map work. Both releases were published on 2026-10-19; GitHub CI and amd64/arm64 image publication passed. The packaged v0.8.0 amd64 image was smoke-tested with disposable data. See [CHANGELOG.md](../CHANGELOG.md) and [BUILD_LOG.md](BUILD_LOG.md). Production remains the last observed 0.6.0 deployment; physical-device and rollout gates remain open.
 
 ## At a glance
 
