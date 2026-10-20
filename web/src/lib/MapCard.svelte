@@ -70,12 +70,13 @@
 </section>
 
 <style>
-  .mapcard { position: absolute; z-index: 2; left: 96px; top: 16px; width: var(--browse-panel-w); height: calc(100% - 32px); max-height: calc(100% - 32px); overflow-y: auto;
+  /* Browsing cards cover map popups (3); the edge control remains above the card. */
+  .mapcard { position: absolute; z-index: 4; left: 96px; top: 16px; width: var(--browse-panel-w); height: calc(100% - 32px); max-height: calc(100% - 32px); overflow-y: auto;
     border-radius: 20px; padding: 16px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
     border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; gap: 10px; }
   .head { width: 100%; display: flex; justify-content: space-between; align-items: center; border: 0; background: none; min-height: 44px; padding: 0; height: auto; text-align: left; gap: 10px; }
   .mapcard.hidden { display: none; }
-  .maptoggle { position: absolute; z-index: 4; top: 50%; left: calc(96px + var(--browse-panel-w) - 22px); width: 44px; height: 44px; padding: 0; margin-top: -22px; border-radius: 999px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); color: var(--text); }
+  .maptoggle { position: absolute; z-index: 5; top: 50%; left: calc(96px + var(--browse-panel-w) - 22px); width: 44px; height: 44px; padding: 0; margin-top: -22px; border-radius: 999px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); color: var(--text); }
   .maptoggle :global(svg) { transform: rotate(180deg); }
   .maptoggle.closed { left: 92px; }
   .maptoggle.closed :global(svg) { transform: none; }

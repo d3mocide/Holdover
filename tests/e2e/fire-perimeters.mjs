@@ -50,7 +50,22 @@ try {
       const close = p.getByRole('button', { name: 'Close wildfire details', exact: true }), bounds = await close.boundingBox(), title = await popup.getByRole('heading').boundingBox();
       ok(bounds.width >= 44 && bounds.height >= 44 && title.x + title.width <= bounds.x + 1, `${theme}/${size}: close target stays clear of the incident name`);
       await p.evaluate(axe); assert.deepEqual(await p.evaluate(async () => (await axe.run()).violations.map((v) => v.id)), []); ok(true, `${theme}/${size}: fire popup axe has zero violations`);
-      await p.screenshot({ path: `${shots}/${theme}-${size}-popup.png` }); await close.click();
+      await p.screenshot({ path: `${shots}/${theme}-${size}-popup.png` });
+      // Force a real popup across the expanded card to exercise collision regardless of map centering.
+      await p.getByRole('button', { name: 'Show Explore waters', exact: true }).click();
+      const card = await explore.boundingBox();
+      const overlap = { x: card.x + 24, y: card.y + 80 };
+      await p.locator('.fire-popup').evaluate((el, point) => {
+        el.style.transform = `translate(${point.x}px, ${point.y}px)`;
+        el.style.top = '0px'; el.style.left = '0px';
+      }, overlap);
+      const content = await p.locator('.fire-popup .maplibregl-popup-content').boundingBox();
+      const point = { x: content.x + 20, y: content.y + 30 };
+      ok(point.x > card.x && point.x < card.x + card.width && point.y > card.y && point.y < card.y + card.height, `${theme}/${size}: popup actually overlaps the expanded card`);
+      ok(await explore.evaluate((el, point) => el.contains(document.elementFromPoint(point.x, point.y)), point), `${theme}/${size}: card paints above the overlapping popup and receives input`);
+      await p.screenshot({ path: `${shots}/${theme}-${size}-card-over-popup.png` });
+      await p.getByRole('button', { name: 'Hide Explore waters', exact: true }).click();
+      await close.click();
       await p.getByRole('button', { name: 'Layers', exact: true }).click(); await p.getByLabel('Fire danger and fires', { exact: true }).uncheck(); await p.getByRole('button', { name: 'Layers', exact: true }).click(); await p.waitForTimeout(250);
       const after = await region(p, x, y); await p.mouse.click(x, y);
       ok(after.color !== before.color && await popup.count() === 0, `${theme}/${size}: fire toggle hides the perimeter and its interaction`);
