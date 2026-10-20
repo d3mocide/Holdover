@@ -4,7 +4,17 @@ Versions follow `0.minor.patch` while the app is still changing quickly: a minor
 `pyproject.toml` and `web/package.json` (a test keeps them equal) and is shown in Settings and `/healthz`. Details and evidence for each change are
 in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
-## Unreleased
+## 0.7.0
+
+**Find waters directly.** Explore waters has Best bets, Rivers and Favorites tabs, statewide name search and direct river markers. River sheets include stored 24-hour and 7-day gauge history. Rankings show evidence coverage and exclude stale flow/forecast inputs.
+
+**A clearer map.** Consistent stocking and river icons, reports above other markers, compact dashed red advisory rings, and a chooser for overlapping pins. Fire names appear on tap instead of repeating around perimeters. Popups stay behind browsing cards. Explore and Plan share card dimensions, with explicit collapse controls and aligned page headers.
+
+**Offline reliability.** Owner-scoped journal snapshots preserve late offline arrivals and deletions, private drafts are cleared safely, day caches distinguish dates and fisheries, and device JSON/CSV exports work offline.
+
+**Upgrade notes.** No new server database migration since 0.6.0. The browser cache upgrade preserves existing journal data. Detailed trip-area offline maps, photo resizing and seasonal flow baselines remain planned. Physical-phone offline qualification is still open.
+
+**Previously unreleased notes.**
 
 **Rivers.** 36 popular rivers across all six zones as waterbodies with their live gauges, flow against each river's own median, NOAA flood status (48 gauges, polled every 2 hours), water quality where a sensor is current, and Willamette Falls fish counts on the rivers above the falls. Settings, Place pins moves a river's pin to where you fish.
 Rankings are about 3 times faster.

@@ -13,6 +13,8 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 - Statuses: `Done`, `In progress`, `Planned`. Do not invent others.
 - `tests/test_docs.py` checks that every Done phase has a build-log entry and that this file's links resolve.
 
+Local release milestone: **v0.7.0** packages river discovery, map browsing improvements and offline reliability fixes. See [CHANGELOG.md](../CHANGELOG.md). Production remains the last observed 0.6.0 deployment; phase gates below are unchanged.
+
 ## At a glance
 
 | Phase | Name | Status |
