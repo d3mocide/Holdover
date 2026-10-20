@@ -19,6 +19,12 @@ test('an overlap keeps all layers reachable, removes tile duplicates and puts re
   assert.deepEqual(markerChoices([hit(1, 'home-pts')]), []);
 });
 
+test('a Santiam-style public stack puts advisory above stocking, river and gauge', () => {
+  const feature = (layer) => ({ layer: { id: layer }, properties: { id: 1, name: 'Synthetic Santiam stack' } });
+  const layers = ['gauge-pts', 'advisory-ring', 'stocking-pts', 'river-pts'];
+  assert.deepEqual(markerChoices(layers.map(feature)).map((f) => f.layer.id), ['advisory-ring', 'stocking-pts', 'river-pts', 'gauge-pts']);
+});
+
 test('nearby Fall Creek waters remain separate and show their own schedule weeks', () => {
   const feature = (id, name, kind, next_week) => ({ layer: { id: 'stocking-pts' }, properties: { id, name, kind, freshness: 'upcoming', next_week } });
   const creek = feature(19, 'Fall Creek (Willamette R)', 'creek', '2027-04-19');

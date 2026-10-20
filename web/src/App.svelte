@@ -32,7 +32,7 @@
   const setCollapsed = (v) => { collapsed = v; try { localStorage.setItem('holdover.panelHidden', v ? '1' : ''); } catch { /* not remembered */ } };
   const go = (k) => { view = k; if (collapsed) setCollapsed(false); };  // choosing a tab means you want its content
   // The side panel sizes to its content. The Map tab is the map alone (no panel); the spot list lives in Plan.
-  const PANEL = { map: '0px', plan: 'min(520px, 44vw)', reports: 'min(560px, 46vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
+  const PANEL = { map: '0px', plan: 'var(--browse-panel-w)', reports: 'min(560px, 46vw)', journal: 'min(460px, 42vw)', gear: 'min(520px, 44vw)', gauges: 'min(660px, 46vw)', settings: 'min(520px, 44vw)' };
   let panelW = $state(520);
   let wide = $state(typeof innerWidth === 'number' ? innerWidth >= 900 : true);
   $effect(() => { const f = () => (wide = innerWidth >= 900); addEventListener('resize', f); return () => removeEventListener('resize', f); });
@@ -211,7 +211,7 @@
 </div>
 
 <style>
-  .shell { --sheet-w: min(clamp(440px, 38vw, 700px), calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(clamp(560px, 46vw, 860px), calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
+  .shell { --browse-panel-w: min(520px, 44vw); --sheet-w: min(clamp(440px, 38vw, 700px), calc(100% - var(--panel-w, 380px) - 128px)); --wide-w: min(clamp(560px, 46vw, 860px), calc(100% - var(--panel-w, 380px) - 128px)); position: relative; height: 100%; display: grid; grid-template-columns: 64px var(--panel-w, 380px) 1fr; grid-template-rows: 100%; gap: 16px; padding: 16px; transition: grid-template-columns 0.25s ease; }
   .shell > :global(*) { grid-row: 1; }
   .planner.gone, .shell.nopanel .planner, .shell.nopanel .ptoggle { display: none; }
   /* The toggle straddles the panel's right edge (desktop) or its top edge (phone). The arrow is the trend_steady icon, rotated. */
@@ -263,7 +263,7 @@
     /* With a sheet open the top row is full (panel or card, Legend, Layers, zoom): Legend drops to the bottom-left, its list opening upward. */
     .shell.sheetopen .legend, .shell.sheetopen .zonepill { top: 16px; bottom: auto; }  /* roomy: they stay at the top, beside the panel or card */
     /* On the Map tab the Best bets card sits where the side panel does, and Legend moves to its right. */
-    .shell.nopanel { --base: calc(96px + min(380px, calc(100% - 144px)) + 16px); }
+    .shell.nopanel { --base: calc(96px + var(--browse-panel-w) + 16px); }
     .shell.nopanel.drawer { --base: calc(96px + var(--drawer-shift, 0px)); }
     .zonepill { display: block; }
     /* Beside the drawer there is little room: Legend shrinks to its icon (and its list is closed when a drawer opens). */
@@ -308,6 +308,7 @@
   }
   @media (min-width: 900px) and (max-width: 1099px) {
     .offline { top: 82px; }  /* the zoom control is hidden at this width, so it tucks under Layers instead */
+    .shell.nopanel .lgl, .shell.full .lgl { display: none; }
   }
   @media (max-width: 899px) {
     .shell { --nav-h: calc(64px + env(safe-area-inset-bottom, 0px)); grid-template-columns: 1fr; grid-template-rows: 1fr var(--nav-h); gap: 0; padding: 0; }

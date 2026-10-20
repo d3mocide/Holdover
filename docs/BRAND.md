@@ -166,14 +166,14 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
   the screen edge, not from an inner container.
 - **Radii:** controls 10, cards 14, panels 20 (top corners 20 on phone sheets). Cards are a faint white fill with a 1 px
   hairline, not a solid colour.
-- **Side panel width follows content:** map 380, plan 520, journal 460, gauges 660 (two columns), settings 520, each
+- **Side panel width follows content:** Explore and Plan share `--browse-panel-w` (520 px, capped at 44vw), journal 460, gauges 660 (two columns), settings 520, each
   capped to a share of the screen; the map re-centres in what remains. Below 900 px panels become a bottom sheet
   (68% tall for pages, 62% for the detail sheet) above a 64 px nav bar plus the safe area.
-- **Breakpoints:** 900 px (phone layout below), 1100 px (zoom buttons and the offline label are hidden below it).
+- **Breakpoints:** 900 px (phone layout below), 1100 px (zoom buttons and the offline label are hidden below it; Legend is icon-only beside Explore/Plan at narrow desktop widths).
 - **Phone sheets are opaque** (`--bg`, no blur): nothing may ghost through.
 - Page headers use `PageHeader.svelte`: a 48 px `PageIcon`, a 14 px gap, and a title centred on the badge. Descriptions sit below that row so wrapping text cannot shift the icon. Reports, Plan, Journal, Gear, Gauges and Settings share this layout and 16 px content gutters.
-- The Map's dense **Explore waters** card uses the same map badge/title alignment with a compact 20 px title and 16 px internal gutters. Best bets, Rivers and Favorites use the same underline selectors as Plan; fisheries remain filter chips. It includes statewide search. On a phone,
-  its collapsed bar keeps a direct Rivers action visible; the expanded card is opaque and can use up to 68% of the available map height. Unpinned search results say "No map pin yet" and still open details.
+- The Map's dense **Explore waters** card uses the same map badge/title alignment and 24 px title as Plan and 16 px internal gutters. Best bets, Rivers and Favorites use the same underline selectors as Plan; fisheries remain filter chips. Its 44 px edge collapse/restore control follows Plan (right edge on desktop, top on phone); the title bar also toggles it. Its expanded desktop width and full available height match Plan; controls beside it use the same width when reserving space. It includes statewide search. On a phone,
+  its collapsed bar keeps a direct Rivers action visible; the expanded card is opaque and fills the space above navigation, matching Plan (including its 52 px header clearance). Unpinned search results say "No map pin yet" and still open details.
 - River detail sheets lead with a stored-observation chart, 24-hour/seven-day controls and a textual values alternative.
   Each measurement keeps its own as-of/stale state. Search fields use the same token-based treatment as other text fields.
 - The full-height phone Plan panel reserves a 52 px control row above its content for the 44 px collapse button;
@@ -208,7 +208,7 @@ Text needs 4.5:1, graphics and map marks 3:1. Recompute for any palette change.
 | Tinted area with a thin outline | ODF fire danger zone | `--warn`. Low is an outline only; Moderate, High and Extreme add a stronger tint. The Legend and each sheet say the level in words, so colour is never the only signal |
 | Dashed outline with a faint fill and a name | Active wildfire perimeter | `--accent`; the name shows from zoom 8.5. It means a fire is burning there, not that anything is closed |
 
-Pins are the brightest things on the map. Everything else recedes. River and stocking art is about 23 px across, gauges about 23 px on the diagonal, and report badges about 26 px. Reports (reviewed and AI-read) draw above every other marker and the selection ring. A tap within 12 px of nearby marker artwork opens a chooser when multiple items are present; reports come first, and every river, gauge, report, advisory and nearby water remains reachable. A single item opens directly. The chooser removes duplicate tile hits, shows full waterbody names/types and scheduled weeks (which may change), scrolls long lists and uses 44 px or larger choices; it does not move stored pins or merge different waters. Advisory markers sit immediately below reports, followed by home/journal pins, rivers, gauges and stocking. Gauge cards reserve a separate 44 px close target, wrap long names, separate the flow value from provenance/time, and offer a full-width waterbody action.
+Pins are the brightest things on the map. Everything else recedes. River and stocking art is about 23 px across, gauges about 23 px on the diagonal, and report badges about 26 px. Reports (reviewed and AI-read) draw above every other marker and the selection ring. A tap within 12 px of nearby marker artwork opens a chooser when multiple items are present; reports come first, and every river, gauge, report, advisory and nearby water remains reachable. A single item opens directly. The chooser removes duplicate tile hits, shows full waterbody names/types and scheduled weeks (which may change), scrolls long lists and uses 44 px or larger choices; it does not move stored pins or merge different waters. Advisory markers sit immediately below reports, followed by home/journal pins, stocking, rivers and gauges. Gauge cards reserve a separate 44 px close target, wrap long names, separate the flow value from provenance/time, and offer a full-width waterbody action.
 
 ## 8. Map
 

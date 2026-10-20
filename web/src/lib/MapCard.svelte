@@ -17,7 +17,10 @@
   const zoneName = (key) => zones.find((z) => z.key === key)?.label ?? key ?? '';
 </script>
 
-<section class="mapcard" class:closed={!open} class:hidden aria-label="Explore waters">
+{#if !hidden}
+  <button class="maptoggle" class:closed={!open} aria-label={open ? 'Hide Explore waters' : 'Show Explore waters'} aria-expanded={open} aria-controls="explore-card" onclick={() => (open = !open)}><Icon name="trend_steady" /></button>
+{/if}
+<section id="explore-card" class="mapcard" class:closed={!open} class:hidden aria-label="Explore waters">
   <div class="heading">
   <button class="head" aria-label="Explore waters" aria-expanded={open} onclick={() => (open = !open)}>
     <span class="t"><PageIcon name="map" /> <strong>Explore waters</strong></span>
@@ -67,15 +70,19 @@
 </section>
 
 <style>
-  .mapcard { position: absolute; z-index: 2; left: 96px; top: 16px; width: min(380px, calc(100% - 144px)); max-height: calc(100% - 32px); overflow-y: auto;
+  .mapcard { position: absolute; z-index: 2; left: 96px; top: 16px; width: var(--browse-panel-w); height: calc(100% - 32px); max-height: calc(100% - 32px); overflow-y: auto;
     border-radius: 20px; padding: 16px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); -webkit-backdrop-filter: var(--glass-blur-dense);
     border: 1px solid var(--glass-line); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; gap: 10px; }
   .head { width: 100%; display: flex; justify-content: space-between; align-items: center; border: 0; background: none; min-height: 44px; padding: 0; height: auto; text-align: left; gap: 10px; }
   .mapcard.hidden { display: none; }
+  .maptoggle { position: absolute; z-index: 4; top: 50%; left: calc(96px + var(--browse-panel-w) - 22px); width: 44px; height: 44px; padding: 0; margin-top: -22px; border-radius: 999px; background: var(--glass-dense); backdrop-filter: var(--glass-blur-dense); border: 1px solid var(--glass-line); color: var(--text); }
+  .maptoggle :global(svg) { transform: rotate(180deg); }
+  .maptoggle.closed { left: 92px; }
+  .maptoggle.closed :global(svg) { transform: none; }
   .heading { display: flex; align-items: center; gap: 8px; } .quick { min-height: 44px; border: 0; background: none; color: var(--gauge); }
   .t { display: inline-flex; align-items: center; gap: 14px; min-width: 0; }
-  .t strong { font-size: 20px; line-height: 1.25; }
-  .mapcard.closed { padding: 8px 12px; }
+  .t strong { font-size: 24px; letter-spacing: -0.01em; line-height: 1.25; }
+  .mapcard.closed { height: auto; padding: 8px 12px; }
   .closed .t strong { font-size: 15px; } .t :global(svg) { color: var(--fresh-1); }
   .chev { display: inline-flex; color: var(--text-quiet); transform: rotate(90deg); transition: transform 0.15s; } .chev.up { transform: rotate(-90deg); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -97,6 +104,11 @@
   .plan { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border: 0; border-top: 1px solid var(--hair); background: none; color: var(--fresh-1); }
   .notice { border: 1px solid var(--accent); border-radius: 8px; padding: 6px 10px; }
   @media (max-width: 899px) {
-    .mapcard { left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-height: 68%; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .maptoggle { left: calc(50% - 22px); top: 6px; margin: 0; }
+    .maptoggle :global(svg) { transform: rotate(90deg); }
+    .maptoggle.closed { left: auto; right: 16px; top: auto; bottom: 98px; }
+    .maptoggle.closed :global(svg) { transform: rotate(-90deg); }
+    .mapcard { left: 0; right: 0; top: 0; bottom: 0; width: auto; height: 100%; max-height: none; padding: 68px 16px 16px; border-radius: 0; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .mapcard.closed { left: 16px; right: 16px; top: auto; bottom: 16px; height: auto; border-radius: 20px; padding: 8px 12px; }
   }
 </style>

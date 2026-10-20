@@ -3,7 +3,7 @@ import { icons } from './icons.js';
 import { longDate } from './api.js';
 
 // Bottom to top. Hit testing follows the same priority as drawing, including AI-read reports.
-export const markerLayers = ['stocking-pts', 'gauge-pts', 'river-pts', 'journal-pts', 'home-pts', 'advisory-ring', 'report-badge'];
+export const markerLayers = ['gauge-pts', 'river-pts', 'stocking-pts', 'journal-pts', 'home-pts', 'advisory-ring', 'report-badge'];
 
 // A feature can be returned twice at a tile boundary; different layers/waters remain distinct.
 export function markerChoices(features) {
