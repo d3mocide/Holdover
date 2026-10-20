@@ -9,9 +9,9 @@ async function cacheDay(id, date, fishery, payload) {
 }
 
 /** Day bundle with an IndexedDB copy, so conditions survive going offline. Returns {data, source, as_of}. */
-export async function loadDay(id, dayIso, fishery = 'trout') {
+export async function loadDay(id, dayIso, fishery = 'trout', refresh = true) {
   try {
-    const data = await api.day(id, dayIso, fishery);
+    const data = await api.day(id, dayIso, fishery, refresh);
     const row = await cacheDay(id, dayIso, fishery, data);
     return { data, source: 'live', as_of: row.fetched_at };
   } catch (e) {

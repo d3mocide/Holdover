@@ -13,7 +13,7 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 - Statuses: `Done`, `In progress`, `Planned`. Do not invent others.
 - `tests/test_docs.py` checks that every Done phase has a build-log entry and that this file's links resolve.
 
-Local release milestone: **v0.7.0** packages river discovery, map browsing improvements and offline reliability fixes. See [CHANGELOG.md](../CHANGELOG.md). Production remains the last observed 0.6.0 deployment; phase gates below are unchanged.
+Published release milestone: **v0.7.0** packages river discovery, map browsing improvements and offline reliability fixes; GitHub CI and amd64/arm64 image publishing passed on 2026-10-19. See [CHANGELOG.md](../CHANGELOG.md). Production remains the last observed 0.6.0 deployment; The v0.8.0 trip-preparation/Favorites milestone adds the completed items below; physical-device and deployment gates stay open.
 
 ## At a glance
 
@@ -101,7 +101,7 @@ push creates no duplicates.
 
 **Carried forward:** **not proven on iOS or Android** (storage quotas, service-worker eviction, GPS, Add to Home
 Screen). Tiles are stored in IndexedDB, not the Cache API as the handoff said (works the same, easier to count and
-clear). The handoff asked to request persistent storage: not done. Trip editing is create and delete only (Phase 10).
+clear). Persistent-storage requests and trip editing were completed later (Phases 9 and 10). Physical-device storage behavior remains open.
 
 ## Phase 5: Planner
 
@@ -171,8 +171,7 @@ lure and setup; no other account can read or reference it; tests, e2e and axe pa
       created offline syncing after reconnect, axe clean on every gear view); backend and unit tests
 
 **Carried forward:** stats are computed on this device from the local journal (so they work offline) and show shared
-credit for "on trips"; gear is not yet used by the planner or the pack list (Phase 10); gear photos are uploaded at
-full size (no resizing yet); gear is not shown on the waterbody sheet.
+credit for "on trips"; gear is not yet a ranking input (Phase 10); owned gear appears in the pack list. New photos are resized on-device; physical-phone photo qualification is open. Gear is not shown on the waterbody sheet.
 
 ## Phase 9: Hardening and first deployment
 
@@ -184,7 +183,7 @@ its server.
 - [x] **USGS migrated to the Water Data API** (done 2026-10-18, ahead of the early-2027 retirement of `waterservices.usgs.gov`): all 16 gauges, same values, no key; routine polls use latest values, with gap-fill and a first-run backfill ([data-source-options.md](data-source-options.md))
 - [ ] Delete the legacy USGS fallback (`USGS_API=legacy`) once USGS retires the old endpoint
 - [x] Per-address login throttle that works behind a proxy (`TRUSTED_PROXY_HOPS`; tested with spoofed headers)
-- [ ] **Publish the image** (`.github/workflows/`, amd64 + arm64 to ghcr.io) and run it on the owner's Raspberry Pi: workflows written 2026-10-18, **never run**; needs a push to `main`, then a pull on the Pi
+- [ ] **Run the published image on the owner's Raspberry Pi**: v0.7.0 image publication to ghcr.io passed for amd64 + arm64 on 2026-10-19; Pi installation remains unverified
 - [x] Separate dev stack (`docker-compose.dev.yml`: reload, Vite, own volumes), built and run 2026-10-18
 - [x] Journal hardening: late offline arrivals reach other devices; drafts are owner-checked and cleared on shared-device removal;
       offline day bundles match the date and fishery; JSON/CSV export includes the device's unsynced entries
@@ -194,8 +193,8 @@ its server.
 - [ ] HTTPS via reverse proxy: verify the Secure cookie and forwarded headers on the real server
 - [x] Request persistent storage (when a trip is saved or offline data is prepared) and show storage status in Settings
 - [ ] iOS and Android: install, offline reload, GPS, storage quota and eviction
-- [ ] Trip-area offline preparation: choose a zone or area around a trip, preview tile count/storage, and save higher detail where needed
-- [ ] Resize journal and gear photos on the device before storage/upload, with original orientation preserved
+- [x] Trip-area offline preparation: choose a pinned waterbody and radius, a zone's pinned-water rectangle or the installed Oregon coverage; preview tile count/storage, retain the selected plan date, save up to seven days of conditions and detail through zoom 14 where the archive supports it; cancel/resume and quota handling tested in Chromium
+- [x] Resize new journal and gear photos on the device before storage/upload (1600 px maximum edge); EXIF rotation, transparency, offline writes, upload and cross-account access tested. Existing photos are preserved
 - [x] Read the published terms for ODFW, OHA, NWS, USGS and Protomaps/OSM and record them (`docs/sources.md`); found and fixed missing OpenStreetMap attribution and added data credits
 - [ ] **Owner:** decide whether to email ODFW (and OHA) about using their public data; ODF terms still unread (feed not built)
 - [ ] Watch the scheduler for a day (timings, `/healthz`)
@@ -212,7 +211,7 @@ its server.
 - [x] Per-waterbody history on the sheet: trips, fish, catches by species, best day with its conditions, most productive lure
 - [ ] Journal-informed scoring factor (for example, waters and lures that worked under similar flows)
 - [x] Gear in the pack list: the day view shows "You have: ..." under template items you own (never says anything is missing)
-- [ ] Favorites dashboard: latest conditions and recent personal trips for your saved waters (the Map's Favorites browser is built)
+- [x] Favorites dashboard: saved waters show source-timed forecast/flow, relevant advisories/fire notices and the three most recent local personal trips; works offline after loading and follows existing device/account isolation
 
 ## Phase 11: More sources and statewide coverage
 
@@ -235,7 +234,7 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 - River discovery gate: a river opens from its marker or its name without a gauge-popup step; cross-zone search, unpinned waters and loaded charts work; browser regressions and all-theme axe scans pass. Stop here for feedback before expanding the comparison/offline features
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
 - [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value. **New (2026-10-18):** the *Angling Zones* (Sport Fishing Regulations zones) are the useful layer, free to use with an ODFW credit, but the server is firewalled from here: see data-source-options 6b
-- [x] Statewide coverage: all six ODFW zones. Central, Northwest, Southwest, Northeast and Southeast were added 2026-10-18 (see the build log), each a module in `app/zones`, pins from OpenStreetMap (many left unpinned for you to place), live USGS gauges, a zone pill on the map. Corps reservoirs and the offline map region remain Willamette-only; NOAA flood status is statewide where linked
+- [x] Statewide coverage: all six ODFW zones. Central, Northwest, Southwest, Northeast and Southeast were added 2026-10-18 (see the build log), each a module in `app/zones`, pins from OpenStreetMap (many left unpinned for you to place), live USGS gauges, a zone pill on the map. Corps reservoirs remain Willamette-only; offline preparation covers selected areas within the installed Oregon archive; NOAA flood status is statewide where linked
 - [x] Admin pin placement from Settings and the map (built 2026-10-18)
 
 ## Phase 12: Coast and marine

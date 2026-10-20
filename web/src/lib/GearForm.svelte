@@ -3,6 +3,7 @@
   import { KINDS, KIND_ONE, FISHERY_LABEL, suggest } from './gearCatalog.js';
   import { countPending, syncNow } from './sync.svelte.js';
   import Icon from './Icon.svelte';
+  import { resizePhoto } from './photo.js';
   let { item = null, browse = false, onclose, onsaved } = $props();
 
   const init = item ?? {};
@@ -24,7 +25,13 @@
   let saving = $state(false);
 
   const matches = $derived(item || name === pickedName ? [] : showList || name.trim().length >= 1 ? suggest(name, showList && !name.trim() ? kind : null, showList ? 60 : 6) : []);
-  const preview = $derived(photoFile ? URL.createObjectURL(photoFile) : item?.photo_blob ? URL.createObjectURL(item.photo_blob) : item?.photo_path ? `/api/journal/photo/${item.photo_path}` : null);
+  let preview = $state(null);
+  $effect(() => {
+    const blob = photoFile ?? item?.photo_blob;
+    const url = blob ? URL.createObjectURL(blob) : null;
+    preview = url ?? (item?.photo_path ? `/api/journal/photo/${item.photo_path}` : null);
+    return () => { if (url) URL.revokeObjectURL(url); };
+  });
 
   function pick(c) {
     kind = c.kind; name = c.name; pickedName = c.name; brand = c.brand ?? brand; fisheries = [...c.fisheries]; sizeHint = c.size ?? ''; showList = false;
@@ -43,7 +50,7 @@
         status, notes: notes.trim() || null, photo_path: item?.photo_path ?? null, photo_blob: item?.photo_blob ?? null,
         updated_at: nowIso(), deleted: 0, dirty: 1
       };
-      if (photoFile) { row.photo_blob = photoFile; row.photo_path = null; } // a new photo uploads on the next sync
+      if (photoFile) { row.photo_blob = await resizePhoto(photoFile); row.photo_path = null; } // a new photo uploads on the next sync
       await db.gear.put(row);
       await countPending(); syncNow();
       onsaved?.(row);
@@ -116,8 +123,9 @@
 
   <div class="f">
     <label for="g-photo">Photo (optional)</label>
+    <p class="quiet small">Photos are resized on this device to at most 1600 pixels before saving.</p>
     {#if preview}<img src={preview} alt="" class="prev" />{/if}
-    <input id="g-photo" type="file" accept="image/*" onchange={(e) => (photoFile = e.currentTarget.files?.[0] ?? null)} />
+    <input id="g-photo" type="file" accept="image/jpeg,image/png,image/webp" onchange={(e) => (photoFile = e.currentTarget.files?.[0] ?? null)} />
   </div>
 
   {#if err}<p role="alert" class="err">{err}</p>{/if}

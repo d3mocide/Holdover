@@ -28,7 +28,7 @@ export const api = {
   waterbodyList: () => req('/api/waterbodies'),
   gauges: (zone = 'willamette') => req(`/api/gauges?zone=${zone}`),
   gaugeHistory: (id, hours = 168) => req(`/api/gauges/${id}/history?hours=${hours}`),
-  day: (id, date, fishery = 'trout') => req(`/api/day/${id}?date=${date}&fishery=${fishery}`),
+  day: (id, date, fishery = 'trout', refresh = true) => req(`/api/day/${id}?date=${date}&fishery=${fishery}${refresh ? '' : '&refresh=false'}`),
   spots: (date, fishery, home = null, zone = 'willamette') =>
     req(`/api/spots?date=${date}&fishery=${fishery}&zone=${zone}${home ? `&home_lat=${home.lat}&home_lon=${home.lon}` : ''}`),
   report: (zone = 'willamette') => req(`/api/reports?zone=${zone}`),

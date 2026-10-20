@@ -28,11 +28,11 @@ def tile_for(z, x, y):
     return gzip.compress(mapbox_vector_tile.encode([{"name": k, **v} for k, v in g.items()], default_options={"extents": 4096}))
 
 
-def main(out):
+def main(out, bbox=(-124.5, 43.0, -121.0, 46.5)):
     tiles = {}
     for z in range(0, 12):
-        x0, y0 = lonlat_tile(-124.5, 46.5, z)
-        x1, y1 = lonlat_tile(-121.0, 43.0, z)
+        x0, y0 = lonlat_tile(bbox[0], bbox[3], z)
+        x1, y1 = lonlat_tile(bbox[2], bbox[1], z)
         for x in range(x0, x1 + 1):
             for y in range(y0, y1 + 1):
                 tiles[zxy_to_tileid(z, x, y)] = tile_for(z, x, y)
@@ -41,11 +41,11 @@ def main(out):
         for tid in sorted(tiles):
             w.write_tile(tid, tiles[tid])
         w.finalize({"tile_type": TileType.MVT, "tile_compression": Compression.GZIP, "min_zoom": 0, "max_zoom": 11,
-                    "min_lon_e7": int(-124.5e7), "min_lat_e7": int(43e7), "max_lon_e7": int(-121e7), "max_lat_e7": int(46.5e7),
+                    "min_lon_e7": int(bbox[0]*1e7), "min_lat_e7": int(bbox[1]*1e7), "max_lon_e7": int(bbox[2]*1e7), "max_lat_e7": int(bbox[3]*1e7),
                     "center_zoom": 7, "center_lon_e7": int(-122.9e7), "center_lat_e7": int(44.6e7)},
                    {"name": "test", "vector_layers": [{"id": "water"}, {"id": "roads"}]})
     print(f"{len(tiles)} tiles -> {out}")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], tuple(map(float, sys.argv[2].split(",")))) if len(sys.argv) > 2 else main(sys.argv[1])

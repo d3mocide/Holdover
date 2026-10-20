@@ -16,6 +16,8 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | `fire-perimeters.mjs` | No automatic perimeter text, one incident name per popup despite duplicate fragments, update time/source, 44px close, popup behind expanded Explore with clickable collapse control, fire layer toggle and axe in all themes/sizes. Browser-only synthetic perimeter | 84 checks, including 9 axe scans |
 | `advisory-rings.mjs` | Red warning-ring pixels, unobscured centre marker, direct ring clicks, overlap chooser access, advisory toggle, dashed legend and axe in all themes/screen sizes. Explicit browser-only synthetic markers | 66 checks, including 9 axe scans |
 | `map-layout.mjs` | Shared title/icon alignment on six pages; matching Explore/Plan dimensions and title size; 900px control separation; edge collapse/restore; Explore underline selectors and header; nearby creek/reservoir choices, distinct schedule weeks and correct selection. Browser-only synthetic schedules | 171 checks, including 12 axe scans |
+| `trip-preparation.mjs` | Eastern-Oregon trip tiles, exact cached days, EXIF-oriented journal/gear photos, alpha/no enlargement, invalid-image rejection, anonymous airplane-mode Favorites/history, photo reconnect/upload and cross-account denial. Requires a disposable gear fixture with synthetic statewide tiles | 19 |
+| `trip-preparation-ui.mjs` | Favorites, zone/trip offline previews, plan-date handoff, photo wording, cancellation/reuse, quota and storage budget, all themes and phone/tablet/desktop; full axe and screenshots | 92 checks, including 36 axe scans |
 | `area-forecasts.mjs` | Area forecast value/distance/time, stale badge, distinct missing-area/unavailable-date states, overflow, screenshots and full axe in all three themes at phone/tablet/desktop widths. Explicit browser-only synthetic forecasts | 138 checks, including 45 axe scans |
 | `rivers.mjs` | Direct river browsing and marker clicks, populated charts, measurement switching, Favorites, cross-zone search, unpinned waters, offline river reload, phone fit | 12 |
 
@@ -85,3 +87,5 @@ push creating no duplicate rows. Restart the server after deleting the DB file.
 
 Verified in headless Chromium only. iOS and Android (storage quotas, service-worker eviction, GPS, Add to Home
 Screen) are untested; see ROADMAP Phase 9.
+
+The new trip suites need synthetic statewide coverage: `python scripts/make_test_pmtiles.py /tmp/holdover-YOUR-FIXTURE/data/tiles/oregon.pmtiles -124.9,41.9,-116.4,46.4`. Never install these toy tiles on dev/production. The legacy offline suite uses global SQL counts, so run it on its own fresh fixture with only its `e2e` account writes.

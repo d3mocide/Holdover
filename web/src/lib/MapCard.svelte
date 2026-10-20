@@ -1,5 +1,6 @@
 <script>
   import Icon from './Icon.svelte';
+  import Favorites from './Favorites.svelte';
   import PageIcon from './PageIcon.svelte';
   import { FISHERIES } from './api.js';
   import { clockText } from './clock.svelte.js';
@@ -39,6 +40,9 @@
     </div>
     {#if browsing}
       <p class="small quiet" role="status">{matches.length} water{matches.length === 1 ? '' : 's'} · {query.trim() || mode === 'favorites' ? 'all zones' : zoneName(zone)}</p>
+      {#if mode === 'favorites' && !query.trim()}
+        <Favorites waters={matches} {onselect} />
+      {:else}
       <ul class="water-results">
         {#each matches as w (w.id)}
           <li><button class="row" class:sel={w.id === selectedId} onclick={() => onselect(w.id)}>
@@ -48,6 +52,7 @@
           </button></li>
         {:else}<li class="quiet small pad">{mode === 'favorites' && !query.trim() ? 'Star a waterbody to keep it here.' : 'No waters match. Try a name or zone.'}</li>{/each}
       </ul>
+      {/if}
     {:else}
     <div class="chips" role="group" aria-label="Fishery">
       {#each FISHERIES as [k, label]}<button class="chip" aria-pressed={fishery === k} onclick={() => onfishery(k)}>{label}</button>{/each}

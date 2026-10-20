@@ -72,6 +72,7 @@
   let editTrip = $state(undefined); // undefined: closed, otherwise the trip row being edited
   let logFor = $state(undefined); // undefined: closed, null: open without a waterbody, number: preset
   let offlineFor = $state(undefined);
+  let offlineDate = $state(isoDay());
   let journalGeo = $state(null);
 
   $effect(() => {
@@ -184,13 +185,13 @@
       {:else if picking}
         <div class="pickbar glass" role="status">Tap the map to set your home <button class="pill" onclick={() => (picking = false)}>Cancel</button></div>
       {/if}
-      <button class="offline" onclick={() => (offlineFor = selectedId)} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
+      <button class="offline" onclick={() => { offlineFor = selectedId; offlineDate = isoDay(); }} aria-label="Prepare for offline" title="Prepare for offline"><Icon name="offline" size={18} /></button>
       {#if view === 'map' && !drawerOpen}
         <MapCard hidden={tight && !!(selectedId || dayFor)} spots={mapSpots} waters={wbList} {zones} {zone} onzone={setZone} {fishery} onfishery={(f) => (fishery = f)} {selectedId} onselect={openWater} onplan={() => go('plan')} error={mapSpotsError} />
       {/if}
   </div>
     {#if dayFor && onMap}
-      <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id) => (offlineFor = id)} /></div>
+      <div class="sheetwrap wide"><DayView id={dayFor} {fishery} startOffset={offset} onback={() => (dayFor = null)} onlog={(id) => (logFor = id)} onoffline={(id, date) => { offlineFor = id; offlineDate = date; }} /></div>
     {:else if selectedId && onMap}
       <div class="sheetwrap"><Sheet id={selectedId} onclose={() => (selectedId = null)} onday={(id) => (dayFor = id)} onlog={(id) => (logFor = id)} /></div>
     {/if}
@@ -207,7 +208,7 @@
   {#if logFor !== undefined}
     <div class="overlay"><LogTrip {wbList} initialWb={logFor} onclose={() => (logFor = undefined)} onsaved={() => { logFor = undefined; view = 'journal'; }} /></div>
   {/if}
-  {#if offlineFor !== undefined}<Offline wbId={offlineFor} onclose={() => (offlineFor = undefined)} />{/if}
+  {#if offlineFor !== undefined}<Offline {fishery} startDate={offlineDate} wbId={offlineFor} waters={wbList} {zones} {zone} onclose={() => (offlineFor = undefined)} />{/if}
 </div>
 
 <style>

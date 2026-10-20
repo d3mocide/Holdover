@@ -4,9 +4,15 @@ Versions follow `0.minor.patch` while the app is still changing quickly: a minor
 `pyproject.toml` and `web/package.json` (a test keeps them equal) and is shown in Settings and `/healthz`. Details and evidence for each change are
 in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
-## Unreleased
+## 0.8.0
+
+**Trip preparation.** Resize new journal and gear photos before storage/upload, preserving orientation and transparency. Save offline maps around a trip, another zone's pinned waters or installed Oregon coverage, with detail, exact dates, tile/storage previews and graceful cancellation/quota handling.
+
+**Favorites at a glance.** Saved-water cards bring together source-timed conditions, notices and the three most recent personal trips, including offline entries.
 
 **Area forecasts.** Rivers join scheduled NWS coverage. Cards and rankings share forecasts within 30 km, preferring current data and showing nearby-point distance. Missing area data and dates without a forecast have distinct messages.
+
+**Upgrade notes.** No server schema or browser schema migration is required. Existing photos and saved tiles are preserved; only newly selected photos are resized. Map detail is limited by the installed archive, and storage sizes are estimates. iOS/Android field qualification remains open.
 
 ## 0.7.0
 

@@ -65,6 +65,9 @@ Look: a deep fir-green night, glass panels floating over a living map, one warm 
 
 Forecast cards label a nearby NWS point with its approximate distance, retain its as-of time and stale indicator, and distinguish a missing area cache from an unavailable date. Area forecasts use stored points within 30 km; an unpinned water is never assigned a guessed location.
 
+Favorites uses dense cards within Explore, with a Refresh favorites control, a 44 px water-name action, source-timed forecast/flow, relevant notices and up to three recent trips from this device's journal. A missing cache and an empty personal history are stated explicitly. Offline preparation uses a bounded, scrolling dialog with labelled area/date/detail controls, a tile count and an explicitly approximate storage estimate (20 KB per new tile). Zone rectangles follow stored pins, not official boundaries. Quota/cancellation messages explain that completed work is retained. Photo inputs explain the 1600 px maximum edge; orientation is applied before export, transparency is retained and decode failures keep the form open.
+
+
 ## 4. Colour
 
 Three themes, switchable in Settings. **A theme is only a palette**: every component reads tokens and contains no

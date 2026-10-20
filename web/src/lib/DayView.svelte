@@ -91,7 +91,7 @@
 
   <div class="bar">
     <button class="primary" onclick={() => onlog(id)}>Log a trip here</button>
-    <button onclick={() => onoffline(id)}>Prepare for offline</button>
+    <button onclick={() => onoffline(id, isoDay(offset))}>Prepare for offline</button>
   </div>
 </section>
 

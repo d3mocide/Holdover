@@ -6,6 +6,7 @@
   import { countPending, syncNow } from './sync.svelte.js';
   import { asOf } from './clock.svelte.js';
   import Icon from './Icon.svelte';
+  import { resizePhoto } from './photo.js';
   import { TRIP_KINDS } from './gearCatalog.js';
   import { requestPersistence } from './storage.js';
 
@@ -96,6 +97,10 @@
     if (!wbId && !gps) { err = 'Pick a waterbody or pin your GPS location.'; return; }
     saving = true;
     try {
+      // Decode/resize before the IndexedDB transaction so asynchronous image work cannot close it early.
+      const photos = [];
+      for (const s of species) photos.push(s.photo ? await resizePhoto(s.photo) : null);
+      species.forEach((s, i) => { s.photo = photos[i]; });
       const tripId = trip?.uuid ?? uuid(), now = nowIso();
       const wb = wbList.find((w) => String(w.id) === wbId);
       const iso = (v) => (v ? new Date(v).toISOString() : null);
@@ -192,7 +197,8 @@
           <select id="co{i}" bind:value={s.gearUuid}><option value="">Not recorded</option>{#each lureOptions as g}<option value={g.uuid}>{g.name}</option>{/each}</select></div>
       {/if}
       <div class="f"><label for="ph{i}">Photo (optional)</label>
-        <input id="ph{i}" type="file" accept="image/*" onchange={(e) => (s.photo = e.currentTarget.files?.[0] ?? null)} /></div>
+        <p class="quiet small">Photos are resized on this device to at most 1600 pixels.</p>
+        <input id="ph{i}" type="file" accept="image/jpeg,image/png,image/webp" onchange={(e) => (s.photo = e.currentTarget.files?.[0] ?? null)} /></div>
     {/each}
     <button onclick={() => (species = [...species, { name: '', count: 0, photo: null, gearUuid: '' }])}>Add species</button>
   </fieldset>
