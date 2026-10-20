@@ -143,3 +143,48 @@ def test_gauge_reports_flow_against_its_own_median_and_stays_quiet_without_histo
         session.add(GaugeReading(gauge_id=short.id, parameter="discharge_cfs", value=500.0, observed_at=(now - timedelta(minutes=15 * i)).isoformat(timespec="minutes")))
     session.commit()
     assert latest_gauge(session, short)["vs_median_pct"] is None
+
+
+def test_forecast_schedule_covers_unstocked_rivers_and_deduplicates_cells(session):
+    seed_waterbodies(session)
+    selected = nws.forecast_points(session)
+    river = wb(session, 'Deschutes River')
+    cell = lambda w: (round(w.lat * 4), round(w.lon * 4))
+    assert river.lat is not None
+    assert cell(river) in {cell(w) for w in selected}
+    assert len({cell(w) for w in selected}) == len(selected)
+    assert all(w.lat is not None and w.lon is not None for w in selected)
+
+
+def test_area_forecast_provenance_freshness_distance_and_missing_date(session):
+    from app.models import ForecastCache
+    from app.http import now_iso
+    from app.scoring import haversine_km
+    seed_waterbodies(session)
+    river = wb(session, 'Tualatin River')
+    # Existing stored waters only; forecasts below are explicit synthetic test payloads.
+    nearby = next(w for w in session.scalars(select(Waterbody))
+                  if w.id != river.id and w.lat is not None and w.lon is not None
+                  and 0 < haversine_km(river.lat, river.lon, w.lat, w.lon) <= 30)
+    today = date.today()
+    payload = {'fetched_at': now_iso(), 'forecast': [{'start': today.isoformat() + 'T06:00:00-07:00', 'daytime': True, 'temp_f': 55}]}
+    session.add(ForecastCache(waterbody_id=nearby.id, fetched_at=payload['fetched_at'], payload_json=json.dumps(payload)))
+    old = {**payload, 'fetched_at': (datetime.now(timezone.utc) - timedelta(days=2)).isoformat()}
+    session.add(ForecastCache(waterbody_id=river.id, fetched_at=old['fetched_at'], payload_json=json.dumps(old)))
+    session.commit()
+    weather = conditions(session, river, today)['weather']
+    assert weather['day']['temp_f'] == 55 and weather['stale'] is False
+    assert 0 < weather['distance_km'] <= 30 and weather['as_of'] == payload['fetched_at']
+    future = conditions(session, river, today + timedelta(days=30))['weather']
+    assert future is not None and future['day'] is None  # cached area, unavailable date
+    distant = wb(session, 'Owyhee River')
+    assert conditions(session, distant, today)['weather'] is None
+    unpinned = next(w for w in session.scalars(select(Waterbody)) if w.lat is None)
+    assert conditions(session, unpinned, today)['weather'] is None
+    # A failed fetch never removes the usable nearby forecast.
+    assert nws.refresh(session, river, lambda u: (503, b'unavailable')) is None
+    assert conditions(session, river, today)['weather']['stale'] is False
+    row = session.scalar(select(ForecastCache).where(ForecastCache.waterbody_id == nearby.id))
+    row.payload_json = json.dumps(old)
+    session.commit()
+    assert conditions(session, river, today)['weather']['stale'] is True

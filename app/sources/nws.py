@@ -92,7 +92,7 @@ def age_hours(fetched_at: str) -> float:
 
 
 def forecast_points(session: Session) -> list[Waterbody]:
-    """Every user's favorite waterbodies, plus one stocked waterbody per ~0.25 degree cell so the planner has a
+    """Every user's favorite waterbodies, plus one river or stocked waterbody per ~0.25 degree cell so the planner has a
     nearby forecast for every spot without one NWS call per waterbody."""
     from app.models import Favorite, StockingSnapshot, WaterbodyAlias
     starred = list(session.scalars(select(Waterbody).where(
@@ -102,7 +102,7 @@ def forecast_points(session: Session) -> list[Waterbody]:
         .where(WaterbodyAlias.confirmed == 1)) if r}
     seen = {(round(w.lat * 4), round(w.lon * 4)) for w in starred if w.lat is not None}
     out = list(starred)
-    for wb in session.scalars(select(Waterbody).where(Waterbody.id.in_(stocked_ids)).order_by(Waterbody.id)):
+    for wb in session.scalars(select(Waterbody).where((Waterbody.id.in_(stocked_ids)) | (Waterbody.kind == "river")).order_by(Waterbody.id)):
         if wb.lat is None or wb.lon is None:
             continue
         cell = (round(wb.lat * 4), round(wb.lon * 4))
@@ -114,16 +114,28 @@ def forecast_points(session: Session) -> list[Waterbody]:
 
 def nearest_cached(session: Session, lat: float, lon: float, max_km: float = 30) -> tuple[dict, float] | None:
     from app.scoring import haversine_km
+    from app.conditions import FORECAST_STALE_H
     best = None
     for wb in session.scalars(select(Waterbody)):
         if wb.lat is None or wb.lon is None:
             continue
         d = haversine_km(lat, lon, wb.lat, wb.lon)
-        if d <= max_km and (best is None or d < best[1]):
+        if d <= max_km:
             payload = cached(session, wb.id)
             if payload:
-                best = (payload, d)
-    return best
+                # Prefer a current area forecast over a closer expired cache.
+                rank = (age_hours(payload["fetched_at"]) > FORECAST_STALE_H, d)
+                if best is None or rank < best[2]:
+                    best = (payload, d, rank)
+    return best[:2] if best else None
+
+
+def area_cached(session: Session, wb: Waterbody) -> tuple[dict, float] | None:
+    """Same bounded area forecast for cards and rankings; never infer a location for unpinned waters."""
+    if wb.lat is not None and wb.lon is not None:
+        return nearest_cached(session, wb.lat, wb.lon)
+    payload = cached(session, wb.id)
+    return (payload, 0) if payload else None
 
 
 def run_job(session: Session, fetch: Fetcher = http_fetch) -> dict:

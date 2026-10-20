@@ -1,5 +1,6 @@
 <script>
   import Tile from './Tile.svelte';
+  import { forecastNote } from './forecastText.js';
   import Icon from './Icon.svelte';
   import { cToF, TREND } from './api.js';
   import { asOf, clockText } from './clock.svelte.js';
@@ -25,7 +26,7 @@
 
 <div class="grid">
   <Tile icon="forecast" label="Forecast" value={w ? `${w.temp_f}°F` : null}
-    sub={w ? `${w.short}${w.precip_pct != null ? `, ${w.precip_pct}% rain` : ''}, wind ${w.wind} ${w.wind_dir ?? ''}` : 'No forecast cached'}
+    sub={forecastNote(c.weather)}
     stale={c.weather?.stale} asof={c.weather ? `NWS ${asOf(c.weather.as_of)}` : ''} />
   <Tile icon="sun" label="Daylight" value={c.daylight ? clockText(`${c.daylight.sunrise}–${c.daylight.sunset}`) : null}
     sub={c.daylight ? clockText(`Light ${c.daylight.first_light}–${c.daylight.last_light}`) : 'No location'} asof="computed" />

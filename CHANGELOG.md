@@ -4,6 +4,10 @@ Versions follow `0.minor.patch` while the app is still changing quickly: a minor
 `pyproject.toml` and `web/package.json` (a test keeps them equal) and is shown in Settings and `/healthz`. Details and evidence for each change are
 in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
+## Unreleased
+
+**Area forecasts.** Rivers join scheduled NWS coverage. Cards and rankings share forecasts within 30 km, preferring current data and showing nearby-point distance. Missing area data and dates without a forecast have distinct messages.
+
 ## 0.7.0
 
 **Find waters directly.** Explore waters has Best bets, Rivers and Favorites tabs, statewide name search and direct river markers. River sheets include stored 24-hour and 7-day gauge history. Rankings show evidence coverage and exclude stale flow/forecast inputs.

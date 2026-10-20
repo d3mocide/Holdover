@@ -63,6 +63,8 @@ Look: a deep fir-green night, glass panels floating over a living map, one warm 
 - **Don't:** recolour outside the theme's `--fresh-1`, stretch, add effects, put the wordmark on a light fill, or
   use the older three-wave glyph.
 
+Forecast cards label a nearby NWS point with its approximate distance, retain its as-of time and stale indicator, and distinguish a missing area cache from an unavailable date. Area forecasts use stored points within 30 km; an unpinned water is never assigned a guessed location.
+
 ## 4. Colour
 
 Three themes, switchable in Settings. **A theme is only a palette**: every component reads tokens and contains no

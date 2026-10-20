@@ -80,7 +80,7 @@ has little text to work with.
 **Gate:** a sheet shows flow, weather and latest report notes together with "as of" times; a stale source shows a badge.
 
 - [x] USGS gauges (16, coordinates verified live), linked to waterbodies; values labelled provisional
-- [x] NWS forecast (hourly for favorites plus one stocked waterbody per ~0.25 degree cell)
+- [x] NWS forecast (favorites plus one river or stocked waterbody per ~0.25 degree cell; cards and rankings share current area forecasts within 30 km, with distance provenance)
 - [x] Sun and moon computed locally
 - [x] OHA algae advisories (read from the public ArcGIS layer behind OHA's map)
 - [x] Waterbody sheet, day-of view, gauges page, stale badges

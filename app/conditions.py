@@ -94,11 +94,12 @@ def conditions(session: Session, wb: Waterbody, day: date, today: date | None = 
     today = today or date.today()
     out: dict = {"waterbody_id": wb.id, "date": day.isoformat()}
 
-    payload = nws.cached(session, wb.id)
-    if payload:
+    area = nws.area_cached(session, wb)
+    if area:
+        payload, distance = area
         w = pick_weather(payload, day)
         out["weather"] = {"as_of": payload["fetched_at"], "stale": _age_h(payload["fetched_at"]) > FORECAST_STALE_H,
-                          "source": "NWS forecast", "day": w}
+                          "source": "NWS forecast", "distance_km": round(distance, 1), "day": w}
     else:
         out["weather"] = None
 

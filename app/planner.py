@@ -111,7 +111,7 @@ def rank(session: Session, day: date, fishery: str, home: tuple[float, float] | 
         flow = sc.flow_factor(cur, hist, s.w_flow, span)
         if flow.value is not None and day != date.today():
             flow.detail += " (latest observed flow, not a forecast)"
-        near = nws.nearest_cached(session, wb.lat, wb.lon)
+        near = nws.area_cached(session, wb)
         wx = pick_weather(near[0], day) if near and _age_h(near[0]["fetched_at"]) <= FORECAST_STALE_H else None
         fc = sc.forecast_factor(wx["temp_f"] if wx else None, wx["precip_pct"] if wx else None,
                                 wind_mph(wx["wind"]) if wx else None, s.w_forecast)
