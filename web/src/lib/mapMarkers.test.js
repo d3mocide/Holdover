@@ -48,3 +48,10 @@ test('stocking states have different geometry without relying on hue', () => {
   assert.match(art[2], /stroke-dasharray/);
   assert.match(art[3], /<rect/); // calendar, rather than another empty circle
 });
+
+test('an advisory badge has an opaque body so underlying stocking art cannot bleed through', () => {
+  const art = markers.advisory({ accent: 'warning', bg: 'ground' });
+  assert.match(art, /<circle[^>]+fill="warning"/);
+  assert.doesNotMatch(art, /opacity|fill="none"/);
+  assert.match(art, /stroke="ground"/);
+});

@@ -125,6 +125,7 @@ input[type='radio']:checked::after { content: ''; width: 10px; height: 10px; bor
 .maplibregl-ctrl-attrib.maplibregl-compact, .maplibregl-ctrl-attrib { background: var(--glass) !important; backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-line); border-radius: 10px; color: var(--text-quiet); }
 .maplibregl-ctrl-attrib a { color: var(--text-quiet) !important; }
 .maplibregl-ctrl-attrib-button { filter: invert(1) opacity(0.7); }
+.maplibregl-popup { z-index: 3; }
 .maplibregl-popup-content { background: var(--glass-dense) !important; backdrop-filter: var(--glass-blur-dense); color: var(--text); border: 1px solid var(--glass-line);
   border-radius: 14px !important; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important; padding: 10px 14px !important; font: 400 13px/1.4 'IBM Plex Sans', system-ui, sans-serif; }
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--glass-dense) !important; }
