@@ -10,7 +10,7 @@ from app.config import get_settings
 from app.db import get_session
 from app.models import Favorite, Invite, Report, ReportItem, Trip, User, UserSession, Waterbody, WaterbodyAlias
 from app.security import hash_password, hash_token, new_token, validate_password
-from app.scheduler import run_briefing, run_corps, run_dart, run_explain, run_nifc, run_nwps, run_nws, run_odf_fire, run_oha, run_reports, run_stocking, run_usgs
+from app.scheduler import run_briefing, run_corps, run_dart, run_explain, run_nifc, run_nwps, run_nws, run_odf_fire, run_oha, run_reports, run_stocking, run_usgs, run_usgs_daily
 
 router = APIRouter(dependencies=[Depends(csrf_guard), Depends(require_admin)])
 
@@ -127,7 +127,7 @@ def run_reports_now():
 
 @router.post("/jobs/{name}/run")
 def run_job_now(name: str):
-    jobs = {"usgs": run_usgs, "nws": run_nws, "oha": run_oha, "corps": run_corps, "odf_fire": run_odf_fire, "nifc": run_nifc, "nwps": run_nwps, "dart": run_dart, "explain": run_explain, "briefing": run_briefing}
+    jobs = {"usgs": run_usgs, "usgs_daily": run_usgs_daily, "nws": run_nws, "oha": run_oha, "corps": run_corps, "odf_fire": run_odf_fire, "nifc": run_nifc, "nwps": run_nwps, "dart": run_dart, "explain": run_explain, "briefing": run_briefing}
     if name not in jobs:
         raise HTTPException(404, "unknown job")
     return jobs[name]()

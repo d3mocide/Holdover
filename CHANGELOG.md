@@ -6,6 +6,11 @@ in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
 ## Unreleased
 
+**Seasonal flow context.** River details, Plan and day views show a documented historical median/middle-50% band,
+sample/year coverage and an observed-flow dot, with stale/missing labels and cached offline series. Historical
+downloads stay disabled until `USGS_API_KEY` is configured. An additive public-cache migration is required;
+personal tables and fishing-score weights are unchanged. Full live historical validation remains open.
+
 **Your journal in the planner.** Optional personal rankings use transparent same-water condition comparisons,
 including trips without recorded catches. Expandable evidence in Plan, water details and the day view shows
 sample counts, captured values/times and recorded lure/setup results. Anonymous and offline journals work with

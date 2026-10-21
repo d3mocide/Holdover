@@ -221,7 +221,8 @@ same-device account isolation. Chromium software evidence is in the 2026-10-20 P
 
 **Carried forward:** personal comparison thresholds and scoring are unvalidated heuristics, cover all species because
 trip targets were not recorded, and do not control for effort. Physical-phone/field qualification stays in Phase 9.
-Seasonal historical flow baselines remain a separate Phase 11 item. This feature is unreleased pending owner feedback.
+Seasonal historical flow baselines remain a separate Phase 11 item. Journal recommendations were approved and
+merged into main on 2026-10-20; they remain unreleased.
 
 ## Phase 11: More sources and statewide coverage
 
@@ -240,7 +241,13 @@ terms recorded in `docs/sources.md`, fixtures, tests, a stale badge and a credit
 - [x] **Map marker feedback**: compact river symbols, reports above all other pins with matching click priority, fish/calendar stocking symbols, and readable gauge cards with a separate close target and observation time
 - [x] **Map overlap and header feedback**: nearby/exact-overlap chooser with full waterbody names and stocking weeks; Plan-style Explore selectors; consistent page icon/title rows with descriptions below; expanded Explore matches Plan dimensions/title size with an edge collapse/restore control; stocking draws above river/gauge markers below advisories
 - [x] **Advisory legibility**: compact red dashed rings around waterbody pins with clear centres; ring hits open details, with no implied geographic advisory boundary
-- [ ] **Seasonal flow context**: use a documented historical baseline and show its period/sample coverage; the current comparison is only a recent seven-day median, not a validated fishing range
+- [x] **Seasonal flow software**: documented ten-year approved daily-mean baseline, median/middle-50% chart,
+      date-window coverage, source times, stale/missing states, river/Plan/day integration and offline bundles.
+      Fixture/browser software gates pass; scoring is unchanged. See [seasonal-flow.md](seasonal-flow.md)
+- [ ] **Seasonal flow live gate**: owner will configure `USGS_API_KEY` later, as requested on 2026-10-20. Full
+      historical downloads stay disabled until then. Validate complete real-gauge baselines and coverage before
+      claiming live seasonal context. Physical-phone/field interpretation remains open. The existing seven-day
+      comparison is still a recent median, not a seasonal normal or a validated fishing range
 - River discovery gate: a river opens from its marker or its name without a gauge-popup step; cross-zone search, unpinned waters and loaded charts work; browser regressions and all-theme axe scans pass. Stop here for feedback before expanding the comparison/offline features
 - [ ] OWRD gauges: station list is public but readings have no documented API; probably skip (USGS covers the main rivers)
 - [ ] ODFW fish-district polygons: available on ArcGIS Online (the handoff's URL is blocked), but they are not the six stocking zones; low value. **New (2026-10-18):** the *Angling Zones* (Sport Fishing Regulations zones) are the useful layer, free to use with an ODFW credit, but the server is firewalled from here: see data-source-options 6b

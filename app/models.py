@@ -5,6 +5,16 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.db import Base
 
 
+class FlowBaseline(Base):
+    """Public, derived USGS daily-mean baseline. Last good payload survives failed refreshes."""
+    __tablename__ = "flow_baseline"
+    gauge_id: Mapped[int] = mapped_column(ForeignKey("gauge.id"), primary_key=True)
+    payload_json: Mapped[str | None] = mapped_column(Text)
+    fetched_at: Mapped[str | None] = mapped_column(Text)
+    attempted_at: Mapped[str] = mapped_column(Text)
+    error: Mapped[str | None] = mapped_column(Text)
+
+
 class Waterbody(Base):
     __tablename__ = "waterbody"
     id: Mapped[int] = mapped_column(primary_key=True)

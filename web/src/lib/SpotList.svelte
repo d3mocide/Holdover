@@ -5,6 +5,7 @@
   import { hhmm, clockText } from './clock.svelte.js';
   import { evidenceText } from './waterSearch.js';
   import JournalAdvice from './JournalAdvice.svelte';
+  import SeasonalFlow from './SeasonalFlow.svelte';
   // A ranked list of spots for one day, each with a "why this score" breakdown.
   let { spots, fresh = {}, selectedId = null, onselect } = $props();
 </script>
@@ -43,6 +44,7 @@
         {#if s.report_sentence}<p class="small quiet">ODFW: “{s.report_sentence}”</p>{/if}
       </details>
       {#if s.advice}<div class="personal"><JournalAdvice advice={s.advice} compact /></div>{/if}
+      {#if s.seasonal}<div class="personal"><SeasonalFlow data={s.seasonal} date={s.seasonal.date} /></div>{/if}
     </li>
   {/each}
 </ul>

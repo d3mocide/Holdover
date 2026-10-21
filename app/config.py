@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     # USGS: "ogc" = the Water Data API (api.waterdata.usgs.gov). "legacy" = waterservices.usgs.gov, which USGS is
     # retiring in early 2027; kept only as a fallback until then and to be deleted afterwards.
     usgs_api: str = "ogc"
+    usgs_api_key: str = ""  # historical daily downloads; header only, never in URLs
     # Accounts. cookie_secure=None means "Secure when the request arrived over HTTPS" (directly or via the
     # reverse proxy's X-Forwarded-Proto); set true/false to force it.
     cookie_secure: bool | None = None

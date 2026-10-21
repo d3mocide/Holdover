@@ -13,10 +13,19 @@ def fake_runs(monkeypatch):
 
 
 def test_catch_up_runs_every_source_on_a_fresh_install_in_order(session, monkeypatch):
+    from app.config import get_settings
+    # Enable the optional historical source for this all-source gate. All jobs are stubbed below.
+    monkeypatch.setattr(get_settings(), "usgs_api_key", "synthetic-test-key")
     ran = fake_runs(monkeypatch)
     out = scheduler.catch_up()
     assert out[0] == "odfw_stocking" and out.index("nws") > out.index("odfw_stocking")  # forecasts need stocked waterbodies first
     assert ran == [fn for _, fn in scheduler.CATCH_UP]
+
+
+def test_catch_up_does_not_start_disabled_historical_downloads(session, monkeypatch):
+    ran = fake_runs(monkeypatch)
+    assert "usgs_daily" not in scheduler.catch_up()
+    assert "run_usgs_daily" not in ran
 
 
 def test_catch_up_skips_sources_that_are_fresh(session, monkeypatch):

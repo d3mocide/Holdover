@@ -38,6 +38,7 @@ export const api = {
   rejectItem: (id) => req(`/api/admin/review/items/${id}/reject`, { method: 'POST', auth: true }),
   runReports: () => req('/api/admin/jobs/reports/run', { method: 'POST', auth: true }),
   waterbody: (id) => req(`/api/waterbodies/${id}`),
+  seasonalFlow: (id, date) => req(`/api/gauges/${id}/seasonal?date=${date}`),
   health: () => req('/healthz'),
   aliases: () => req('/api/admin/aliases?status=unconfirmed', { auth: true }),
   waterbodies: () => req('/api/admin/waterbodies', { auth: true }),

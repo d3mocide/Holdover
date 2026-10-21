@@ -46,9 +46,9 @@
     {#if health}
       {#each Object.entries(health.sources) as [name, s]}
         <div class="src">
-          <i class="stat-dot" class:ok={!s.stale} class:bad={s.stale}></i>
-          <span class="nm">{name}</span>
-          <span class="when quiet">{s.last_success ? new Date(s.last_success).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'never run'}{s.stale && s.last_success ? ' · stale' : ''}</span>
+          <i class="stat-dot" class:ok={!s.stale && !s.disabled} class:bad={s.stale}></i>
+          <span class="nm">{name === 'usgs_daily' ? 'USGS seasonal flows' : name}</span>
+          <span class="when quiet">{s.disabled ? 'Downloads disabled (USGS API key)' : s.last_success ? new Date(s.last_success).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'never run'}{s.stale && s.last_success ? ' · stale' : ''}</span>
         </div>
         {#if s.last_error}<p class="quiet small err">Last error: {s.last_error}</p>{/if}
       {/each}
@@ -62,7 +62,8 @@
   legend { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-quiet); padding: 0 6px; }
   .opt { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--text); margin: 0; }
   h2 { margin: 0 0 8px; }
-  .src { display: grid; grid-template-columns: 9px 1fr auto; gap: 12px; align-items: center; min-height: 36px; border-bottom: 1px solid var(--hair); }
+  .src { display: grid; grid-template-columns: 9px minmax(0, 1fr) minmax(0, 1.4fr); gap: 12px; align-items: center; min-height: 36px; border-bottom: 1px solid var(--hair); }
+  .nm, .when { min-width: 0; overflow-wrap: anywhere; }
   .src:last-of-type { border-bottom: 0; } .nm { font-size: 14px; } .when { font-size: 13px; font-variant-numeric: tabular-nums; }
   .small { font-size: 13px; margin: 0; } .err { padding-left: 21px; }
 </style>

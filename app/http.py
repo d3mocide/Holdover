@@ -21,7 +21,7 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def http_fetch(url: str, *, retries: int = 3, timeout: float = 30, extra_ca: str | None = None, system_trust: bool = False) -> tuple[int | None, bytes]:
+def http_fetch(url: str, *, retries: int = 3, timeout: float = 30, extra_ca: str | None = None, system_trust: bool = False, api_key: str = "") -> tuple[int | None, bytes]:
     """extra_ca: a PEM file added to the trust store for hosts that omit an intermediate certificate from their chain.
     system_trust: use the operating system's store, for a host whose (newer) root the bundled store lacks.
     Verification is never switched off."""
@@ -32,12 +32,14 @@ def http_fetch(url: str, *, retries: int = 3, timeout: float = 30, extra_ca: str
         verify = ssl.create_default_context(cafile=certifi.where())
         verify.load_verify_locations(extra_ca)
     headers = {"User-Agent": get_settings().user_agent}
+    if api_key:
+        headers["X-Api-Key"] = api_key
     delay = 2.0
     status: int | None = None
     body = b""
     for attempt in range(retries + 1):
         try:
-            r = httpx.get(url, headers=headers, follow_redirects=True, timeout=timeout, verify=verify)
+            r = httpx.get(url, headers=headers, follow_redirects=not bool(api_key), timeout=timeout, verify=verify)
             status, body = r.status_code, r.content
         except httpx.HTTPError as exc:
             status, body = None, str(exc).encode()

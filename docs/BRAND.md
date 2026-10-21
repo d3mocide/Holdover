@@ -42,6 +42,12 @@ Look: a deep fir-green night, glass panels floating over a living map, one warm 
 - **Empty states invite.** A short reason, then the one next action ("Log your first trip").
 - **Flow context:** call the short baseline a recent seven-day median, never seasonal normal or a validated fishing range.
   Evidence percentages describe the share of scoring inputs backed by data, not the chance of catching a fish.
+- **Seasonal context:** expandable river/Plan/day cards label baseline years, approved daily means, window
+  coverage and retrieval time. The gauge-coloured line is the median; a muted band is the middle 50%; an outlined
+  accent dot is one dated observation. Text explains these, with a full values alternative. Gaps stay blank;
+  stale data and disabled downloads are explicit. Cards use labelled groups rather than repeated landmarks,
+  shared-icon disclosure arrows and 44 px summaries; values scroll with the surrounding panel. Seasonal context
+  does not change the fishing score. Calculations and setup live in [seasonal-flow.md](seasonal-flow.md).
 
 | Say | Not |
 | --- | --- |

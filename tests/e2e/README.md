@@ -19,6 +19,7 @@ sync, accounts, gear, offline or UI code changes (see AGENTS.md).
 | `trip-preparation.mjs` | Eastern-Oregon trip tiles, exact cached days, EXIF-oriented journal/gear photos, alpha/no enlargement, invalid-image rejection, anonymous airplane-mode Favorites/history, photo reconnect/upload and cross-account denial. Requires a disposable gear fixture with synthetic statewide tiles | 19 |
 | `trip-preparation-ui.mjs` | Favorites, zone/trip offline previews, plan-date handoff, photo wording, cancellation/reuse, quota and storage budget, all themes and phone/tablet/desktop; full axe and screenshots | 92 checks, including 36 axe scans |
 | `journal-advice.mjs` | Optional Map/Plan rankings, explicit public/personal scores, comparable trips including zero catches, lure/setup evidence, all themes/sizes, airplane-mode reload, reconnect adoption and shared-device account isolation. Synthetic journal and public comparison fixtures on a disposable gear instance | 114 checks, including 36 full axe scans |
+| `seasonal-flow.mjs` | River/Plan/day charts, sample coverage/text values, stale/insufficient/key-disabled states, Settings, all themes/sizes and real service-worker/IndexedDB offline reload. Requires `seed-seasonal.py` on a disposable river fixture | 180 checks, including 64 full axe scans |
 | `area-forecasts.mjs` | Area forecast value/distance/time, stale badge, distinct missing-area/unavailable-date states, overflow, screenshots and full axe in all three themes at phone/tablet/desktop widths. Explicit browser-only synthetic forecasts | 138 checks, including 45 axe scans |
 | `rivers.mjs` | Direct river browsing and marker clicks, populated charts, measurement switching, Favorites, cross-zone search, unpinned waters, offline river reload, phone fit | 12 |
 
@@ -47,6 +48,12 @@ Use a fresh disposable server for the complete run. Fixtures are synthetic; neve
 production instance. Public response routes are installed on the browser context so service-worker fetches see
 the same fixtures, then removed before airplane mode. Raw IndexedDB fixture inserts are followed by a reload;
 app writes use Dexie and update the comparison through live queries.
+
+For `seasonal-flow.mjs`, start a fresh disposable gear fixture with the synthetic river history and toy tiles,
+then run `.venv/bin/python tests/e2e/seed-seasonal.py /tmp/holdover-.../data/e2e.db` before the browser script.
+The seed refuses non-disposable paths and preserves existing rows; it never downloads real history or needs a key.
+`UI_ONLY=1` runs the all-theme matrix; `OFFLINE_ONLY=1` runs the service-worker/IndexedDB scenario. Never use a
+personal dev/production database for either seed or browser script. Historical downloads stay disabled in tests.
 
 For the hardening suite, use a separate fresh fixture instance (never the personal dev database):
 

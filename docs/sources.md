@@ -20,6 +20,24 @@ pages. **This is a summary of what the sources publish, not legal advice**: the 
 
 ## Review findings, 2026-10-18
 
+### USGS daily means, reviewed 2026-10-20
+
+The existing USGS source also provides approved daily mean discharge through the documented
+[`daily` collection](https://api.waterdata.usgs.gov/docs/ogcapi/) (`00060`, statistic `00003`, `ft^3/s`).
+The live response for USGS-14207500 on 2025-10-01 through 2025-10-03 was checked and saved as a parser fixture.
+[`robots.txt`](https://api.waterdata.usgs.gov/robots.txt) was read: it explicitly welcomes automated retrieval of
+public documentation and asks clients to begin with documented entry points. **API item paths are disallowed
+for general crawlers; the explanatory policy directs bulk API clients to use an API key.** Historical downloads
+therefore require `USGS_API_KEY`, sent in a header, never stored in raw URLs or browser storage. No bulk historical
+download is attempted without that key. It repeats the public-domain policy and asks for USGS credit.
+The existing identifying client/backoff is reused. When enabled, one river-linked gauge is considered each half-hour job,
+with successful baselines refreshed at most monthly and failures deferred for a day. Raw pages are stored before
+parsing, pagination is bounded and a failed/incomplete refresh retains the last good baseline marked stale.
+This uses the existing USGS service, with a free API key needed for the new historical requests. Calculation details live in
+`docs/seasonal-flow.md`. These are Holdover's smoothed ten-year summaries, not USGS's period-of-record statistics;
+the [USGS statistics documentation](https://waterdata.usgs.gov/statistics-documentation) informed the use of
+approved daily means and clearly labelled percentiles. Credit remains U.S. Geological Survey in Settings and charts.
+
 ### ODFW and the state terms
 
 - **No ODFW terms page exists that I could find.** The homepage, the footer and the stocking page were read. The

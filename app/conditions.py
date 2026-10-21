@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.astro import daylight, moon_phase
 from app.freshness import freshness
 from app.models import Gauge, GaugeReading, Report, ReportItem, StockingSnapshot, Waterbody, WaterbodyAlias, WaterbodyGauge
-from app import passage
+from app import passage, seasonal
 from app.sources import corps, nifc, nwps, nws, odf_fire, oha
 
 GAUGE_STALE_H = 3
@@ -106,6 +106,9 @@ def conditions(session: Session, wb: Waterbody, day: date, today: date | None = 
     gauges = session.scalars(select(Gauge).join(WaterbodyGauge, WaterbodyGauge.gauge_id == Gauge.id)
                              .where(WaterbodyGauge.waterbody_id == wb.id)).all()
     out["gauges"] = [latest_gauge(session, g) for g in gauges]
+    if wb.kind == "river":
+        for g, result in zip(gauges, out["gauges"]):
+            result["seasonal"] = seasonal.for_gauge(session, g, day)
     temps = [g["values"]["water_temp_f"] for g in out["gauges"] if "water_temp_f" in g["values"]]
     out["water_temp_f"] = max(temps, key=lambda t: datetime.fromisoformat(t["observed_at"])) if temps else None
 

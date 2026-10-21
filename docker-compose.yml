@@ -9,6 +9,7 @@ services:
     volumes: ["holdover-data:/data"]
     environment:
       USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
+      USGS_API_KEY: ${USGS_API_KEY:-}
       TZ: America/Los_Angeles
       USGS_API: ${USGS_API:-ogc}   # ogc (default) or legacy; legacy is retired by USGS in early 2027
       TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-0}   # set to 1 behind one reverse proxy so the login throttle sees real client addresses

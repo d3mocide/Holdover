@@ -8,7 +8,7 @@ from app.config import get_settings
 from app.db import session_factory
 from app.http import now_iso
 from app.models import RawFetch
-from app.sources import corps, dart, nifc, nwps, nws, odf_fire, odfw_report, odfw_stocking, oha, usgs
+from app.sources import corps, dart, nifc, nwps, nws, odf_fire, odfw_report, odfw_stocking, oha, usgs, usgs_daily
 
 log = logging.getLogger("holdover.scheduler")
 scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
@@ -17,7 +17,7 @@ scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
 CADENCE = {odfw_stocking.SOURCE: timedelta(days=7), odfw_report.SOURCE: timedelta(days=8),
            usgs.SOURCE: timedelta(hours=1), oha.SOURCE: timedelta(days=1), nws.SOURCE: timedelta(hours=2),
            corps.SOURCE: timedelta(hours=1), odf_fire.SOURCE: timedelta(hours=12), nifc.SOURCE: timedelta(hours=3), nwps.SOURCE: timedelta(hours=4),
-           dart.SOURCE: timedelta(days=1)}
+           dart.SOURCE: timedelta(days=1), usgs_daily.SOURCE: timedelta(days=45)}
 # Sources that only run for things the owner opts into (nws needs starred waterbodies)
 OPTIONAL: set[str] = set()
 
@@ -80,6 +80,10 @@ def _run(name: str, mod) -> dict:
 
 def run_usgs() -> dict:
     return _run("usgs", usgs)
+
+
+def run_usgs_daily() -> dict:
+    return _run("usgs_daily", usgs_daily)
 
 
 def run_nws() -> dict:
@@ -161,7 +165,7 @@ def run_llm_retry() -> None:
 # Order matters: NWS forecasts are fetched for stocked waterbodies, so stocking goes first.
 CATCH_UP = [(odfw_stocking.SOURCE, "run_stocking"), (oha.SOURCE, "run_oha"), (usgs.SOURCE, "run_usgs"), (corps.SOURCE, "run_corps"),
             (odf_fire.SOURCE, "run_odf_fire"), (nifc.SOURCE, "run_nifc"), (nwps.SOURCE, "run_nwps"), (dart.SOURCE, "run_dart"), (nws.SOURCE, "run_nws"),
-            (odfw_report.SOURCE, "run_reports")]
+            (odfw_report.SOURCE, "run_reports"), (usgs_daily.SOURCE, "run_usgs_daily")]
 
 
 def catch_up() -> list[str]:
@@ -219,6 +223,7 @@ def start() -> None:
     # Retry LLM work that was skipped because the host was down.
     scheduler.add_job(run_llm_retry, "interval", hours=2, id="llm_retry", replace_existing=True)
     scheduler.add_job(run_usgs, "interval", minutes=30, id="usgs", replace_existing=True, coalesce=True)
+    scheduler.add_job(run_usgs_daily, "interval", minutes=30, id="usgs_daily", replace_existing=True, coalesce=True)
     scheduler.add_job(run_corps, "interval", hours=1, id="corps", replace_existing=True, coalesce=True)
     scheduler.add_job(run_odf_fire, "interval", hours=6, id="odf_fire", replace_existing=True, coalesce=True)
     scheduler.add_job(run_nifc, "interval", hours=1, id="nifc", replace_existing=True, coalesce=True)
@@ -264,6 +269,9 @@ def source_status() -> dict:
             last_ok = s.scalar(select(func.max(RawFetch.fetched_at)).where(
                 RawFetch.source == source, RawFetch.status == 200, RawFetch.parse_ok == 1))
             last = s.scalar(select(RawFetch).where(RawFetch.source == source).order_by(RawFetch.id.desc()).limit(1))
+            if source == usgs_daily.SOURCE and not get_settings().usgs_api_key:
+                out[source] = {"last_success": last_ok, "stale": False, "last_error": None, "idle": True, "disabled": True}
+                continue
             if last is None and source in OPTIONAL:
                 out[source] = {"last_success": None, "stale": False, "last_error": None, "idle": True}
                 continue

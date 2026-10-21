@@ -12,6 +12,7 @@ services:
       - dev-data:/data
     environment:
       USER_AGENT: ${USER_AGENT:?set USER_AGENT with a contact address}
+      USGS_API_KEY: ${USGS_API_KEY:-}
       # On by default so data does not go stale while you work (same polite polling as the deployed app). To stop it set
       # DEV_RUN_SCHEDULER=false and refresh by hand with scripts/dev-fetch.sh
       RUN_SCHEDULER: ${DEV_RUN_SCHEDULER:-true}

@@ -17,6 +17,15 @@ from app.sources import nws
 router = APIRouter()
 
 
+@router.get("/gauges/{gauge_id}/seasonal")
+def seasonal_flow(gauge_id: int, date_: date | None = Query(None, alias="date"), session: Session = Depends(get_session)):
+    from app import seasonal
+    gauge = session.get(Gauge, gauge_id)
+    if gauge is None:
+        raise HTTPException(404)
+    return seasonal.for_gauge(session, gauge, date_ or date.today())
+
+
 @router.get("/gauges/{gauge_id}/history")
 def gauge_history(gauge_id: int, hours: int = Query(168), session: Session = Depends(get_session)):
     """Bounded observed history from stored USGS data; never fetch a source inside a chart request."""

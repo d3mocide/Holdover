@@ -9,6 +9,7 @@
   import { ownedFor, ownedText } from './gearPack.js';
   import Icon from './Icon.svelte';
   import JournalAdvice from './JournalAdvice.svelte';
+  import SeasonalFlow from './SeasonalFlow.svelte';
   import { journalAdvice, dayContext } from './journalAdvice.js';
   import { adviceState, adviceData } from './journalAdvice.svelte.js';
   let { id, fishery = 'trout', startOffset = 0, onback, onlog, onoffline } = $props();
@@ -62,6 +63,7 @@
     <p role="alert">Couldn't load the day view ({error}).</p>
   {:else if c}
     <Conditions {c} level={2} />
+    {#if d.waterbody.kind === 'river'}<SeasonalFlow gauges={c.gauges} date={isoDay(offset)} />{/if}
 
     <StockingList stocking={c.stocking} level={2} />
 

@@ -12,6 +12,7 @@ from app.llm.prompts import EXPLAIN_VERSION
 from app.models import Favorite, User
 from app.planner import FISHERIES, facts_text, rank
 from app.zones import BY_KEY
+from app import seasonal
 
 router = APIRouter()
 
@@ -42,6 +43,7 @@ def spots(date_: date | None = Query(None, alias="date"), fishery: str = "trout"
             "favorite": sp.wb.id in favs,
             "score": sp.score, "coverage": sp.coverage,
             "journal_context": sp.journal_context,
+            "seasonal": seasonal.for_water(session, sp.wb.id, day) if sp.wb.kind == "river" else None,
             "factors": [{"name": f.name, "value": f.value, "weight": f.weight, "points": f.contribution, "detail": f.detail,
                          "applicable": f.applicable}
                         for f in sp.factors],

@@ -110,7 +110,7 @@ def main(argv: list[str]) -> int:
         from app.sources import usgs
         with session_factory()() as s:
             print(usgs.run_job(s, period="P7D"))
-    elif cmd in ("usgs", "nws", "oha", "explain"):
+    elif cmd in ("usgs", "nws", "oha", "explain", "usgs_daily"):
         from app import scheduler
         print(getattr(scheduler, f"run_{cmd}")())
     elif cmd in ("create-user", "reset-password", "list-users"):

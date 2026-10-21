@@ -9,6 +9,7 @@
   import { isFavorite, toggleFavorite } from './auth.svelte.js';
   import { waterbodyHistory } from './journalStats.js';
   import GaugeHistory from './GaugeHistory.svelte';
+  import SeasonalFlow from './SeasonalFlow.svelte';
   import JournalAdvice from './JournalAdvice.svelte';
   import { journalAdvice, dayContext } from './journalAdvice.js';
   import { adviceState, adviceData } from './journalAdvice.svelte.js';
@@ -51,6 +52,7 @@
     {#if wb.kind === 'river'}
       <p class="quiet small">River markers may be at a gauge; they are not verified fishing access points.</p>
       <GaugeHistory gauges={wb.conditions.gauges} />
+      <SeasonalFlow gauges={wb.conditions.gauges} />
     {/if}
     <Conditions c={{ ...wb.conditions, waterbody_kind: wb.kind }} />
 
