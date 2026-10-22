@@ -14,7 +14,7 @@ Downloads are disabled until the owner configures a free key, following the USGS
    it in browser storage. The historical client sends an `X-Api-Key` header; raw URLs contain no key.
 3. Start the updated image, or refresh local development with `docker compose -f docker-compose.dev.yml up -d api`.
    Additive Alembic migration `0010` creates only a public derived-cache table. It changes no existing readings
-   or personal tables. The prepared 0.9.0 release contains this feature; confirm publication before pulling it.
+   or personal tables. The published 0.9.0 release contains this feature.
 4. Reload the app. Enabled installs consider one river-linked USGS gauge per half-hour job, gradually warming
    coverage. Successful baselines refresh monthly; failures defer retries for a day. The operator CLI
    `python -m app.cli usgs_daily` runs the same bounded due-work job once, not a forced bulk refresh.

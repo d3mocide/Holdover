@@ -13,12 +13,12 @@ unedited in [reference/original-handoff.md](reference/original-handoff.md). Rule
 - Statuses: `Done`, `In progress`, `Planned`. Do not invent others.
 - `tests/test_docs.py` checks that every Done phase has a build-log entry and that this file's links resolve.
 
-Published release milestone: **v0.8.0** adds photo resizing, trip-area offline maps, the Favorites dashboard and area forecasts on top of v0.7.0's river discovery/map work. Both releases were published on 2026-10-19; GitHub CI and amd64/arm64 image publication passed. The packaged v0.8.0 amd64 image was smoke-tested with disposable data. See [CHANGELOG.md](../CHANGELOG.md) and [BUILD_LOG.md](BUILD_LOG.md). Production remains the last observed 0.6.0 deployment; physical-device and rollout gates remain open.
-
-**Next release: v0.9.0 (In progress).** Packages the journal recommendations and key-gated seasonal-flow software
-with all v0.8.0 changes. Release preparation does not complete the seasonal live-data gate. Publication, registry
-verification and production rollout remain separate gates; production was checked read-only on 2026-10-22 and
-still reports 0.6.0. See the latest build-log entry for candidate checks and remaining work.
+Published release milestone: **v0.9.0**, published 2026-10-22, packages journal recommendations and key-gated
+seasonal-flow software with all v0.8.0 trip preparation/Favorites/forecast and v0.7.0 river/map work. Release CI
+and amd64/arm64 image publication passed; the downloaded amd64 image passed its startup/HTTP smoke test with
+disposable data. See [CHANGELOG.md](../CHANGELOG.md) and the latest [BUILD_LOG.md](BUILD_LOG.md) evidence.
+The seasonal live-data gate remains open; downloads stay disabled without the server-only USGS key. Production
+was last checked read-only on 2026-10-22 at 0.6.0. Production rollout, physical-device and field gates remain open.
 
 ## At a glance
 

@@ -804,3 +804,21 @@ Owner approved the proposed main merge, push and v0.9.0 tag/publication after re
 Remote main was checked at `90d3ea0`; no v0.9.0 tag existed. Finalized the changelog release heading. The
 application is unchanged from the verified candidate. CI, registry publication and published-image smoke evidence
 will be appended after those checks complete. Production rollout remains the owner's next step.
+
+### 2026-10-22 · this commit · v0.9.0 publication verified
+Fast-forwarded main and atomically pushed main plus annotated `v0.9.0`, both at `ed38c19`. Published the
+[GitHub release](https://github.com/d3mocide/Holdover/releases/tag/v0.9.0) after
+[release CI 39865317442](https://github.com/d3mocide/Holdover/actions/runs/39865317442) passed backend, frontend
+and multi-architecture image jobs. Independently inspected the registry index: linux/amd64 and linux/arm64 exist.
+The release image index digest is `sha256:0534b66933f8be46966d34cdf5e31b55df035ed84acf606f0b9361b6c8cd949f`.
+- Pulled `ghcr.io/d3mocide/holdover:0.9.0`; its OCI revision matches `ed38c19bfd6a643eff0f77d8cb19ff490e608178`.
+  Ran its actual entrypoint with fresh RAM-only `/data` and scheduler disabled: migrations and seed succeeded,
+  HTTP health reports 0.9.0/ok, public waters include Malheur River, the frontend serves, and every linked
+  Tualatin seasonal gauge explicitly reports disabled downloads. The temporary container was stopped/removed.
+- Updated roadmap/public setup wording to the verified publication state. Document checks pass. This follow-up
+  changes documentation only and leaves the application tag unchanged. Release notes include validation,
+  upgrade/key setup and outstanding qualification limits. Existing CI runner/action deprecation notices remain.
+- Not performed: production upgrade, production backup/restore or cookie/scheduler checks, arm64 execution on
+  a real Pi, physical-phone qualification, Postgres migration 0010 or authenticated historical USGS downloads.
+  The owner can now back up production, pin `HOLDOVER_TAG=0.9.0`, pull and recreate the service using
+  [operations](operations.md#upgrades). No existing data volume or production record was modified.
