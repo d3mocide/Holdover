@@ -6,7 +6,7 @@ in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
 ## Unreleased
 
-## 0.9.0 (prepared; not published)
+## 0.9.0
 
 **Seasonal flow context.** River details, Plan and day views show a documented historical median/middle-50% band,
 sample/year coverage and an observed-flow dot, with stale/missing labels and cached offline series. Historical

@@ -798,3 +798,9 @@ version-pin, startup-check and rollback guidance in operations. No production da
   physical phones, Pi, Secure cookies on production and a production scheduler soak remain unverified.
   Live production was checked read-only: 0.6.0, healthy scheduler, ten fresh sources. Remote main still points
   to `90d3ea0`, and no v0.9.0 tag exists. Merge, push, tag/image publication and deployment have not occurred.
+
+### 2026-10-22 · this commit · v0.9.0 publication authorized
+Owner approved the proposed main merge, push and v0.9.0 tag/publication after reviewing candidate `5d50c46`.
+Remote main was checked at `90d3ea0`; no v0.9.0 tag existed. Finalized the changelog release heading. The
+application is unchanged from the verified candidate. CI, registry publication and published-image smoke evidence
+will be appended after those checks complete. Production rollout remains the owner's next step.
