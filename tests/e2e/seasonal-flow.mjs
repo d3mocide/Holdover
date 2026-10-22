@@ -65,7 +65,13 @@ try {
     await scan(p, `${size}-${theme}-day`); await p.getByRole('button', { name: 'Back', exact: true }).click();
     if (await p.getByRole('button', { name: 'Close details', exact: true }).count()) await p.getByRole('button', { name: 'Close details', exact: true }).click();
     await nav(p, 'Plan'); await p.getByRole('button', { name: 'Steelhead & salmon', exact: true }).click();
-    const spot = p.locator('.spotli').filter({ hasText: 'Tualatin River' }).first(); await summary(spot).click(); await card(spot).getByRole('img').waitFor();
+    const spot = p.locator('.spotli').filter({ hasText: 'Tualatin River' }).first();
+    try { await summary(spot).click(); await card(spot).getByRole('img').waitFor(); }
+    catch (error) {
+      await p.screenshot({ path: `${shots}/${size}-${theme}-plan-failure.png` });
+      console.error(await p.locator('body').innerText());
+      throw error;
+    }
     await scan(p, `${size}-${theme}-plan`);
     for (const state of ['stale', 'insufficient', 'disabled']) {
       variant = state; const target = await openRiver(p); await summary(target).click();

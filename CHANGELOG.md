@@ -6,6 +6,8 @@ in [docs/BUILD_LOG.md](docs/BUILD_LOG.md).
 
 ## Unreleased
 
+## 0.9.0 (prepared; not published)
+
 **Seasonal flow context.** River details, Plan and day views show a documented historical median/middle-50% band,
 sample/year coverage and an observed-flow dot, with stale/missing labels and cached offline series. Historical
 downloads stay disabled until `USGS_API_KEY` is configured. An additive public-cache migration is required;
@@ -16,6 +18,18 @@ including trips without recorded catches. Expandable evidence in Plan, water det
 sample counts, captured values/times and recorded lure/setup results. Anonymous and offline journals work with
 the existing account isolation. Public scores remain available. No schema migration or new service is required;
 the comparison rules are unvalidated heuristics, documented in [journal recommendations](docs/journal-recommendations.md).
+
+**Upgrade notes.** Includes every change in 0.8.0. Startup adds migrations `0009` (fish counts, when upgrading
+from 0.6.0) and `0010` (public seasonal cache). Existing personal tables, photos, tiles and manually placed pins
+are preserved. No new browser schema migration is added after 0.8.0; upgrades from 0.6.0 also receive the earlier
+date/fishery cache migration. Back up the database and photos before upgrading; follow
+[operations](docs/operations.md#upgrades). Keep `USGS_API_KEY` unset to deploy with historical downloads disabled;
+live flow and the rest of the app continue to work. To enable downloads later, add the key to the production
+service environment and follow [seasonal-flow setup](docs/seasonal-flow.md#enable-historical-downloads).
+Physical iOS/Android, Pi and authenticated historical-data qualification remain open.
+
+**Ranking reliability.** Slow Map and Plan requests for a previous fishery or zone no longer overwrite the
+currently selected results or show an obsolete request error.
 
 ## 0.8.0
 

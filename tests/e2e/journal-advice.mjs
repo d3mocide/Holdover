@@ -91,7 +91,9 @@ try {
       await p.getByRole('button', { name: 'Back', exact: true }).click();
       if (await p.getByRole('button', { name: 'Close details', exact: true }).count()) await p.getByRole('button', { name: 'Close details', exact: true }).click();
     }
-    ok(!errors.length, size + ': no browser exceptions'); await ctx.close();
+    ok(!errors.length, size + ': no browser exceptions');
+    await ctx.unrouteAll({ behavior: 'wait' });
+    await ctx.close();
   }
   if (!process.env.UI_ONLY) {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }), p = await ctx.newPage();
@@ -125,6 +127,7 @@ try {
     await checkbox(p).check(); ok(!await explore(p).getByText(/journal -0.5/).count(), 'second account has no previous-owner score adjustment');
     await explore(p).getByRole('button', { name: /Tualatin River/ }).click(); await comparison(detail(p)).locator(':scope > summary').click();
     await comparison(detail(p)).getByText(/No comparable trips yet/).waitFor(); ok(!await comparison(detail(p)).getByText(/Synthetic comparison lure/).count(), 'same-device account switch removes previous-owner gear advice');
+    await ctx.unrouteAll({ behavior: 'wait' });
     await ctx.close();
   }
   console.log(`${checks} journal advice checks passed`);

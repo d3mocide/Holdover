@@ -109,10 +109,14 @@
     const z = zone;
     try { const result = await api.map(z); if (z === zone) { data = result; error = ''; } } catch (e) { if (z === zone) error = e.message; }
   }
+  let mapSpotsRequest = 0;
   function loadMapSpots() {
+    const request = ++mapSpotsRequest;
     mapSpotsError = '';
     const home = homeForRequests(); // signed in: the server uses the account's home; signed out: this device's
-    api.spots(isoDay(0), fishery, home, zone).then((v) => (mapSpots = v)).catch((e) => (mapSpotsError = e.message));
+    api.spots(isoDay(0), fishery, home, zone)
+      .then((v) => { if (request === mapSpotsRequest) mapSpots = v; })
+      .catch((e) => { if (request === mapSpotsRequest) mapSpotsError = e.message; });
   }
   $effect(() => { fishery; zone; loadMapSpots(); });
   async function loadReport() { try { report = await api.report(); } catch { /* keep last */ } }

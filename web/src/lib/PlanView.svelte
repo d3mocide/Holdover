@@ -23,9 +23,12 @@
   let outlookError = $state('');
   $effect(() => {
     const f = fishery, home = homeForRequests();
+    let active = true;
     outlookError = '';
     const z = zone;
-    Promise.all([0, 1, 2, 3, 4, 5, 6].map((o) => api.spots(isoDay(o), f, home, z))).then((v) => (outlook = v)).catch((e) => (outlookError = e.message));
+    Promise.all([0, 1, 2, 3, 4, 5, 6].map((o) => api.spots(isoDay(o), f, home, z)))
+      .then((v) => { if (active) outlook = v; }).catch((e) => { if (active) outlookError = e.message; });
+    return () => { active = false; };
   });
   const fresh = $derived(Object.fromEntries((data?.features ?? []).filter((f) => f.properties.layer === 'stocking').map((f) => [f.properties.id, f.properties])));
   const unlocated = $derived(data?.meta.needs_coords ?? []);

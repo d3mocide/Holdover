@@ -756,3 +756,45 @@ Owner approved merging the verified journal recommendations and starting seasona
 - **Ran and looked:** inspected the real dev Tualatin disabled-download card with its live USGS readings, plus populated synthetic-chart screenshots on phone, tablet and desktop across themes. Applied the additive migration and refreshed the dev API container with its existing volume; dev stays at `http://localhost:5173` / API `:8020`. Synthetic baselines/readings were written only to disposable `/tmp` test databases; real dev has no synthetic history. Existing personal rows, photos, map tiles and live readings were not overwritten.
 - **Found/fixed:** axe caught a nested scrollable values list without keyboard focus; removed the nested scrolling so the surrounding panel scrolls. Repeated Plan cards initially created duplicate region landmarks; changed them to labelled groups. The old all-source startup test assumed every source was enabled; its original all-jobs assertion is preserved with a synthetic configured key, and a separate regression proves disabled historical downloads never start. Tightened the new gauge selector's accessible label and asserted actual alternate-gauge identity. Final old-cache review found a missing seasonal endpoint could leave a loading message beside the actual error; removed that misleading loading state and empty values disclosure, with an older-bundle regression. An initial documentation patch had an unmatched context and changed no files; corrected before committing. A manual browser reference became stale after hot reload; refreshed the snapshot. No test was weakened or removed. Existing frontend warnings and Starlette/httpx deprecation remain.
 - **Source boundary:** a single live three-day USGS response was inspected for schema/units and saved as a fixture. Full reading of robots revealed API-path restrictions and explicit API-key guidance; corrected the initial draft source note and gated historical downloads before any bulk request. No ten-year historical download was made. Full real-gauge availability/approval coverage, field interpretation, physical iOS/Android storage/eviction, Postgres execution of this new migration, Pi/production rollout and key-authenticated live pagination remain unverified. ROADMAP records the software gate separately and leaves the live seasonal gate open; Phase 11 stays In progress. Stop for owner feedback/key setup here.
+
+### 2026-10-22 · this commit · v0.9.0 release preparation
+Owner asked to finish seasonal-flow software and prepare 0.9.0 for `holdover.int.d3mo.us`. The candidate includes
+all 0.8.0 work, journal-informed recommendations and the existing key-gated seasonal-flow feature. Bumped Python,
+web and lockfile root versions together. Historical downloads remain disabled without the server-only USGS key;
+this release does not complete the live seasonal-data gate. Added explicit upgrade notes and production backup,
+version-pin, startup-check and rollback guidance in operations. No production data was changed.
+- **Upgrade regression:** a disposable production-0.6.0-schema database (migration 0008) containing an owner,
+  session, trip, catch/photo reference, private pin, gear, setup, favorite and manually edited public pin survives
+  migration to head plus the startup seed with those rows unchanged. The new public seasonal cache starts empty.
+  This tests schema/seed preservation with synthetic data, not a copy of the production database or photo bytes.
+- **Found and fixed:** Map and Plan accepted obsolete ranking responses after a fishery/zone change. Map now
+  accepts only its latest request; Plan invalidates the prior effect's results/errors. A browser regression holds
+  previous-fishery responses until the selected results render: it fails against the pre-fix candidate image
+  (`AssertionError: 1 !== 0`) and passes both Map and Plan with the fix. Journal browser teardown also raced
+  outstanding intercepted requests (`Request context disposed`); it now drains routes before closing contexts.
+- **Backend/package gates:** full `pytest` **255 passed**, including the new upgrade regression; frontend logic
+  tests and production build pass; document/version consistency **10 passed**. The first backend run had
+  **254 passed, 1 failed** because installed editable metadata still reported 0.8.0 after the source bump;
+  reinstalling the editable package and rerunning the full suite resolved it. No assertion was weakened.
+- **Browser regressions:** accounts **37/37**, gear **46/46**, isolated airplane-mode journal/maps **12/12**,
+  journal recommendations **114/114** including **36 zero-violation axe scans**, and ranking request order
+  **2/2** pass. Final seasonal gate **180/180**, including **64 zero-violation full axe scans** across three themes
+  and phone/tablet/desktop, plus actual offline river, exact-date day and Plan chart reloads. Inspected the chart
+  and values screenshots; test baselines and toy map tiles are explicitly synthetic, never live data. Evidence
+  logs/screenshots are under `/tmp/holdover-090-*`. Two earlier full seasonal attempts timed out waiting for the
+  Plan chart (`locator.click: Timeout 15000ms exceeded`), including one after the request-order fix. The isolated
+  offline scenario **3/3** and a complete diagnostic rerun pass without removing assertions or increasing waits;
+  failure screenshot/page-text capture remains in the suite. The remaining intermittent timeout was not reproduced
+  on the final run; its exact cause is unconfirmed.
+- **Packaged app:** built the final local amd64 image `holdover:0.9.0-candidate` and ran its actual entrypoint on
+  fresh RAM-only `/data`, scheduler disabled. Startup migrations and seed succeeded; HTTP `/healthz` reports
+  0.9.0/ok, public waters include Malheur River, the frontend serves, and Tualatin seasonal data reports disabled.
+  The disposable container was removed. This is local image evidence, not a published registry/arm64 check.
+- **Environment and limitations:** initial restricted-sandbox TestClient runs stalled and fixture curl could not
+  reach localhost; those runs were stopped and successful gates used host networking with disposable data.
+  Initial fixture setup also omitted its toy-tile directory and short-lived command sessions stopped their
+  servers; corrected setup keeps each server alive for its complete browser run. Existing frontend warnings and
+  the Starlette/httpx deprecation remain. Real authenticated USGS pagination/coverage, Postgres migration 0010,
+  physical phones, Pi, Secure cookies on production and a production scheduler soak remain unverified.
+  Live production was checked read-only: 0.6.0, healthy scheduler, ten fresh sources. Remote main still points
+  to `90d3ea0`, and no v0.9.0 tag exists. Merge, push, tag/image publication and deployment have not occurred.

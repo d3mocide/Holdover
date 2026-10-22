@@ -162,3 +162,42 @@ def test_additive_migration_downgrade_preserves_existing_tables(session):
     assert 'trip' in inspect(get_engine()).get_table_names()
     command.upgrade(config, 'head')
     assert 'flow_baseline' in inspect(get_engine()).get_table_names()
+
+
+def test_upgrade_from_060_preserves_personal_rows_and_manual_pin(session):
+    from alembic import command
+    from alembic.config import Config
+    from app.models import Catch, Favorite, GearItem, GearSetup, Pin, Trip, User, UserSession
+    from app.seed import seed_waterbodies
+
+    config = Config('alembic.ini')
+    config.set_main_option('sqlalchemy.url', session.bind.url.render_as_string(hide_password=False))
+    session.close()
+    command.downgrade(config, '0008')  # production 0.6.0 schema
+    seed_waterbodies(session)
+    water = session.scalar(select(Waterbody).where(Waterbody.name == 'Henry Hagg Lake'))
+    water.lat, water.lon = 45.0, -123.0  # explicitly synthetic owner-edited pin
+    stamp = now_iso()
+    owner = User(username='upgrade-test', password_hash='synthetic-hash', created_at=stamp)
+    session.add(owner); session.flush()
+    session.add(GearItem(uuid='upgrade-lure', owner_id=owner.id, kind='lure', name='Synthetic lure', updated_at=stamp))
+    session.add(GearSetup(uuid='upgrade-setup', owner_id=owner.id, name='Synthetic setup', item_uuids_json='["upgrade-lure"]', updated_at=stamp))
+    session.add(Trip(uuid='upgrade-trip', owner_id=owner.id, waterbody_id=water.id, notes='Keep this journal', setup_uuid='upgrade-setup', updated_at=stamp))
+    session.flush()
+    session.add_all([
+        Catch(uuid='upgrade-catch', owner_id=owner.id, trip_uuid='upgrade-trip', count=1, photo_path='synthetic-photo.jpg', updated_at=stamp),
+        Pin(uuid='upgrade-pin', owner_id=owner.id, label='Synthetic private pin', lat=45, lon=-123, updated_at=stamp),
+        Favorite(user_id=owner.id, waterbody_id=water.id),
+        UserSession(token_hash='synthetic-session', user_id=owner.id, created_at=stamp, last_used_at=stamp, expires_at='2099-01-01T00:00:00+00:00'),
+    ])
+    session.commit()
+    tables = [User, UserSession, Trip, Catch, Pin, GearItem, GearSetup, Favorite, Waterbody]
+    def snapshot():
+        return {model.__tablename__: [dict(row) for row in session.execute(select(model.__table__)).mappings()] for model in tables}
+    before = snapshot()
+    session.close()
+    command.upgrade(config, 'head')
+    seed_waterbodies(session)  # the same migrate + seed sequence used by the image
+    assert snapshot() == before
+    assert 'flow_baseline' in inspect(session.bind).get_table_names()
+    assert session.scalar(select(FlowBaseline)) is None  # no invented historical data

@@ -114,6 +114,33 @@ Deployed from the published image: `docker compose pull && docker compose up -d`
 backup first (above). Migrations are written to be reversible; `python -m alembic downgrade -1` inside the container
 undoes the last one.
 
+For a production release, pin `HOLDOVER_TAG` in the production `.env` to the published version you intend to run
+(for example `0.9.0`, **after it is published**), rather than `main`. Changing the image tag does not require
+changing the data volume or recreating accounts. Do not use `docker compose down -v` for an upgrade.
+
+1. Sync each device's journal and export any device-only entries. Make a uniquely named, consistent database
+   backup without replacing today's scheduled backup:
+
+       docker compose exec holdover python -c 'import sqlite3; from pathlib import Path; from datetime import datetime, timezone; p=Path("/data/backup") / ("pre-upgrade-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + ".db"); p.parent.mkdir(parents=True, exist_ok=True); src=sqlite3.connect("file:/data/holdover.db?mode=ro", uri=True); dst=sqlite3.connect(p); src.backup(dst); dst.close(); src.close(); print(p)'
+
+   Copy the printed file and `/data/photos` to a separate backup location off the server. Keep the previous image
+   tag and production Compose/environment settings. The database backup alone does not contain photo bytes.
+2. Set the version pin, then run `docker compose pull holdover` and `docker compose up -d holdover`. Do not use
+   `--build` when deploying the published image. If the production Compose file predates a new optional setting,
+   add its environment mapping explicitly; a value in `.env` alone is not passed to the container.
+3. Check `docker compose logs --tail=100 holdover` for migration/startup errors and check the actual HTTPS
+   `/healthz`: expected version, `ok: true`, scheduler running, source times and errors. Newly enabled sources may
+   need time to warm; disabled historical downloads should be labelled disabled, not fresh.
+4. Reload the PWA online and check Settings, sign-in, existing journal/photos, gear, Favorites and river details.
+   Check offline reload on the actual phone and confirm the HTTPS session cookie is Secure. Monitor the scheduler
+   over the next day; a passing local image test does not establish these deployment gates.
+
+If startup or data checks fail, stop writes and retain the failed database for diagnosis. Do not run an old image
+against a changed schema as a rollback assumption. Restore the pre-upgrade database/photos and previous pinned
+image using the restore procedure above; this discards server writes made after that backup, so preserve/export
+new device entries first. A downgrade is an alternative only after checking every intervening migration; one
+`downgrade -1` does not necessarily return to the previous release's schema.
+
 ## Behind a reverse proxy
 
 - Terminate HTTPS at the proxy (service workers and Add to Home Screen need it) and forward `X-Forwarded-Proto` so
